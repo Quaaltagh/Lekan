@@ -1,0 +1,186 @@
+.container {
+  background-color: #f9fafb;
+  border-radius: 1.5rem;
+  padding: 16px;
+  margin-bottom: 32px;
+  border: 1px solid #f3f4f6;
+}
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  width: 100%;
+  justify-items: center;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* responsive lg:flex-row */
+@media (min-width: 1024px) {
+  .wrapper {
+    flex-direction: row;
+  }
+}
+
+/* columns */
+.colQuarter { width: 100%; }
+.colThird { width: 100%; }
+.colAuto { width: 100%; }
+
+@media (min-width: 1024px) {
+  .colQuarter { width: 25%; }
+  .colThird { width: 33.333%; }
+  .colAuto { width: auto; }
+}
+
+/* label */
+.label {
+  display: block;
+  font-size: 10px;
+  font-weight: 700;
+  color: #9ca3af;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 8px;
+}
+
+/* select */
+.selectWrapper {
+  position: relative;
+}
+
+.select {
+  appearance: none;
+  width: 100%;
+  background-color: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.75rem;
+  padding: 12px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.select:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px #1e3a8a;
+}
+
+/* chevron */
+.chevron {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 16px;
+  width: 16px;
+  color: #9ca3af;
+  pointer-events: none;
+}
+
+/* price range */
+.range {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.input {
+  width: 100%;
+  background-color: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.75rem;
+  padding: 12px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+}
+
+.input:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px #1e3a8a;;
+}
+
+.dash {
+  color: #d1d5db;
+}
+
+/* status */
+.statusWrapper {
+  display: flex;
+  gap: 8px;
+  padding: 4px;
+  background-color: rgba(229,231,235,0.5);
+  border-radius: 0.75rem;
+}
+
+.activeBtn {
+  padding: 8px 8px;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 0.5rem;
+  background-color: #1e3a8a;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.inactiveBtn {
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: 0.5rem;
+  color: #6b7280;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.inactiveBtn:hover {
+  background-color: white;
+}
+
+/* apply button */
+.applyBtn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  padding: 10px 24px;
+  background-color: #1e3a8a;;
+  color: white;
+  border-radius: 1rem;
+  font-weight: bold;
+  font-size: 14px;
+
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  box-shadow: 0 5px 20px rgba(30,58,138,0.2);
+}
+
+.applyBtn:hover {
+  background-color: rgb(18, 37, 101);;
+}
+
+/* responsive button */
+@media (min-width: 1024px) {
+  .applyBtn {
+    width: auto;
+  }
+}
+
+.filterIcon {
+  height: 16px;
+  width: 16px;
+}
