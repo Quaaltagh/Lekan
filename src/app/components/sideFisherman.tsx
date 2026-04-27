@@ -8,8 +8,8 @@ export default function SideFisherman() {
   const pathname = usePathname();
 
   const navItems = [
-    { href: "/fisherman", icon: LayoutDashboard, label: "Dashboard" },
-    { href: "/uploadAuction", icon: Upload, label: "Unggah Lelang" },
+    { href: "/fisherman/dashboard", icon: LayoutDashboard, label: "Dashboard" },
+    { href: "/fisherman/uploadAuction", icon: Upload, label: "Unggah Lelang" },
     { href: "#", icon: Activity, label: "Status Lelang" },
     { href: "#", icon: History, label: "Histori Lelang" },
     { href: "#", icon: Settings, label: "Pengaturan" },

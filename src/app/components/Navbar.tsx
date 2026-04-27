@@ -4,10 +4,12 @@ import { Bell, Wallet, Search, LogOut, ChevronDown } from 'lucide-react';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function Navbar() {
   const { user, logout } = useAuth();
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const router = useRouter();
 
   const getInitials = (name?: string) => {
     if (!name) return '?';
@@ -32,7 +34,7 @@ export default function Navbar() {
           <input type="text" className={styles.searchinput} placeholder="Cari ikan..." />
         </div>
       </div>
-
+      
       {/* Kanan - Actions */}
       <div className={styles.navRight}>
         <a href="#"><Bell className={styles.icon} size={20} /></a>
@@ -78,13 +80,17 @@ export default function Navbar() {
                   <p className={styles.dropdownEmail}>{user.email}</p>
                 </div>
                 <hr className={styles.dropdownDivider} />
-                <Link href="/" className={styles.dropdownItem}>Profil Saya</Link>
-                <Link href="/" className={styles.dropdownItem}>Status Lelang</Link>
-                <Link href="/" className={styles.dropdownItem}>Riwayat Lelang</Link>
+                <Link href="" className={styles.dropdownItem}>Profil Saya</Link>
+                <Link href="" className={styles.dropdownItem}>Status Lelang</Link>
+                <Link href="" className={styles.dropdownItem}>Riwayat Lelang</Link>
                 <hr className={styles.dropdownDivider} />
                 <button
                   className={`${styles.dropdownItem} ${styles.dropdownLogout}`}
-                  onClick={() => { logout(); setDropdownOpen(false); }}
+                  onClick={() => { 
+                    logout(); 
+                    setDropdownOpen(false);
+                    router.push('/');
+                  }}
                 >
                   <LogOut size={14} /> Keluar
                 </button>
