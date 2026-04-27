@@ -1,0 +1,218 @@
+.container {
+  display: flex;
+  height: 100vh;
+  background-color: #f8fafc; /* slate-50 */
+  color: #1e293b; /* slate-800 */
+  font-family: sans-serif;
+}
+
+/* Main Content Styling */
+.mainContent {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.header {
+  background-color: #ffffff;
+  border-bottom: 1px solid #e2e8f0;
+  padding: 1rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.searchWrapper {
+  position: relative;
+  width: 24rem;
+}
+
+.searchInput {
+  width: 100%;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  padding: 0.5rem 1rem 0.5rem 2.5rem;
+  font-size: 0.875rem;
+  outline: none;
+}
+
+.searchInput:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+/* Dashboard Layout */
+.dashboardPadding {
+  padding: 2rem;
+  display: flex;
+  gap: 2rem;
+}
+
+.cardGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.statCard {
+  background-color: #ffffff;
+  padding: 1.5rem;
+  border-radius: 1rem;
+  border: 1px solid #f1f5f9;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.cardicon{
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+   
+}
+
+.auctionItem {
+  background-color: #ffffff;
+  padding: 1rem;
+  border-radius: 1rem;
+  border: 1px solid #f1f5f9;
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.imagePlaceholder {
+  width: 8rem;
+  height: 8rem;
+  background-color: #0f172a;
+  border-radius: 0.75rem;
+  flex-shrink: 0;
+}
+
+/* Utility Badges */
+.badgeLive {
+  background-color: #fee2e2;
+  color: #dc2626;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  height: 1.5rem;
+}
+
+/* CTA Box */
+.ctaBox {
+  background-color: #1e3a8a;
+  border-radius: 1.5rem;
+  padding: 1.5rem;
+  color: #ffffff;
+}
+
+.primaryButton {
+  width: 100%;
+  background-color: #1e40af;
+  color: #ffffff;
+  padding: 0.75rem;
+  border-radius: 0.75rem;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.primaryButton:hover {
+  background-color: #1e3a8a;
+}
+
+/* Widget Tren Pasar */
+.marketTrendTitle {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #94a3b8; /* slate-400 */
+  letter-spacing: 0.05em;
+  margin-bottom: 1rem;
+  text-transform: uppercase;
+}
+
+.marketTrendCard {
+  background-color: #ffffff;
+  border-radius: 1rem;
+  border: 1px solid #f1f5f9;
+  padding: 1rem;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.marketTrendItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+/* Menghilangkan margin bawah pada item terakhir */
+.marketTrendItem:last-child {
+  margin-bottom: 0;
+}
+
+.trendInfo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #334155; /* slate-700 */
+}
+
+.indicatorDot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 9999px;
+}
+
+.trendPositive {
+  color: #16a34a; /* green-600 */
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+.trendNegative {
+  color: #dc2626; /* red-600 */
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+/* Section Header Daftar Lelang */
+.auctionHeader {
+  margin-bottom: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.auctionHeaderTitle {
+  font-size: 1.25rem; /* text-xl */
+  font-weight: 700;
+  color: #1e293b; /* slate-800 */
+  margin: 0;
+}
+
+.auctionHeaderSubtitle {
+  font-size: 0.875rem; /* text-sm */
+  color: #64748b; /* slate-500 */
+  margin: 0.25rem 0 0 0;
+}
+
+.viewAllLink {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #2563eb; /* blue-600 */
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.viewAllLink:hover {
+  color: #1d4ed8;
+}
