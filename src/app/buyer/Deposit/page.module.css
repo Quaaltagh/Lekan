@@ -1,0 +1,339 @@
+.container {
+  display: grid;
+  grid-template-columns: 540px 290px;
+  gap: 40px;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 40px 150px;
+  font-family: 'Inter', sans-serif;
+  background-color: #ffffff;
+}
+
+.mainContent{
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start
+}
+
+.balanceHeader {
+  margin-bottom: 40px;
+  text-align: left;
+}
+
+.label {
+  color: #005a92;
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+  text-align: left;
+}
+
+.balanceValue {
+  letter-spacing: 1;
+  font-size: 42px;
+  font-weight: 800;
+  color: #1a1a1a;
+  margin: 0;
+}
+
+.subtext {
+  color: #6c757d;
+  font-size: 14px;
+  margin-top: 15px;
+}
+
+/* Stepper Section */
+.stepSection {
+  width: 550px;
+  margin-bottom: 40px;
+}
+
+.stepTitle {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.stepNumber {
+  background: #005a92;
+  color: white;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.stepTitle h3 {
+  font-size: 18px;
+  font-weight: 700;
+  margin: 0;
+  color: #1a1a1a;
+}
+
+/* Amount Grid */
+.amountGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.amountBtn {
+  padding: 14px;
+  border: 1px solid #edf0f2;
+  background: white;
+  color: #1a1a1a;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.activeAmount {
+  border-color: #005a92;
+  color: #005a92;
+  background-color: #f0f7ff;
+}
+
+/* Custom Input */
+.customInputWrapper label {
+  width: 100%;
+  font-size: 10px;
+  font-weight: 700;
+  color: #adb5bd;
+  display: block;
+  margin-bottom: 4px;
+  padding-left: 15px;
+  text-align: left;
+}
+
+.inputField {
+  display: flex;
+  align-items: center;
+  background: #f8f9fa;
+  padding: 12px 16px;
+  border-radius: 8px;
+  gap: 10px;
+}
+
+.inputField span {
+  color: #adb5bd;
+  font-weight: 600;
+}
+
+.inputField input {
+  background: transparent;
+  border: none;
+  outline: none;
+  font-weight: 600;
+  width: 100%;
+}
+
+/* Method Grid */
+.methodGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.methodCard {
+  width: 250px;
+  border: 1px solid #edf0f2;
+  padding: 10px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  position: relative;
+}
+
+.selectedMethod {
+  border-color: #005a92;
+  background-color: #f0f7ff;
+}
+
+.methodIcon{
+  margin: 0 10px;
+  background-color: #F2F4F6;
+  padding: 8px 8px 4px 8px;
+  border-radius: 5px;
+}
+
+.methodText{
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  gap: 0px;
+}
+
+.methodName {
+  font-weight: 700;
+  font-size: 14px;
+  padding: 0;
+  color: #191C1E;
+}
+
+.methodSub {
+  font-size: 11px;
+  color: #adb5bd;
+  margin: 0px 0 0 0;
+}
+
+.checkIcon {
+  position: absolute;
+  right: 12px;
+  color: #005a92;
+  font-size: 12px;
+}
+
+/* Sidebar / Summary */
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.safetyCard {
+  display: flex;
+  flex-direction: column;
+  background: #f8f9fa;
+  padding: 10px 20px;
+  border-radius: 16px;
+  border-left: 4px solid #005a92;
+  text-align: left;
+}
+
+.safetyLabel {
+  font-size: 10px;
+  font-weight: 700;
+  color: #005a92;
+}
+
+.safetyValue {
+  font-weight: 600;
+  font-size: 18px;
+  margin: 4px 0;
+  color:#1a1a1a;
+}
+
+.safetySub {
+  font-size: 10px;
+  color: #adb5bd;
+}
+
+.summaryCard {
+  background: white;
+  border: 1px solid #edf0f2;
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+  text-align: left;
+}
+
+.summaryCard H3 {
+  color: #1a1a1a;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.summaryRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  margin-bottom: 12px;
+  color: #6c757d;
+}
+
+.freeText {
+  color: #d9534f;
+  font-weight: 700;
+}
+
+.totalRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 24px 0;
+  padding-top: 20px;
+  border-top: 1px dashed #edf0f2;
+}
+
+.totalLabel p {
+  margin: 0;
+  font-weight: 600;
+  line-height: 1.1;
+  font-size: 18px;
+  color: #1a1a1a;
+}
+
+.totalAmount {
+  font-size: 24px;
+  font-weight: 800;
+  color: #005a92;
+}
+
+.infoBox {
+  background: #f0f7ff;
+  padding: 15px;
+  border-radius: 8px;
+  font-size: 11px;
+  color: #005a92;
+  margin-bottom: 20px;
+  display: flex;
+  gap: 10px;
+}
+
+.btnDeposit {
+  width: 100%;
+  background: #005a92;
+  color: white;
+  border: none;
+  padding: 16px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.secureText {
+  text-align: center;
+  font-size: 10px;
+  color: #adb5bd;
+  margin-top: 12px;
+  display: flex;
+  gap: 5px;
+}
+
+.secureText p {
+  line-height: 15px;
+}
+
+.helpCard {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  background: #f8f9fa;
+  border-radius: 12px;
+  text-align: left;
+}
+
+.helpTitle {
+  font-size: 12px;
+  font-weight: 700;
+  margin-top: 10px;
+  line-height: 5px;
+}
+
+.helpSub {
+  font-size: 11px;
+  color: #6c757d;
+  margin: 0px 0 0 0;
+}
