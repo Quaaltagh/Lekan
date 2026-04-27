@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import authRoutes from './routes/authRoutes';
+import auctionRoutes from './routes/auctionRoutes';
 
 dotenv.config();
 
@@ -12,10 +13,14 @@ app.use(cors({
   origin: process.env.FRONTEND_URL || 'http://localhost:3000',
   credentials: true,
 }));
-app.use(express.json());
+
+// Naikkan limit untuk handle base64 gambar (default 100kb, naik ke 15mb)
+app.use(express.json({ limit: '15mb' }));
+app.use(express.urlencoded({ extended: true, limit: '15mb' }));
 
 // Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/auctions', auctionRoutes);
 
 // Health check
 app.get('/api/health', (_req, res) => {
