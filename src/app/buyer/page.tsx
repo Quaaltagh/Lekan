@@ -5,6 +5,7 @@ export default function BuyerDashboard() {
   return (
     <div className="flex h-screen bg-slate-50 text-slate-800 font-sans">
       {/* Sidebar */}
+      {/*  */}
       <aside className="w-64 bg-white border-r border-slate-200 flex flex-col justify-between">
         <div>
           <div className="p-6 border-b border-slate-100">

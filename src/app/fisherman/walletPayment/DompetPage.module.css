@@ -1,0 +1,356 @@
+/* ── Layout ── */
+.layout {
+    display: flex;
+    min-height: 100vh;
+    background-color: #f8fafc;
+    font-family: 'Geist', 'DM Sans', sans-serif;
+}
+
+.mainWrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.main {
+    flex: 1;
+    padding: 32px 40px;
+    overflow-y: auto;
+}
+
+/* ── Page Header ── */
+.pageHeader {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 28px;
+}
+
+.pageTitle {
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: #0f172a;
+    margin: 0 0 4px;
+    letter-spacing: -0.02em;
+}
+
+.pageSubtitle {
+    font-size: 0.875rem;
+    color: #64748b;
+    margin: 0;
+}
+
+.withdrawBtn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background-color: #1e3a8a;
+    color: #ffffff;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.15s;
+    box-shadow: 0 4px 14px rgba(30, 58, 138, 0.3);
+}
+
+.withdrawBtn:hover {
+    background-color: #1e40af;
+    transform: translateY(-1px);
+}
+
+/* ── Balance Card ── */
+.balanceCard {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 1.25rem;
+    padding: 32px 36px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 32px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+}
+
+.balanceLeft {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.balanceLabel {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    color: #94a3b8;
+    text-transform: uppercase;
+}
+
+.balanceAmount {
+    font-size: 2.75rem;
+    font-weight: 800;
+    color: #172554;
+    letter-spacing: -0.03em;
+    line-height: 1;
+}
+
+.balanceSafe {
+    font-size: 12px;
+    color: #64748b;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 4px;
+}
+
+.safeIcon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    background-color: #dcfce7;
+    color: #16a34a;
+    border-radius: 50%;
+    font-size: 9px;
+    font-weight: 700;
+}
+
+.pendingBox {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 16px 24px;
+    text-align: right;
+}
+
+.pendingLabel {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    color: #94a3b8;
+    text-transform: uppercase;
+}
+
+.pendingAmount {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: #374151;
+}
+
+/* ── Sections ── */
+.section {
+    margin-bottom: 32px;
+}
+
+.sectionHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+}
+
+.sectionTitle {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0 0 16px;
+}
+
+.viewAllBtn {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #1e3a8a;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    margin-bottom: 16px;
+}
+
+.viewAllBtn:hover {
+    text-decoration: underline;
+}
+
+/* ── Stats Grid ── */
+.statsGrid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+}
+
+@media (max-width: 768px) {
+    .statsGrid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.statCard {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 1rem;
+    padding: 20px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.03);
+}
+
+.statTopRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.statIcon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+}
+
+.statIconBlue {
+    background: #eff6ff;
+    color: #1e40af;
+}
+
+.statIconOrange {
+    background: #fff7ed;
+    color: #ea580c;
+}
+
+.statIconGray {
+    background: #f1f5f9;
+    color: #475569;
+}
+
+.statBadge {
+    font-size: 10px;
+    font-weight: 600;
+    color: #94a3b8;
+    background: #f1f5f9;
+    padding: 3px 8px;
+    border-radius: 999px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.statLabel {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: #94a3b8;
+    text-transform: uppercase;
+}
+
+.statValue {
+    font-size: 1.375rem;
+    font-weight: 800;
+    color: #0f172a;
+    letter-spacing: -0.02em;
+}
+
+/* ── Transaction List ── */
+.transactionList {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 1.25rem;
+    overflow: hidden;
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.03);
+}
+
+.txRow {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 18px 24px;
+    border-bottom: 1px solid #f1f5f9;
+    transition: background 0.15s;
+}
+
+.txRow:last-child {
+    border-bottom: none;
+}
+
+.txRow:hover {
+    background: #f8fafc;
+}
+
+.txIcon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    flex-shrink: 0;
+}
+
+.txIconIncome {
+    background: #eff6ff;
+    color: #1e40af;
+}
+
+.txIconWithdraw {
+    background: #fef2f2;
+    color: #dc2626;
+}
+
+.txInfo {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.txTitle {
+    font-size: 13px;
+    font-weight: 600;
+    color: #0f172a;
+}
+
+.txMeta {
+    font-size: 11px;
+    color: #94a3b8;
+}
+
+.txRight {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+}
+
+.txAmount {
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.txAmountIncome {
+    color: #16a34a;
+}
+
+.txAmountWithdraw {
+    color: #dc2626;
+}
+
+.txStatus {
+    font-size: 10px;
+    font-weight: 600;
+    color: #64748b;
+    background: #f1f5f9;
+    padding: 2px 8px;
+    border-radius: 999px;
+}
