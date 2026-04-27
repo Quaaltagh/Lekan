@@ -4,12 +4,14 @@ import { Bell, Wallet, Search, LogOut, ChevronDown } from 'lucide-react';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter,usePathname } from 'next/navigation';
 
 export default function Navbar() {
   const { user, logout } = useAuth();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const router = useRouter();
+  const pathname = usePathname();
+  const isNotification = pathname.startsWith("/notification");
 
   const getInitials = (name?: string) => {
     if (!name) return '?';
@@ -37,8 +39,15 @@ export default function Navbar() {
       
       {/* Kanan - Actions */}
       <div className={styles.navRight}>
-        <a href="#"><Bell className={styles.icon} size={20} /></a>
-        <a href="#"><Wallet className={styles.icon} size={20} /></a>
+        <Link href="/notification">
+          <Bell
+            className={`${styles.icon} ${
+              isNotification ? styles.iconActive : styles.iconInactive
+            }`}
+            size={20}
+          />
+        </Link>
+        <Link href="#"><Wallet className={styles.iconInactive} size={20} /></Link>
 
         {user ? (
           <div 

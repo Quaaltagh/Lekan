@@ -32,6 +32,21 @@
   gap: 6px;
 }
 
+
+
+.dot {
+  height: 6px;
+  width: 6px;
+  border-radius: 50%;
+  background-color: white;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
 .image {
   width: 100%;
   height: 100%;
@@ -104,8 +119,11 @@
 }
 
 .button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   width: 100%;
-  padding: 1rem;
+  padding: .5rem;
   background: #1e3a8a;
   color: white;
   border-radius: 12px;
@@ -113,6 +131,7 @@
   text-transform: uppercase;
   margin-top: 1rem;
   cursor: pointer;
+  font-size: 16px;
 }
 
 .button:hover {
