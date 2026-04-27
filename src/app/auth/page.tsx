@@ -54,7 +54,7 @@ export default function LoginPage() {
         await register(form.email, form.password, role, form.full_name || undefined);
       }
       // Redirect berdasarkan role
-      router.push(role === 'pembeli' ? '/buyer' : '/fisherman');
+      router.push(role === 'pembeli' ? '/' : '/fisherman/dashboard');
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Terjadi kesalahan.');
     } finally {
