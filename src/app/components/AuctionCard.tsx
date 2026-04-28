@@ -1,4 +1,6 @@
+'use client'
 import { Clock } from 'lucide-react';
+import Link from 'next/link';
 import { motion } from 'framer-motion';
 import styles from './AuctionCard.module.css';
 
@@ -27,9 +29,12 @@ export default function AuctionCard({
   return (
     <div className={styles.card}>
       <div className={styles.header}>
-        <div className={styles.liveBadge}>
-          ● Live Now
-        </div>
+         <div>
+              <span className={styles.liveBadge}>
+              <span className={styles.dot}></span>
+              Live Now
+              </span>
+          </div>
 
         <img src={image} alt={name} className={styles.image}/>
 
@@ -72,10 +77,10 @@ export default function AuctionCard({
             <div>Rp {highestBid}</div>
           </div>
         </div>
-
-        <button className={styles.button} >
-          Lihat Detail
-        </button>
+        
+          <Link href="/AuctionDetail"  className={styles.button}>Lihat Detail
+          </Link>
+        
       </div>
     </div>
   );

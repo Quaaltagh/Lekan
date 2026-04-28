@@ -1,6 +1,6 @@
 "use client";
 import styles from './SideFisherman.module.css';
-import { LayoutDashboard, Upload, History, Activity, Settings, Bell, Wallet, Search, Plus } from 'lucide-react';
+import { LayoutDashboard, Upload, History, Activity, Settings, Bell, Wallet, Search, Plus, Truck } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from "next/navigation";
 
@@ -13,6 +13,7 @@ export default function SideFisherman() {
     { href: "#", icon: Activity, label: "Status Lelang" },
     { href: "#", icon: History, label: "Histori Lelang" },
     { href: "#", icon: Settings, label: "Pengaturan" },
+    { href: "#", icon: Truck, label: "Logistic" },
   ];
 
   return (

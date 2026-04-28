@@ -25,11 +25,16 @@
   gap: 16px;
 }
 
-.icon {
+.iconInactive {
   color: #94a3b8;
 }
 
-.icon:hover {
+.iconActive {
+  fill: #1e3a8a;;
+  color: #1e3a8a;
+}
+
+.iconInactive:hover {
   color: #1e3a8a;
 }
 
