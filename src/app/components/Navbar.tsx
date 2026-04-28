@@ -12,6 +12,7 @@ export default function Navbar() {
   const router = useRouter();
   const pathname = usePathname();
   const isNotification = pathname.startsWith("/notification");
+  const isWallet = pathname === "/buyer/Dompet";
 
   const getInitials = (name?: string) => {
     if (!name) return '?';
@@ -47,7 +48,12 @@ export default function Navbar() {
             size={20}
           />
         </Link>
-        <Link href="#"><Wallet className={styles.iconInactive} size={20} /></Link>
+        <Link href={isWallet ? "/" : "/buyer/Dompet"}>
+          <Wallet 
+            className={`${styles.icon} ${isWallet ? styles.iconActive : styles.iconInactive}`} 
+            size={20} 
+          />
+        </Link>
 
         {user ? (
           <div 
