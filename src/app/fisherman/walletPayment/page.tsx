@@ -1,4 +1,6 @@
 "use client";
+
+import { useEffect, useState } from "react";
 import styles from "./DompetPage.module.css";
 import SideFisherman from "../../components/sideFisherman";
 import NavbarFisherman from "../../components/NavbarFisherman";
@@ -9,58 +11,65 @@ import {
   Anchor,
   Landmark,
   ChevronRight,
+  Loader2,
 } from "lucide-react";
+import {
+  walletService,
+  formatRupiah,
+  formatTxDate,
+  txLabel,
+  isIncome,
+  type WalletData,
+  type Transaction,
+} from "../../../services/walletService";
 
-// ─── Mock Data ────────────────────────────────────────────────────────────────
-const transactions = [
-  {
-    id: "TR-99281",
-    type: "income",
-    title: "Auction Payout: Yellowfin Tuna",
-    date: "Today, 14:30",
-    amount: "+ Rp 15.000.000",
-    status: "Completed",
-  },
-  {
-    id: "WT-44102",
-    type: "withdrawal",
-    title: "Bank Transfer (Mandiri)",
-    date: "Yesterday, 09:15",
-    amount: "- Rp 20.000.000",
-    status: "Completed",
-  },
-  {
-    id: "TR-99280",
-    type: "income",
-    title: "Auction Payout: Skipjack Batch",
-    date: "Oct 24, 16:45",
-    amount: "+ Rp 8.500.000",
-    status: "Completed",
-  },
-  {
-    id: "TR-99271",
-    type: "income",
-    title: "Auction Payout: Red Snapper",
-    date: "Oct 22, 11:00",
-    amount: "+ Rp 11.200.000",
-    status: "Completed",
-  },
-];
-
-// ─── Component ────────────────────────────────────────────────────────────────
 export default function DompetPage() {
+  const [data, setData] = useState<WalletData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const raw = localStorage.getItem("lekan_user"); // ← ganti ini
+    const token = localStorage.getItem("lekan_token"); // ← dan ini
+
+    if (!raw || !token) {
+      setError("Sesi tidak ditemukan. Silakan login ulang.");
+      setLoading(false);
+      return;
+    }
+
+    const { id: userId } = JSON.parse(raw);
+
+    walletService
+      .getWallet(userId, token)
+      .then(setData)
+      .catch((e) => setError(e.message))
+      .finally(() => setLoading(false));
+  }, []);
+
+  // Derived stats from the last 10 transactions in the response
+  const totalEarned =
+    data?.transactions
+      .filter((tx) => tx.type === "auction_payout" && tx.status === "completed")
+      .reduce((s, tx) => s + tx.amount, 0) ?? 0;
+
+  const successfulBids =
+    data?.transactions.filter(
+      (tx) => tx.type === "auction_payout" && tx.status === "completed",
+    ).length ?? 0;
+
+  const totalWithdrawn =
+    data?.transactions
+      .filter((tx) => tx.type === "withdrawal" && tx.status === "completed")
+      .reduce((s, tx) => s + tx.amount, 0) ?? 0;
+
   return (
     <div className={styles.layout}>
-      {/* Sidebar */}
       <SideFisherman />
-
-      {/* Main Content */}
       <div className={styles.mainWrapper}>
-        {/* Top Navbar */}
         <NavbarFisherman />
-
         <main className={styles.main}>
-          {/* ── Page Header ── */}
+          {/* Header */}
           <div className={styles.pageHeader}>
             <div>
               <h1 className={styles.pageTitle}>Dompet</h1>
@@ -69,111 +78,171 @@ export default function DompetPage() {
               </p>
             </div>
             <button className={styles.withdrawBtn}>
-              <Wallet size={16} />
-              Withdraw Funds
+              <Wallet size={16} /> Withdraw Funds
             </button>
           </div>
 
-          {/* ── Balance Card ── */}
-          <div className={styles.balanceCard}>
-            <div className={styles.balanceLeft}>
-              <span className={styles.balanceLabel}>
-                TOTAL AVAILABLE BALANCE
-              </span>
-              <span className={styles.balanceAmount}>Rp 48.500.000</span>
-              <span className={styles.balanceSafe}>
-                <span className={styles.safeIcon}>✓</span> Funds are secure and
-                ready for withdrawal.
-              </span>
+          {/* Loading */}
+          {loading && (
+            <div
+              style={{ display: "flex", justifyContent: "center", padding: 60 }}
+            >
+              <Loader2
+                size={32}
+                style={{
+                  animation: "spin 1s linear infinite",
+                  color: "#1e3a8a",
+                }}
+              />
             </div>
-            <div className={styles.pendingBox}>
-              <span className={styles.pendingLabel}>PENDING CLEARANCE</span>
-              <span className={styles.pendingAmount}>Rp 12.200.000</span>
-            </div>
-          </div>
+          )}
 
-          {/* ── Earnings Overview ── */}
-          <section className={styles.section}>
-            <h2 className={styles.sectionTitle}>Earnings Overview</h2>
-            <div className={styles.statsGrid}>
-              <div className={styles.statCard}>
-                <div className={styles.statTopRow}>
-                  <div className={`${styles.statIcon} ${styles.statIconBlue}`}>
-                    <TrendingUp size={18} />
-                  </div>
-                  <span className={styles.statBadge}>This Month</span>
+          {/* Error */}
+          {error && (
+            <div
+              style={{
+                background: "#fef2f2",
+                border: "1px solid #fecaca",
+                borderRadius: 12,
+                padding: "16px 20px",
+                color: "#dc2626",
+                marginBottom: 24,
+              }}
+            >
+              {error}
+            </div>
+          )}
+
+          {data && (
+            <>
+              {/* Balance Card */}
+              <div className={styles.balanceCard}>
+                <div className={styles.balanceLeft}>
+                  <span className={styles.balanceLabel}>
+                    TOTAL AVAILABLE BALANCE
+                  </span>
+                  <span className={styles.balanceAmount}>
+                    {formatRupiah(data.wallet.balance)}
+                  </span>
+                  <span className={styles.balanceSafe}>
+                    <span className={styles.safeIcon}>✓</span> Funds are secure
+                    and ready for withdrawal.
+                  </span>
                 </div>
-                <span className={styles.statLabel}>TOTAL EARNED</span>
-                <span className={styles.statValue}>Rp 82.400.000</span>
+                <div className={styles.pendingBox}>
+                  <span className={styles.pendingLabel}>PENDING CLEARANCE</span>
+                  <span className={styles.pendingAmount}>
+                    {formatRupiah(data.wallet.pending)}
+                  </span>
+                </div>
               </div>
 
-              <div className={styles.statCard}>
-                <div className={styles.statTopRow}>
-                  <div
-                    className={`${styles.statIcon} ${styles.statIconOrange}`}
-                  >
-                    <Anchor size={18} />
+              {/* Earnings Overview */}
+              <section className={styles.section}>
+                <h2 className={styles.sectionTitle}>Earnings Overview</h2>
+                <div className={styles.statsGrid}>
+                  <div className={styles.statCard}>
+                    <div className={styles.statTopRow}>
+                      <div
+                        className={`${styles.statIcon} ${styles.statIconBlue}`}
+                      >
+                        <TrendingUp size={18} />
+                      </div>
+                      <span className={styles.statBadge}>Recent</span>
+                    </div>
+                    <span className={styles.statLabel}>TOTAL EARNED</span>
+                    <span className={styles.statValue}>
+                      {formatRupiah(totalEarned)}
+                    </span>
                   </div>
-                  <span className={styles.statBadge}>Auctions</span>
-                </div>
-                <span className={styles.statLabel}>SUCCESSFUL BIDS</span>
-                <span className={styles.statValue}>14</span>
-              </div>
-
-              <div className={styles.statCard}>
-                <div className={styles.statTopRow}>
-                  <div className={`${styles.statIcon} ${styles.statIconGray}`}>
-                    <Landmark size={18} />
+                  <div className={styles.statCard}>
+                    <div className={styles.statTopRow}>
+                      <div
+                        className={`${styles.statIcon} ${styles.statIconOrange}`}
+                      >
+                        <Anchor size={18} />
+                      </div>
+                      <span className={styles.statBadge}>Auctions</span>
+                    </div>
+                    <span className={styles.statLabel}>SUCCESSFUL BIDS</span>
+                    <span className={styles.statValue}>{successfulBids}</span>
                   </div>
-                  <span className={styles.statBadge}>All Time</span>
+                  <div className={styles.statCard}>
+                    <div className={styles.statTopRow}>
+                      <div
+                        className={`${styles.statIcon} ${styles.statIconGray}`}
+                      >
+                        <Landmark size={18} />
+                      </div>
+                      <span className={styles.statBadge}>Recent</span>
+                    </div>
+                    <span className={styles.statLabel}>TOTAL WITHDRAWN</span>
+                    <span className={styles.statValue}>
+                      {formatRupiah(totalWithdrawn)}
+                    </span>
+                  </div>
                 </div>
-                <span className={styles.statLabel}>TOTAL WITHDRAWN</span>
-                <span className={styles.statValue}>Rp 340.000.000</span>
-              </div>
-            </div>
-          </section>
+              </section>
 
-          {/* ── Recent Transactions ── */}
-          <section className={styles.section}>
-            <div className={styles.sectionHeader}>
-              <h2 className={styles.sectionTitle}>Recent Transactions</h2>
-              <button className={styles.viewAllBtn}>
-                View All <ChevronRight size={14} />
-              </button>
-            </div>
-
-            <div className={styles.transactionList}>
-              {transactions.map((tx) => (
-                <div key={tx.id} className={styles.txRow}>
-                  <div
-                    className={`${styles.txIcon} ${tx.type === "income" ? styles.txIconIncome : styles.txIconWithdraw}`}
-                  >
-                    <ArrowDownToLine
-                      size={16}
+              {/* Recent Transactions */}
+              <section className={styles.section}>
+                <div className={styles.sectionHeader}>
+                  <h2 className={styles.sectionTitle}>Recent Transactions</h2>
+                  <button className={styles.viewAllBtn}>
+                    View All <ChevronRight size={14} />
+                  </button>
+                </div>
+                <div className={styles.transactionList}>
+                  {data.transactions.length === 0 && (
+                    <div
                       style={{
-                        transform:
-                          tx.type === "withdrawal" ? "rotate(180deg)" : "none",
+                        padding: 32,
+                        textAlign: "center",
+                        color: "#94a3b8",
+                        fontSize: 14,
                       }}
-                    />
-                  </div>
-                  <div className={styles.txInfo}>
-                    <span className={styles.txTitle}>{tx.title}</span>
-                    <span className={styles.txMeta}>
-                      {tx.date} • ID: {tx.id}
-                    </span>
-                  </div>
-                  <div className={styles.txRight}>
-                    <span
-                      className={`${styles.txAmount} ${tx.type === "income" ? styles.txAmountIncome : styles.txAmountWithdraw}`}
                     >
-                      {tx.amount}
-                    </span>
-                    <span className={styles.txStatus}>{tx.status}</span>
-                  </div>
+                      Belum ada transaksi.
+                    </div>
+                  )}
+                  {data.transactions.map((tx: Transaction) => (
+                    <div key={tx.id} className={styles.txRow}>
+                      <div
+                        className={`${styles.txIcon} ${isIncome(tx) ? styles.txIconIncome : styles.txIconWithdraw}`}
+                      >
+                        <ArrowDownToLine
+                          size={16}
+                          style={{
+                            transform: !isIncome(tx)
+                              ? "rotate(180deg)"
+                              : "none",
+                          }}
+                        />
+                      </div>
+                      <div className={styles.txInfo}>
+                        <span className={styles.txTitle}>{txLabel(tx)}</span>
+                        <span className={styles.txMeta}>
+                          {formatTxDate(tx.created_at)} • ID:{" "}
+                          {tx.id.slice(0, 8).toUpperCase()}
+                        </span>
+                      </div>
+                      <div className={styles.txRight}>
+                        <span
+                          className={`${styles.txAmount} ${isIncome(tx) ? styles.txAmountIncome : styles.txAmountWithdraw}`}
+                        >
+                          {isIncome(tx) ? "+" : "-"} {formatRupiah(tx.amount)}
+                        </span>
+                        <span className={styles.txStatus}>
+                          {tx.status.charAt(0).toUpperCase() +
+                            tx.status.slice(1)}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-          </section>
+              </section>
+            </>
+          )}
         </main>
       </div>
     </div>
