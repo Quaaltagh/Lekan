@@ -1,6 +1,9 @@
+'use client'
 import React, { useState } from 'react';
 import styles from './page.module.css';
 import { Landmark, CreditCard, Wallet, QrCode, ShieldAlert, Headset, Info } from 'lucide-react';
+import Navbar from '@/app/components/Navbar';
+import { div } from 'framer-motion/client';
 
 const DepositPage: React.FC = () => {
   const [selectedAmount, setSelectedAmount] = useState('100.000');
@@ -8,7 +11,10 @@ const DepositPage: React.FC = () => {
   const amounts = ['50.000', '100.000', '500.000', '1.000.000'];
 
   return (
+    <div className={styles.all}>
+    <Navbar />
     <div className={styles.container}>
+      
       <div className={styles.mainContent}>
         {/* Total Balance Header */}
         <header className={styles.balanceHeader}>
@@ -140,6 +146,7 @@ const DepositPage: React.FC = () => {
           </div>
         </div>
       </aside>
+    </div>
     </div>
   );
 };

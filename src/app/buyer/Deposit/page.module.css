@@ -9,6 +9,14 @@
   background-color: #ffffff;
 }
 
+.all {
+  min-height: 100vh;
+  background-color: white;
+  color: #111827;
+  font-family: sans-serif;
+   
+}
+
 .mainContent{
   display: flex;
   flex-direction: column;
