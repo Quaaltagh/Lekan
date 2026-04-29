@@ -1,0 +1,717 @@
+/* ══════════════════════════════════════════════════════════
+   LAYOUT
+══════════════════════════════════════════════════════════ */
+.layout {
+  display: flex;
+  min-height: 100vh;
+  background-color: #f8fafc;
+}
+
+.mainWrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.main {
+  padding: 32px;
+  flex: 1;
+}
+
+/* ══════════════════════════════════════════════════════════
+   PAGE HEADER
+══════════════════════════════════════════════════════════ */
+.pageHeader {
+  margin-bottom: 28px;
+}
+
+.pageTitle {
+  font-size: 24px;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0 0 4px;
+  letter-spacing: -0.02em;
+}
+
+.pageSubtitle {
+  font-size: 14px;
+  color: #64748b;
+  margin: 0;
+}
+
+/* ══════════════════════════════════════════════════════════
+   LOADING / ERROR
+══════════════════════════════════════════════════════════ */
+.centered {
+  display: flex;
+  justify-content: center;
+  padding: 60px 0;
+}
+
+.spinner {
+  color: #1e3a8a;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.errorBox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 12px;
+  padding: 14px 18px;
+  color: #dc2626;
+  font-size: 14px;
+  margin-bottom: 24px;
+}
+
+/* ══════════════════════════════════════════════════════════
+   CONTENT GRID — left + right
+══════════════════════════════════════════════════════════ */
+.contentGrid {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 24px;
+  align-items: start;
+}
+
+@media (max-width: 1024px) {
+  .contentGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════
+   BALANCE CARD
+══════════════════════════════════════════════════════════ */
+.balanceCard {
+  background: linear-gradient(135deg, #0f2d6b 0%, #1e3a8a 45%, #2563eb 100%);
+  border-radius: 20px;
+  padding: 28px 32px;
+  color: white;
+  margin-bottom: 16px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 12px 40px rgba(30, 58, 138, 0.30);
+}
+
+.balanceCard::before {
+  content: '';
+  position: absolute;
+  top: -60px;
+  right: -60px;
+  width: 200px;
+  height: 200px;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.balanceCard::after {
+  content: '';
+  position: absolute;
+  bottom: -40px;
+  left: 30%;
+  width: 120px;
+  height: 120px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.balanceTopRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  position: relative;
+  z-index: 1;
+}
+
+.balanceLabel {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: rgba(255, 255, 255, 0.6);
+  text-transform: uppercase;
+}
+
+.balanceIconWrap {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.balanceAmount {
+  font-size: 36px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  position: relative;
+  z-index: 1;
+  margin-bottom: 14px;
+}
+
+.balanceMeta {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  position: relative;
+  z-index: 1;
+}
+
+.balanceTrend,
+.balanceVerified {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.balanceTrend {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 4px 10px;
+  border-radius: 999px;
+}
+
+.balanceVerified {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 4px 10px;
+  border-radius: 999px;
+}
+
+/* ══════════════════════════════════════════════════════════
+   LEDGER BOX (Oceanic Ledger)
+══════════════════════════════════════════════════════════ */
+.ledgerBox {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 14px;
+  padding: 16px 18px;
+  margin-bottom: 20px;
+}
+
+.ledgerIconWrap {
+  background: #dbeafe;
+  border-radius: 10px;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.ledgerTitle {
+  font-size: 14px;
+  font-weight: 700;
+  color: #1e40af;
+  margin: 0 0 4px;
+}
+
+.ledgerDesc {
+  font-size: 12px;
+  color: #3b82f6;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* ══════════════════════════════════════════════════════════
+   FORM CARD
+══════════════════════════════════════════════════════════ */
+.formCard {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+  padding: 28px;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.04);
+}
+
+.formLabel {
+  display: block;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: #94a3b8;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+/* ── Amount input ── */
+.amountInputWrap {
+  display: flex;
+  align-items: center;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #f8fafc;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.amountInputWrap:focus-within {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
+  background: #fff;
+}
+
+.currencyPrefix {
+  padding: 14px 14px 14px 18px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #64748b;
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.amountInput {
+  flex: 1;
+  border: none;
+  background: transparent;
+  font-size: 22px;
+  font-weight: 700;
+  color: #0f172a;
+  padding: 10px 8px;
+  outline: none;
+  min-width: 0;
+}
+
+.amountInput::placeholder {
+  color: #cbd5e1;
+  font-weight: 400;
+}
+
+.maxBtn {
+  padding: 8px 16px;
+  margin: 6px;
+  background: #1e3a8a;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s;
+  flex-shrink: 0;
+}
+
+.maxBtn:hover {
+  background: #1e40af;
+  transform: translateY(-1px);
+}
+
+.amountHint {
+  font-size: 12px;
+  color: #94a3b8;
+  margin: 8px 0 0;
+}
+
+/* ── Bank section ── */
+.bankSection {
+  margin-top: 24px;
+  border-top: 1px solid #f1f5f9;
+  padding-top: 20px;
+}
+
+.bankSectionTitle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 16px;
+}
+
+.fieldGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+@media (max-width: 640px) {
+  .fieldGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.fieldLabel {
+  font-size: 12px;
+  font-weight: 600;
+  color: #64748b;
+}
+
+.selectInput,
+.textInput {
+  border: 1.5px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-size: 13px;
+  color: #0f172a;
+  background: #f8fafc;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.selectInput:focus,
+.textInput:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.10);
+  background: #fff;
+}
+
+.textInput::placeholder {
+  color: #cbd5e1;
+}
+
+/* ── Processing note ── */
+.processingNote {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: #f0f9ff;
+  border: 1px solid #bae6fd;
+  border-radius: 12px;
+  padding: 12px 16px;
+  margin-top: 20px;
+  font-size: 12.5px;
+  color: #0369a1;
+  line-height: 1.5;
+}
+
+.processingNoteIcon {
+  flex-shrink: 0;
+  margin-top: 1px;
+  color: #0ea5e9;
+}
+
+/* ── Feedback ── */
+.feedbackError {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 10px;
+  padding: 12px 16px;
+  color: #dc2626;
+  font-size: 13px;
+  margin-top: 16px;
+}
+
+.feedbackSuccess {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 10px;
+  padding: 12px 16px;
+  color: #16a34a;
+  font-size: 13px;
+  margin-top: 16px;
+}
+
+/* ── Submit button ── */
+.submitBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 14px;
+  margin-top: 20px;
+  background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+  color: white;
+  border: none;
+  border-radius: 14px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 6px 20px rgba(30, 58, 138, 0.25);
+  letter-spacing: 0.01em;
+}
+
+.submitBtn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 28px rgba(30, 58, 138, 0.32);
+}
+
+.submitBtn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.submitBtn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.spinnerBtn {
+  animation: spin 1s linear infinite;
+}
+
+/* ══════════════════════════════════════════════════════════
+   RIGHT COLUMN
+══════════════════════════════════════════════════════════ */
+.rightCol {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.rightCard {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
+  padding: 20px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+}
+
+.rightCardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.rightCardTitle {
+  font-size: 14px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+/* ── Pending badge ── */
+.pendingBadge {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  background: #ea580c;
+  color: #fff;
+  padding: 3px 9px;
+  border-radius: 999px;
+}
+
+/* ── Empty hint ── */
+.emptyHint {
+  font-size: 13px;
+  color: #94a3b8;
+  text-align: center;
+  padding: 12px 0;
+  margin: 0;
+}
+
+/* ── Pending item ── */
+.pendingItem {
+  background: #fffbf5;
+  border: 1px solid #fed7aa;
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin-bottom: 10px;
+}
+
+.pendingItem:last-child {
+  margin-bottom: 0;
+}
+
+.pendingItemTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.pendingTxId {
+  font-size: 11px;
+  font-weight: 700;
+  color: #ea580c;
+  letter-spacing: 0.05em;
+}
+
+.pendingTxAmount {
+  font-size: 18px;
+  font-weight: 800;
+  color: #0f172a;
+  margin-bottom: 4px;
+}
+
+.pendingTxMeta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: #94a3b8;
+  flex-wrap: wrap;
+}
+
+.verifyingTag {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #ea580c;
+  background: #fff7ed;
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid #fed7aa;
+}
+
+/* ── Pending wallet box ── */
+.pendingWalletBox {
+  background: linear-gradient(135deg, #fff7ed, #ffedd5);
+  border: 1px solid #fed7aa;
+  border-radius: 14px;
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.pendingWalletLabel {
+  font-size: 12px;
+  font-weight: 600;
+  color: #ea580c;
+}
+
+.pendingWalletAmount {
+  font-size: 16px;
+  font-weight: 800;
+  color: #c2410c;
+}
+
+/* ── History item ── */
+.historyItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 4px;
+  border-bottom: 1px solid #f8fafc;
+  cursor: pointer;
+  transition: background 0.15s;
+  border-radius: 8px;
+}
+
+.historyItem:last-of-type {
+  border-bottom: none;
+}
+
+.historyItem:hover {
+  background: #f8fafc;
+  padding-left: 8px;
+}
+
+.historyIconWrap {
+  background: #f0fdf4;
+  border-radius: 10px;
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.historyInfo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.historyAmount {
+  font-size: 14px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.historyMeta {
+  font-size: 11px;
+  color: #94a3b8;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.historyRight {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.historyBadge {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+
+/* Status badge colors */
+.badgeCompleted {
+  background: #f0fdf4;
+  color: #16a34a;
+}
+
+.badgePending {
+  background: #fff7ed;
+  color: #ea580c;
+}
+
+.badgeFailed {
+  background: #fef2f2;
+  color: #dc2626;
+}
+
+.badgeCancelled {
+  background: #f8fafc;
+  color: #64748b;
+}
+
+/* ── View ledger button ── */
+.viewLedgerBtn {
+  display: block;
+  width: 100%;
+  margin-top: 14px;
+  padding: 10px;
+  background: none;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #1e40af;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+}
+
+.viewLedgerBtn:hover {
+  background: #eff6ff;
+  border-color: #bfdbfe;
+}
+
+/* ══════════════════════════════════════════════════════════
+   LEFT COLUMN
+══════════════════════════════════════════════════════════ */
+.leftCol {
+  display: flex;
+  flex-direction: column;
+}
