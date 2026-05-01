@@ -1,0 +1,264 @@
+.layout {
+  display: flex;
+  min-height: 100vh;
+  background-color: #f8fafc;
+}
+
+.mainWrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.main {
+  padding: 32px 40px;
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.headerContainer {
+  margin-bottom: 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.pageTitle {
+  font-size: 36px;
+  font-weight: 900;
+  color: #0f172a;
+  margin: 0 0 8px 0;
+  letter-spacing: -1.5px;
+}
+
+.pageSubtitle {
+  color: #64748b;
+  font-size: 15px;
+  margin: 0;
+}
+
+.contentGrid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 32px;
+  align-items: start;
+}
+
+/* LEFT COLUMN */
+.leftCol {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.sectionBox {
+  background-color: #f1f5f9;
+  border-radius: 16px;
+  padding: 24px;
+}
+
+.sectionTitleWrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.sectionTitle {
+  font-size: 20px;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0;
+}
+
+/* Active Shipment Card */
+.shipmentCard {
+  background-color: white;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 16px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+.shipmentCard:last-child {
+  margin-bottom: 0;
+}
+
+.shipmentHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+.fishMeta {
+  font-size: 11px;
+  font-weight: 800;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+.destination {
+  font-size: 18px;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0;
+}
+
+/* Badges */
+.badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 6px 12px;
+  border-radius: 20px;
+}
+.badgeDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+.badgeInTransit {
+  background-color: #dbeafe;
+  color: #1e40af;
+}
+.badgeInTransit .badgeDot {
+  background-color: #3b82f6;
+}
+.badgeOutForDelivery {
+  background-color: #b45309;
+  color: white;
+}
+.badgeOutForDelivery .badgeDot {
+  background-color: #fcd34d;
+}
+.badgeDelivered {
+  background-color: #e2e8f0;
+  color: #475569;
+  padding: 4px 10px;
+  border-radius: 6px;
+}
+
+.shipmentFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid #f1f5f9;
+  padding-top: 16px;
+}
+
+.estArrival {
+  font-size: 13px;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.trackLink {
+  font-size: 13px;
+  font-weight: 700;
+  color: #0284c7;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: opacity 0.2s;
+}
+.trackLink:hover {
+  opacity: 0.8;
+}
+
+/* History Table */
+.historyTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+.historyTable th {
+  text-align: left;
+  font-size: 11px;
+  font-weight: 800;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #e2e8f0;
+}
+.historyTable td {
+  padding: 16px 0;
+  font-size: 13px;
+  color: #334155;
+  border-bottom: 1px solid #e2e8f0;
+}
+.historyTable tr:last-child td {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+.historyDest {
+  font-weight: 700;
+  color: #0f172a;
+}
+
+/* RIGHT COLUMN (Partners) */
+.rightCol {
+  background-color: #f8fafc; /* Matches main bg, but we give the box itself a color */
+}
+
+.partnersBox {
+  background-color: #f1f5f9;
+  border-radius: 16px;
+  padding: 24px;
+}
+
+.partnerCard {
+  background-color: white;
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+.partnerCard:last-child {
+  margin-bottom: 0;
+}
+
+.partnerIconWrap {
+  width: 48px;
+  height: 48px;
+  background-color: #e2e8f0;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  color: #0f172a;
+  font-size: 14px;
+}
+
+.partnerInfo h4 {
+  margin: 0 0 4px 0;
+  font-size: 14px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.partnerInfo p {
+  margin: 0;
+  font-size: 11px;
+  color: #64748b;
+}
+
+/* Utility */
+.loadingState, .errorState, .emptyState {
+  text-align: center;
+  padding: 48px;
+  color: #64748b;
+  font-weight: 500;
+}
+.errorState {
+  color: #ef4444;
+}

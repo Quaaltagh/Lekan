@@ -6,6 +6,7 @@ import dotenv from "dotenv";
 import authRoutes from "./routes/authRoutes";
 import auctionRoutes from "./routes/auctionRoutes";
 import walletRoutes from "./routes/Walletroutes";
+import logisticsRoutes from "./routes/logisticsRoutes";
 
 dotenv.config();
 
@@ -25,6 +26,7 @@ app.use(express.urlencoded({ extended: true, limit: "15mb" }));
 app.use("/api/auth", authRoutes);
 app.use("/api/auctions", auctionRoutes);
 app.use("/api/wallet", walletRoutes);
+app.use("/api/logistics", logisticsRoutes);
 
 app.get("/api/health", (_req, res) => {
   res.json({ status: "ok", message: "LEKAN API is running" });
