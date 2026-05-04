@@ -1,0 +1,136 @@
+.all {
+  min-height: 100vh;
+  background-color: white;
+  color: #111827;
+  font-family: sans-serif;
+}
+
+.mainContainer {
+  display: flex;
+  flex-direction: column;
+  margin-left: auto; 
+  margin-right: auto;
+  padding: 32px 256px;
+  gap: 2rem; 
+  align-items: center;
+}
+
+.header{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+    height: fit-content;
+    align-items: center;
+}
+
+.notiHeader {
+    width: 100%;
+    align-items: end    ;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.notiTitle {
+  font-size: 36px;
+  font-weight: 900;
+  color: #172554;
+}
+
+.notiDescription {
+  color: #6b7280;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.transactionSection {
+  margin-top: 10px;
+  width: 100%;
+}
+
+.viewAll {
+  color: #1e3a8a;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.transactionList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.transactionItem {
+  background: white;
+  border: 1px solid #f1f5f9;
+  border-radius: 12px;
+  padding: 16px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.transactionItem:hover {
+  border-color: #e2e8f0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  transform: scale(1.005);
+}
+
+.transactionDescription {
+  display: flex;
+  align-items: center;
+}
+
+.txIcon {
+  width: 44px;
+  height: 44px;
+  background: #f8fafc;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 16px;
+}
+
+.txInfo {
+  display: flex;
+  flex-direction: column;
+}
+
+.txTitle {
+  font-weight: 600;
+  font-size: 15px;
+  color: #0f172a;
+  margin: 0;
+}
+
+.txDesc {
+  font-size: 13px;
+  color: #64748b;
+  margin-top: 2px;
+}
+
+.txAmountContainer {
+  text-align: right;
+}
+
+.txAmount {
+  font-weight: 700;
+  font-size: 16px;
+  margin: 0;
+}
+
+.negative { color: #0f172a; }
+.positive { color: #10b981; }
+
+.txDate {
+  font-size: 11px;
+  color: #94a3b8;
+  text-transform: uppercase;
+  margin-top: 4px;
+  font-weight: 500;
+}
