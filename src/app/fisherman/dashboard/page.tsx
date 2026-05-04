@@ -1,51 +1,39 @@
 'use client';
-import React from 'react';
-import {
-  Activity, Wallet, Ellipsis, Fish
-} from 'lucide-react';
+import React, { useEffect } from 'react';
+import { Activity, Wallet, Ellipsis, Fish } from 'lucide-react';
 import SideFisherman from '../../components/sideFisherman';
 import NavbarFisherman from '../../components/NavbarFisherman';
 import styles from './page.module.css';
 import { useSellerAuctions, Auction, AuctionStatus } from '@/hooks/useSellerAuctions';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
 
-// ─── Status config ─────────────────────────────────────────────────────────
+// ─── Status config — sesuai constraint DB: active | done | pending | cancelled ──
 const STATUS_CONFIG: Record<AuctionStatus, { label: string; color: string }> = {
   active:    { label: 'AKTIF',      color: '#dc2626' },
   pending:   { label: 'PENDING',    color: '#d97706' },
-  completed: { label: 'SELESAI',    color: '#16a34a' },
+  done:      { label: 'SELESAI',    color: '#16a34a' },
   cancelled: { label: 'DIBATALKAN', color: '#94a3b8' },
 };
 
-// ─── Format currency ────────────────────────────────────────────────────────
 function formatRp(value: number) {
   if (value >= 1_000_000) return `Rp ${(value / 1_000_000).toFixed(1)}M`;
   return `Rp ${value.toLocaleString('id-ID')}`;
 }
 
-// ─── Auction Item ───────────────────────────────────────────────────────────
+// ─── Auction Item ─────────────────────────────────────────────────────────────
 function AuctionItem({ auction }: { auction: Auction }) {
-  const status = STATUS_CONFIG[auction.status];
+  const status = STATUS_CONFIG[auction.status] ?? { label: auction.status, color: '#94a3b8' };
   const currentPrice = auction.current_bid ?? auction.start_price;
 
   return (
     <div className={styles.auctionItem}>
-      {/* Gambar / placeholder */}
       <div className={styles.imagePlaceholder} style={{
-        overflow: 'hidden',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        background: '#f1f5f9',
+        overflow: 'hidden', display: 'flex',
+        alignItems: 'center', justifyContent: 'center', background: '#f1f5f9',
       }}>
         {auction.image_url ? (
-          <img
-            src={auction.image_url}
-            alt={auction.name}
-            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-          />
+          <img src={auction.image_url} alt={auction.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
         ) : (
           <Fish size={32} color="#94a3b8" />
         )}
@@ -109,11 +97,10 @@ function AuctionItem({ auction }: { auction: Auction }) {
   );
 }
 
-// ─── Skeleton loader ─────────────────────────────────────────────────────────
 function AuctionSkeleton() {
   return (
     <div className={styles.auctionItem} style={{ opacity: 0.6 }}>
-      <div className={styles.imagePlaceholder} style={{ background: '#e2e8f0', animation: 'pulse 1.5s infinite' }} />
+      <div className={styles.imagePlaceholder} style={{ background: '#e2e8f0' }} />
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
         <div style={{ height: '1rem', background: '#e2e8f0', borderRadius: '4px', width: '40%' }} />
         <div style={{ height: '0.875rem', background: '#e2e8f0', borderRadius: '4px', width: '60%' }} />
@@ -123,13 +110,12 @@ function AuctionSkeleton() {
   );
 }
 
-// ─── Main Dashboard ──────────────────────────────────────────────────────────
+// ─── Main Dashboard ───────────────────────────────────────────────────────────
 export default function FishermanDashboard() {
   const { user } = useAuth();
   const router = useRouter();
   const { auctions, loading, error } = useSellerAuctions();
 
-  // Guard: redirect jika bukan nelayan
   useEffect(() => {
     if (!user) { router.push('/'); return; }
     if (user.role !== 'nelayan') { router.push('/buyer'); }
@@ -137,12 +123,11 @@ export default function FishermanDashboard() {
 
   if (!user) return null;
 
-  // ── Stats dari data realtime ─────────────────────────────────────────────
+  // Stats — gunakan 'done' bukan 'completed'
   const activeCount   = auctions.filter(a => a.status === 'active').length;
-  const totalEarnings = auctions.filter(a => a.status === 'completed').reduce((s, a) => s + (a.final_price || 0), 0);
+  const totalEarnings = auctions.filter(a => a.status === 'done').reduce((s, a) => s + (a.final_price || 0), 0);
   const pendingTotal  = auctions.filter(a => a.status === 'pending').reduce((s, a) => s + (a.final_price || a.start_price), 0);
 
-  // Tampilkan hanya 3 terkini di dashboard
   const recentAuctions = auctions.slice(0, 3);
 
   return (
@@ -155,7 +140,7 @@ export default function FishermanDashboard() {
         <div className={styles.dashboardPadding}>
           <div style={{ flex: 1 }}>
 
-            {/* ── Stats Cards ── */}
+            {/* Stats Cards */}
             <div className={styles.cardGrid}>
               <div className={styles.statCard}>
                 <div className={styles.cardicon}>
@@ -196,30 +181,23 @@ export default function FishermanDashboard() {
               </div>
             </div>
 
-            {/* ── List Lelang Header ── */}
+            {/* List Header */}
             <div className={styles.auctionHeader}>
               <div>
                 <h2 className={styles.auctionHeaderTitle}>Daftar Lelang Terkini</h2>
-                <p className={styles.auctionHeaderSubtitle}>
-                  Monitor hasil tangkapan Anda secara real-time.
-                </p>
+                <p className={styles.auctionHeaderSubtitle}>Monitor hasil tangkapan Anda secara real-time.</p>
               </div>
               <a href="#" className={styles.viewAllLink}>Lihat Semua →</a>
             </div>
 
-            {/* ── Error ── */}
             {error && (
               <div style={{ background: '#fef2f2', border: '1px solid #fecaca', color: '#dc2626', padding: '0.75rem 1rem', borderRadius: '0.75rem', fontSize: '0.875rem', marginBottom: '1rem' }}>
                 {error}
               </div>
             )}
 
-            {/* ── List ── */}
             {loading ? (
-              <>
-                <AuctionSkeleton />
-                <AuctionSkeleton />
-              </>
+              <><AuctionSkeleton /><AuctionSkeleton /></>
             ) : recentAuctions.length === 0 ? (
               <div style={{ textAlign: 'center', padding: '3rem', background: '#f8fafc', borderRadius: '1rem', border: '1px dashed #e2e8f0' }}>
                 <Fish size={40} color="#cbd5e1" style={{ margin: '0 auto 1rem' }} />
@@ -231,10 +209,9 @@ export default function FishermanDashboard() {
                 <AuctionItem key={auction.id} auction={auction} />
               ))
             )}
-
           </div>
 
-          {/* ── Sidebar Kanan ── */}
+          {/* Sidebar Kanan */}
           <div style={{ width: '20rem' }}>
             <div className={styles.ctaBox}>
               <h3 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>Siap Melantai di Bursa?</h3>
@@ -246,7 +223,6 @@ export default function FishermanDashboard() {
               </button>
             </div>
 
-            {/* Market Trend */}
             <div style={{ marginTop: '1.5rem' }}>
               <p className={styles.marketTrendTitle}>Market Trend</p>
               <div className={styles.marketTrendCard}>
