@@ -10,6 +10,27 @@ export interface CreateAuctionForm {
   image_file?: File | null;
 }
 
+export interface BiddingAuction {
+  id: string;
+  name: string;
+  species?: string;
+  grade?: string;
+  weight_kg: number;
+  start_price: number;
+  current_bid?: number;
+  final_price?: number;
+  status: string;
+  ends_at: string;
+  image_url?: string;
+  bidders_count: number;
+  winner_name?: string | null;
+}
+
+export interface BiddingStatusResponse {
+  active: BiddingAuction[];
+  finished: BiddingAuction[];
+}
+
 // Konversi File ke base64
 async function fileToBase64(file: File): Promise<{ base64: string; mime: string }> {
   return new Promise((resolve, reject) => {
@@ -57,6 +78,17 @@ export const auctionService = {
 
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || 'Gagal membuat lelang.');
+    return data;
+  },
+
+  getBiddingStatus: async (sellerId: string, token: string): Promise<BiddingStatusResponse> => {
+    const res = await fetch(`${API_URL}/api/auctions/seller/${sellerId}/bidding-status`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Gagal mengambil data status lelang.');
     return data;
   },
 };

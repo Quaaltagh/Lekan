@@ -7,6 +7,7 @@ import {
   createAuction,
   updateAuction,
   deleteAuction,
+  getSellerBiddingStatus,
 } from '../controller/auctionController';
 
 const router = Router();
@@ -25,7 +26,10 @@ router.get('/:id', getAuctionById);
 // GET    /api/auctions/seller/:sellerId
 router.get('/seller/:sellerId', getAuctionsBySeller);
 
-// POST   /api/auctions/seller/:sellerId
+// GET  /api/auctions/seller/:sellerId/bidding-status
+router.get('/seller/:sellerId/bidding-status', getSellerBiddingStatus);
+
+// POST /api/auctions/seller/:sellerId
 router.post('/seller/:sellerId', createAuction);
 
 // PUT    /api/auctions/seller/:sellerId/:id

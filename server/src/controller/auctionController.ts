@@ -137,6 +137,60 @@ export const updateAuction = async (req: Request, res: Response): Promise<void> 
   res.status(200).json(data);
 };
 
+// ─── GET bidding status (Active & Finished) untuk seller ─────────────────────
+export const getSellerBiddingStatus = async (req: Request, res: Response): Promise<void> => {
+  const { sellerId } = req.params;
+
+  const { data, error } = await supabase
+    .from('auctions')
+    .select(`
+      *,
+      bids (
+        amount,
+        profiles ( full_name )
+      )
+    `)
+    .eq('seller_id', sellerId)
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    res.status(500).json({ error: error.message });
+    return;
+  }
+
+  const activeAuctions: any[] = [];
+  const finishedAuctions: any[] = [];
+
+  for (const auction of data || []) {
+    const bids = auction.bids || [];
+    const biddersCount = bids.length;
+    
+    // Cari bid tertinggi
+    let highestBid = null;
+    if (biddersCount > 0) {
+      highestBid = bids.reduce((prev: any, current: any) => 
+        (prev.amount > current.amount) ? prev : current
+      );
+    }
+
+    const auctionData = {
+      ...auction,
+      bidders_count: biddersCount,
+      winner_name: highestBid?.profiles?.full_name || null,
+    };
+    // Hapus relasi raw bids agar response lebih ringan
+    delete auctionData.bids;
+
+    if (auction.status === 'active') {
+      activeAuctions.push(auctionData);
+    } else if (auction.status === 'completed') {
+      finishedAuctions.push(auctionData);
+    }
+  }
+
+  res.status(200).json({ active: activeAuctions, finished: finishedAuctions });
+};
+
 // ─── DELETE lelang ────────────────────────────────────────────────────────────
 export const deleteAuction = async (req: Request, res: Response): Promise<void> => {
   const { id, sellerId } = req.params;

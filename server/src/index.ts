@@ -1,8 +1,10 @@
-import express from 'express';
-import cors from 'cors';
-import dotenv from 'dotenv';
-import authRoutes from './routes/authRoutes';
-import auctionRoutes from './routes/auctionRoutes';
+import express from "express";
+import cors from "cors";
+import dotenv from "dotenv";
+import authRoutes from "./routes/authRoutes";
+import auctionRoutes from "./routes/auctionRoutes";
+import walletRoutes from "./routes/Walletroutes";
+import logisticsRoutes from "./routes/logisticsRoutes";
 import { startAuctionExpiryJob } from './jobs/auctionExpiry';
 
 dotenv.config();
@@ -18,9 +20,10 @@ app.use(cors({
 app.use(express.json({ limit: '15mb' }));
 app.use(express.urlencoded({ extended: true, limit: '15mb' }));
 
-// Routes
-app.use('/api/auth', authRoutes);
-app.use('/api/auctions', auctionRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/auctions", auctionRoutes);
+app.use("/api/wallet", walletRoutes);
+app.use("/api/logistics", logisticsRoutes);
 
 // Health check
 app.get('/api/health', (_req, res) => {
