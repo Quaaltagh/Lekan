@@ -1,4 +1,4 @@
-export type AuctionStatus = 'active' | 'completed' | 'pending' | 'cancelled';
+export type AuctionStatus = 'active' | 'done' | 'pending' | 'cancelled';
 
 export interface Auction {
   id: string;

@@ -3,6 +3,7 @@ import {
   getAuctionsBySeller,
   getAuctionById,
   getActiveAuctions,
+  getBuyerAuctions,
   createAuction,
   updateAuction,
   deleteAuction,
@@ -10,21 +11,24 @@ import {
 
 const router = Router();
 
-// Publik — untuk halaman buyer browse
-// GET /api/auctions
+// ── Buyer routes ──────────────────────────────────────────────────────────────
+// GET /api/auctions/buyer?search=&grade=&min_price=&max_price=&sort=
+router.get('/buyer', getBuyerAuctions);
+
+// GET /api/auctions (semua aktif, tanpa filter)
 router.get('/', getActiveAuctions);
 
 // GET /api/auctions/:id
 router.get('/:id', getAuctionById);
 
-// Seller — semua endpoint pakai sellerId
-// GET  /api/auctions/seller/:sellerId
+// ── Seller routes ─────────────────────────────────────────────────────────────
+// GET    /api/auctions/seller/:sellerId
 router.get('/seller/:sellerId', getAuctionsBySeller);
 
-// POST /api/auctions/seller/:sellerId
+// POST   /api/auctions/seller/:sellerId
 router.post('/seller/:sellerId', createAuction);
 
-// PUT  /api/auctions/seller/:sellerId/:id
+// PUT    /api/auctions/seller/:sellerId/:id
 router.put('/seller/:sellerId/:id', updateAuction);
 
 // DELETE /api/auctions/seller/:sellerId/:id
