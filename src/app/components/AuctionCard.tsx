@@ -1,7 +1,6 @@
 'use client'
 import { Clock } from 'lucide-react';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 import styles from './AuctionCard.module.css';
 
 interface AuctionCardProps {
@@ -17,6 +16,7 @@ interface AuctionCardProps {
 }
 
 export default function AuctionCard({
+  id,
   name,
   image,
   weight,
@@ -29,14 +29,14 @@ export default function AuctionCard({
   return (
     <div className={styles.card}>
       <div className={styles.header}>
-         <div>
-              <span className={styles.liveBadge}>
-              <span className={styles.dot}></span>
-              Live Now
-              </span>
-          </div>
+        <div>
+          <span className={styles.liveBadge}>
+            <span className={styles.dot}></span>
+            Live Now
+          </span>
+        </div>
 
-        <img src={image} alt={name} className={styles.image}/>
+        <img src={image} alt={name} className={styles.image} />
 
         <div className={styles.timeBox}>
           <Clock size={14} />
@@ -71,16 +71,16 @@ export default function AuctionCard({
             <small>Harga Dasar</small>
             <div>Rp {startingPrice}</div>
           </div>
-
           <div>
             <small>Bid Tertinggi</small>
             <div>Rp {highestBid}</div>
           </div>
         </div>
-        
-          <Link href="/AuctionDetail"  className={styles.button}>Lihat Detail
-          </Link>
-        
+
+        {/* Pakai id dari database */}
+        <Link href={`/buyer/auction/${id}`} className={styles.button}>
+          Lihat Detail
+        </Link>
       </div>
     </div>
   );

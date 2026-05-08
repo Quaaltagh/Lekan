@@ -3,6 +3,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import authRoutes from "./routes/authRoutes";
 import auctionRoutes from "./routes/auctionRoutes";
+import bidRoutes from "./routes/bidRoutes";
 import walletRoutes from "./routes/Walletroutes";
 import logisticsRoutes from "./routes/logisticsRoutes";
 import { startAuctionExpiryJob } from './jobs/auctionExpiry';
@@ -22,6 +23,7 @@ app.use(express.urlencoded({ extended: true, limit: '15mb' }));
 
 app.use("/api/auth", authRoutes);
 app.use("/api/auctions", auctionRoutes);
+app.use("/api/bids", bidRoutes);
 app.use("/api/wallet", walletRoutes);
 app.use("/api/logistics", logisticsRoutes);
 
@@ -32,9 +34,7 @@ app.get('/api/health', (_req, res) => {
 
 app.listen(PORT, () => {
   console.log(`Server berjalan di http://localhost:${PORT}`);
-
-  // Start auction expiry job
-  startAuctionExpiryJob(60_000); // cek tiap 1 menit
+  startAuctionExpiryJob(60_000);
 });
 
 export default app;
