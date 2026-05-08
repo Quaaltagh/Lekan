@@ -116,3 +116,21 @@ export const logout = async (_req: Request, res: Response): Promise<void> => {
   await supabase.auth.signOut();
   res.status(200).json({ message: 'Logout berhasil.' });
 };
+
+// ─── GET profil user berdasarkan ID (untuk halaman detail lelang) ─────────────
+export const getProfileById = async (req: Request, res: Response): Promise<void> => {
+  const { userId } = req.params;
+ 
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('full_name, vessel_name, verified, role')
+    .eq('id', userId)
+    .single();
+ 
+  if (error || !data) {
+    res.status(404).json({ error: 'Profil tidak ditemukan.' });
+    return;
+  }
+ 
+  res.status(200).json(data);
+};

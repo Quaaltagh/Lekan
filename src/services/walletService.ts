@@ -1,118 +1,127 @@
-// services/walletService.ts
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+export type TransactionType =
+  | 'auction_payout'
+  | 'withdrawal'
+  | 'refund'
+  | 'deposit'
+  | 'purchase'
+  | 'fee';
+
+export type TransactionStatus = 'pending' | 'completed' | 'failed' | 'cancelled';
 
 export interface Wallet {
   id: string;
   user_id: string;
-  balance: number; // bigint from DB
+  balance: number;
   pending: number;
   created_at: string;
   updated_at: string;
 }
 
-// Matches your actual transactions table
 export interface Transaction {
   id: string;
   user_id: string;
-  type: "auction_payout" | "withdrawal" | "refund" | "deposit";
-  amount: number; // bigint
-  description?: string; // your column
-  auction_id?: string; // your column
-  status: "pending" | "completed" | "failed" | "cancelled";
+  type: TransactionType;
+  amount: number;
+  description?: string;
+  auction_id?: string;
+  status: TransactionStatus;
   created_at: string;
 }
 
-export interface WalletData {
-  wallet: Wallet;
+export interface TransactionsResponse {
   transactions: Transaction[];
+  total: number;
+  page: number;
+  limit: number;
 }
-
-async function handleResponse<T>(res: Response): Promise<T> {
-  const data = await res.json();
-  if (!res.ok) throw new Error(data.error || "Terjadi kesalahan.");
-  return data as T;
-}
-
-export const walletService = {
-  getWallet: async (userId: string, token: string): Promise<WalletData> => {
-    const res = await fetch(`${API_URL}/api/wallet/${userId}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    return handleResponse<WalletData>(res);
-  },
-
-  getTransactions: async (
-    userId: string,
-    token: string,
-    page = 1,
-    limit = 20,
-  ) => {
-    const res = await fetch(
-      `${API_URL}/api/wallet/${userId}/transactions?page=${page}&limit=${limit}`,
-      { headers: { Authorization: `Bearer ${token}` } },
-    );
-    return handleResponse<{
-      transactions: Transaction[];
-      total: number;
-      page: number;
-    }>(res);
-  },
-
-  withdraw: async (
-    userId: string,
-    token: string,
-    amount: number,
-    description?: string,
-  ) => {
-    const res = await fetch(`${API_URL}/api/wallet/${userId}/withdraw`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ amount, description }),
-    });
-    return handleResponse(res);
-  },
-};
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
-
 export function formatRupiah(amount: number): string {
-  return new Intl.NumberFormat("id-ID", {
-    style: "currency",
-    currency: "IDR",
-    minimumFractionDigits: 0,
-  }).format(amount);
+  if (amount >= 1_000_000) return `Rp ${(amount / 1_000_000).toFixed(1)}M`;
+  return `Rp ${amount.toLocaleString('id-ID')}`;
 }
 
 export function formatTxDate(isoString: string): string {
   const date = new Date(isoString);
   const diffDays = Math.floor((Date.now() - date.getTime()) / 86_400_000);
-  const time = date.toLocaleTimeString("id-ID", {
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-  if (diffDays === 0) return `Today, ${time}`;
-  if (diffDays === 1) return `Yesterday, ${time}`;
-  return (
-    date.toLocaleDateString("id-ID", { day: "numeric", month: "short" }) +
-    `, ${time}`
-  );
+  const time = date.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+  if (diffDays === 0) return `Hari ini, ${time}`;
+  if (diffDays === 1) return `Kemarin, ${time}`;
+  return date.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' }) + `, ${time}`;
 }
 
 export function txLabel(tx: Transaction): string {
   if (tx.description) return tx.description;
-  const map: Record<string, string> = {
-    auction_payout: "Auction Payout",
-    withdrawal: "Penarikan Dana",
-    refund: "Refund",
-    deposit: "Deposit",
+  const map: Record<TransactionType, string> = {
+    auction_payout: 'Hasil Lelang',
+    withdrawal:     'Penarikan Dana',
+    refund:         'Pengembalian Dana',
+    deposit:        'Deposit Saldo',
+    purchase:       'Pembelian Lelang',
+    fee:            'Biaya Layanan',
   };
-  return map[tx.type] ?? "Transaksi";
+  return map[tx.type] ?? 'Transaksi';
 }
 
 export function isIncome(tx: Transaction): boolean {
-  return tx.type !== "withdrawal";
+  return tx.type === 'deposit' || tx.type === 'auction_payout' || tx.type === 'refund';
 }
+
+// ─── API ──────────────────────────────────────────────────────────────────────
+async function handleResponse<T>(res: Response): Promise<T> {
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || 'Terjadi kesalahan.');
+  return data as T;
+}
+
+function authHeaders(token: string) {
+  return { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` };
+}
+
+export const walletService = {
+  // Wallet + 10 transaksi terakhir (1 request)
+  getWallet: async (userId: string, token: string) => {
+    const res = await fetch(`${API_URL}/api/wallet/${userId}`, {
+      headers: authHeaders(token),
+    });
+    return handleResponse<{ wallet: Wallet; transactions: Transaction[] }>(res);
+  },
+
+  // Paginated transaction history
+  getTransactions: async (userId: string, token: string, page = 1, limit = 20) => {
+    const res = await fetch(`${API_URL}/api/wallet/${userId}/transactions?page=${page}&limit=${limit}`, {
+      headers: authHeaders(token),
+    });
+    return handleResponse<TransactionsResponse>(res);
+  },
+
+  // Jumlah bid aktif
+  getActiveBidsCount: async (userId: string, token: string) => {
+    const res = await fetch(`${API_URL}/api/wallet/${userId}/active-bids`, {
+      headers: authHeaders(token),
+    });
+    return handleResponse<{ count: number }>(res);
+  },
+
+  // Buyer: deposit saldo
+  deposit: async (userId: string, token: string, amount: number, description?: string) => {
+    const res = await fetch(`${API_URL}/api/wallet/${userId}/deposit`, {
+      method: 'POST',
+      headers: authHeaders(token),
+      body: JSON.stringify({ amount, description }),
+    });
+    return handleResponse(res);
+  },
+
+  // Fisherman: tarik dana
+  withdraw: async (userId: string, token: string, amount: number, description?: string) => {
+    const res = await fetch(`${API_URL}/api/wallet/${userId}/withdraw`, {
+      method: 'POST',
+      headers: authHeaders(token),
+      body: JSON.stringify({ amount, description }),
+    });
+    return handleResponse(res);
+  },
+};
