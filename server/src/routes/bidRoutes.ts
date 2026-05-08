@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { getBidsByAuction, submitBid } from '../controller/bidController';
-import { getActiveBidsCount } from '../controller/userWalletController';
+import { getActiveBidsCount } from '../controller/Walletcontroller';
 
 const router = Router();
 

@@ -6,38 +6,19 @@ import Navbar from '@/app/components/Navbar';
 import { Landmark, Coins, Receipt, MoveDownLeft, Handbag, Loader2 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
-
-interface Wallet {
-  id: string;
-  user_id: string;
-  balance: number;
-  escrowed: number;
-}
-
-interface Transaction {
-  id: string;
-  user_id: string;
-  type: string;
-  amount: number;
-  description: string;
-  status: string;
-  auction_id?: string;
-  created_at: string;
-}
+import {
+  walletService, Wallet, Transaction,
+  formatRupiah, formatTxDate, txLabel, isIncome,
+} from '@/services/walletService';
 
 function txIcon(type: string) {
   switch (type) {
-    case 'deposit':  return <MoveDownLeft size={24} />;
+    case 'deposit':
+    case 'auction_payout':
+    case 'refund':   return <MoveDownLeft size={24} />;
     case 'fee':      return <Receipt size={24} />;
     default:         return <Coins size={24} />;
   }
-}
-
-function formatRp(value: number) {
-  if (value >= 1_000_000) return `Rp ${(value / 1_000_000).toFixed(1)}M`;
-  return `Rp ${value.toLocaleString('id-ID')}`;
 }
 
 const WalletDashboard: React.FC = () => {
@@ -52,42 +33,26 @@ const WalletDashboard: React.FC = () => {
   const [error,        setError]        = useState('');
 
   useEffect(() => {
-    if (!user) { router.push('/'); return; }
+    if (!user || !token) { router.push('/'); return; }
 
     async function fetchAll() {
       try {
-        const headers = {
-          'Content-Type': 'application/json',
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        };
+        // Wallet + transaksi terakhir sekaligus (1 request)
+        const { wallet: w, transactions: recentTx } = await walletService.getWallet(user!.id, token!);
+        setWallet(w);
+        setTransactions(recentTx);
+        const spent = recentTx
+          .filter(tx => !isIncome(tx) && tx.status === 'completed')
+          .reduce((s, tx) => s + tx.amount, 0);
+        setTotalSpent(spent);
 
-        // Wallet balance
-        const wRes = await fetch(`${API_URL}/api/wallet/${user!.id}`, { headers });
-        if (wRes.ok) setWallet(await wRes.json());
-
-        // Transactions
-        const tRes = await fetch(`${API_URL}/api/wallet/${user!.id}/transactions`, { headers });
-        if (tRes.ok) {
-          const raw = await tRes.json();
-          // ✅ Pastikan selalu array, apapun bentuk response-nya
-          const txData: Transaction[] = Array.isArray(raw) ? raw : (raw?.data ?? raw?.transactions ?? []);
-          setTransactions(txData);
-          const spent = txData
-            .filter(t => t.type !== 'deposit' && t.status === 'completed')
-            .reduce((s, t) => s + t.amount, 0);
-          setTotalSpent(spent);
-        }
-
-        // Active bids count
-        const bRes = await fetch(`${API_URL}/api/bids/user/${user!.id}/active`, { headers });
-        if (bRes.ok) {
-          const bData = await bRes.json();
-          setActiveBids(bData.count ?? 0);
-        }
+        // Active bids
+        const b = await walletService.getActiveBidsCount(user!.id, token!);
+        setActiveBids(b.count);
 
       } catch (err) {
-        console.error('fetchAll error:', err);
         setError('Gagal memuat data dompet.');
+        console.error(err);
       } finally {
         setLoading(false);
       }
@@ -101,8 +66,8 @@ const WalletDashboard: React.FC = () => {
   return (
     <div className={styles.container}>
       <Navbar />
-
       <main className={styles.mainContent}>
+
         <header className={styles.header}>
           <h1 className={styles.title}>Dompet</h1>
           <p className={styles.subtitle}>Manage your funds and view recent financial activity.</p>
@@ -122,13 +87,15 @@ const WalletDashboard: React.FC = () => {
                 <span className={styles.label}>AVAILABLE BALANCE</span>
                 {loading
                   ? <Loader2 size={20} color="#fff" style={{ marginTop: '0.5rem' }} />
-                  : <h2 className={styles.amount}>{formatRp(wallet?.balance ?? 0)}</h2>
+                  : <h2 className={styles.amount}>{formatRupiah(wallet?.balance ?? 0)}</h2>
                 }
               </div>
               <div className={styles.bankIcon}><Landmark size={24} color='#fcfcfc' /></div>
             </div>
             <div className={styles.buttonGroup}>
-              <button className={styles.btnDeposit}>+ Deposit Funds</button>
+              <button className={styles.btnDeposit} onClick={() => router.push('/buyer/Deposit')}>
+                + Deposit Funds
+              </button>
               <button className={styles.btnTransfer}>Transfer</button>
             </div>
           </div>
@@ -140,7 +107,7 @@ const WalletDashboard: React.FC = () => {
             </div>
             {loading
               ? <div style={{ height: '2rem', background: '#e2e8f0', borderRadius: '4px', width: '50%', margin: '0.5rem 0' }} />
-              : <h2 className={styles.spentAmount}>{formatRp(totalSpent)}</h2>
+              : <h2 className={styles.spentAmount}>{formatRupiah(totalSpent)}</h2>
             }
             <p className={styles.periodText}>This billing period</p>
             <div className={styles.spendingFooter}>
@@ -149,9 +116,9 @@ const WalletDashboard: React.FC = () => {
                 <p className={styles.footerValue}>{loading ? '—' : `${activeBids} Lots`}</p>
               </div>
               <div style={{ textAlign: 'right' }}>
-                <span className={styles.subLabel}>Escrowed</span>
+                <span className={styles.subLabel}>Pending</span>
                 <p className={`${styles.footerValue} ${styles.blueText}`}>
-                  {loading ? '—' : formatRp(wallet?.escrowed ?? 0)}
+                  {loading ? '—' : formatRupiah(wallet?.pending ?? 0)}
                 </p>
               </div>
             </div>
@@ -162,7 +129,7 @@ const WalletDashboard: React.FC = () => {
         <section className={styles.transactionSection}>
           <div className={styles.sectionHeader}>
             <h3>Recent Transactions</h3>
-            <a href="#" className={styles.viewAll}>View All →</a>
+            <a href="/buyer/transactionHistory" className={styles.viewAll}>View All →</a>
           </div>
 
           <div className={styles.transactionList}>
@@ -182,18 +149,13 @@ const WalletDashboard: React.FC = () => {
                   <div className={styles.transactionDescription}>
                     <div className={styles.txIcon}>{txIcon(tx.type)}</div>
                     <div className={styles.txInfo}>
-                      <p className={styles.txTitle}>{tx.description}</p>
-                      <p className={styles.txDesc}>
-                        {new Date(tx.created_at).toLocaleDateString('id-ID', {
-                          day: 'numeric', month: 'short',
-                          hour: '2-digit', minute: '2-digit'
-                        })}
-                      </p>
+                      <p className={styles.txTitle}>{txLabel(tx)}</p>
+                      <p className={styles.txDesc}>{formatTxDate(tx.created_at)}</p>
                     </div>
                   </div>
                   <div className={styles.txAmountContainer}>
-                    <p className={`${styles.txAmount} ${tx.type === 'deposit' ? styles.positive : styles.negative}`}>
-                      {tx.type === 'deposit' ? '+' : '-'}{formatRp(tx.amount)}
+                    <p className={`${styles.txAmount} ${isIncome(tx) ? styles.positive : styles.negative}`}>
+                      {isIncome(tx) ? '+' : '-'}{formatRupiah(tx.amount)}
                     </p>
                     <p className={styles.txDate}>{tx.status.toUpperCase()}</p>
                   </div>
@@ -202,6 +164,7 @@ const WalletDashboard: React.FC = () => {
             )}
           </div>
         </section>
+
       </main>
     </div>
   );
