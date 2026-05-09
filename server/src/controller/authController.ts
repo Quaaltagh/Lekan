@@ -118,19 +118,37 @@ export const logout = async (_req: Request, res: Response): Promise<void> => {
 };
 
 // ─── GET profil user berdasarkan ID (untuk halaman detail lelang) ─────────────
+// FIX: tambah logging error asli agar bisa debug penyebab "Profil tidak ditemukan."
+// Penyebab umum: RLS blocking (pastikan supabaseClient pakai SERVICE_ROLE_KEY),
+// atau user ada di auth.users tapi row-nya tidak ada di tabel profiles.
 export const getProfileById = async (req: Request, res: Response): Promise<void> => {
   const { userId } = req.params;
- 
+
   const { data, error } = await supabase
     .from('profiles')
     .select('full_name, vessel_name, verified, role')
     .eq('id', userId)
     .single();
- 
-  if (error || !data) {
+
+  if (error) {
+    // Log error asli ke console server — berguna untuk debug RLS vs not found
+    console.error('[getProfileById] error code:', error.code, '| message:', error.message);
+
+    // PGRST116 = row tidak ditemukan (.single() tidak dapat baris)
+    if (error.code === 'PGRST116') {
+      res.status(404).json({ error: 'Profil tidak ditemukan.' });
+      return;
+    }
+
+    // Error lain: kemungkinan RLS block, koneksi DB, dsb
+    res.status(500).json({ error: 'Gagal mengambil profil: ' + error.message });
+    return;
+  }
+
+  if (!data) {
     res.status(404).json({ error: 'Profil tidak ditemukan.' });
     return;
   }
- 
+
   res.status(200).json(data);
 };
