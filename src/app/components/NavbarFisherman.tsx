@@ -55,13 +55,14 @@ export default function NavbarFisherman() {
                 <p className={styles.dropdownBalance}>Rp 0</p>
               </div>
               <hr className={styles.divider} />
-              <button className={styles.dropdownItem}>
+              <button className={styles.dropdownItem} onClick={() => { setWalletOpen(false); router.push('/fisherman/withdraw'); }}>
                 <BanknoteIcon size={15} />
                 Tarik Dana (Withdraw)
               </button>
-              <button className={styles.dropdownItem}>
+
+              <button className={styles.dropdownItem} onClick={() => { setWalletOpen(false); router.push('/fisherman/walletPayment'); }}>
                 <Wallet size={15} />
-                Riwayat Transaksi
+                Dompet
               </button>
             </div>
           )}
