@@ -218,7 +218,8 @@ export default function FishermanDashboard() {
               <p style={{ color: '#bfdbfe', fontSize: '0.875rem', marginBottom: '1.5rem' }}>
                 Unggah hasil tangkapan Anda hari ini dan dapatkan harga terbaik dari pembeli global.
               </p>
-              <button style={{ width: '100%', padding: '0.75rem', backgroundColor: 'white', color: '#1e3a8a', fontWeight: 'bold', borderRadius: '0.75rem', border: 'none', cursor: 'pointer' }}>
+              <button style={{ width: '100%', padding: '0.75rem', backgroundColor: 'white', color: '#1e3a8a', fontWeight: 'bold', borderRadius: '0.75rem', border: 'none', cursor: 'pointer' }}
+              onClick={() => router.push('/fisherman/uploadAuction/')}>
                 + Unggah Lelang Baru
               </button>
             </div>

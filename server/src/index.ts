@@ -8,6 +8,8 @@ import walletRoutes from "./routes/Walletroutes";
 import logisticsRoutes from "./routes/logisticsRoutes";
 import { startAuctionExpiryJob } from './jobs/auctionExpiry';
 import depositRoutes from './routes/depositRoutes';
+import historyRoutes from './routes/historyRoutes';
+import statusLelangRoutes from './routes/statusLelangRoutes';
 
 dotenv.config();
 
@@ -28,6 +30,8 @@ app.use("/api/bids", bidRoutes);
 app.use("/api/wallet", walletRoutes);
 app.use("/api/logistics", logisticsRoutes);
 app.use('/api/deposit', depositRoutes);
+app.use('/api/history', historyRoutes);
+app.use('/api/status-lelang', statusLelangRoutes);
 
 // Health check
 app.get('/api/health', (_req, res) => {

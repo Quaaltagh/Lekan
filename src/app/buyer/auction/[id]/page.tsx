@@ -1,6 +1,6 @@
 'use client'
 import { ArrowLeft, Clock, ShieldCheck, Truck, MessageSquare, AlertCircle } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Navbar from '@/app/components/Navbar';
 import { useAuth } from '@/context/AuthContext';
@@ -64,7 +64,29 @@ export default function AuctionDetailPage() {
   const [bidError,   setBidError]   = useState('');
   const [bidSuccess, setBidSuccess] = useState('');
 
-  const walletBalance = 0; // TODO: sambungkan ke wallet API
+  // FIX 1: wallet balance dari API, bukan hardcode 0
+  const [walletBalance, setWalletBalance] = useState(0);
+  const [walletLoading, setWalletLoading] = useState(false);
+
+  // ── Fetch wallet balance ──────────────────────────────────────────────────
+  // Walletcontroller.ts return: { wallet: { balance, pending, ... }, transactions: [] }
+  const fetchWallet = useCallback(async () => {
+    if (!user?.id || !token) return;
+    setWalletLoading(true);
+    try {
+      const res = await fetch(`${API_URL}/api/wallet/${user.id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setWalletBalance(data.wallet?.balance ?? 0);
+      }
+    } catch {
+      // wallet gagal fetch — tidak perlu error fatal, balance tetap 0
+    } finally {
+      setWalletLoading(false);
+    }
+  }, [user?.id, token]);
 
   // ── Fetch auction + bids ──────────────────────────────────────────────────
   useEffect(() => {
@@ -99,6 +121,11 @@ export default function AuctionDetailPage() {
 
     fetchAll();
   }, [id]);
+
+  // FIX 2: fetch wallet saat user sudah tersedia
+  useEffect(() => {
+    if (user?.id && token) fetchWallet();
+  }, [user?.id, token, fetchWallet]);
 
   // ── Countdown timer ───────────────────────────────────────────────────────
   useEffect(() => {
@@ -150,6 +177,10 @@ export default function AuctionDetailPage() {
       setBids(prev => [data, ...prev]);
       setBidAmount((amount + 50000).toLocaleString('id-ID'));
       setBidSuccess('Bid berhasil! Kamu sekarang penawar tertinggi.');
+
+      // Refresh wallet setelah bid berhasil
+      await fetchWallet();
+
     } catch (err) {
       setBidError(err instanceof Error ? err.message : 'Terjadi kesalahan.');
     } finally {
@@ -369,7 +400,10 @@ export default function AuctionDetailPage() {
                   <div className={styles.walletcontainer}>
                     <div className={styles.balanceRow}>
                       <span className={styles.balanceLabel}>Your Wallet Balance</span>
-                      <span className={styles.balanceValue}>Rp {walletBalance.toLocaleString('id-ID')}</span>
+                      {/* FIX 3: tampilkan saldo real, bukan hardcode 0 */}
+                      <span className={styles.balanceValue}>
+                        {walletLoading ? '...' : `Rp ${walletBalance.toLocaleString('id-ID')}`}
+                      </span>
                     </div>
                     {isInsufficient && (
                       <div className={styles.warningBox}>
@@ -377,7 +411,17 @@ export default function AuctionDetailPage() {
                         <span className={styles.warningText}>Insufficient balance for this bid.</span>
                       </div>
                     )}
-                    <button className={styles.depositButton}>Deposit Saldo</button>
+                    {/* FIX 4: tombol deposit redirect ke halaman Deposit */}
+                    <button
+                      className={styles.depositButton}
+                      onClick={() => {
+                        // Simpan URL ini agar bisa kembali setelah deposit
+                        sessionStorage.setItem('depositReturnUrl', `/buyer/auction/${id}`);
+                        router.push('/buyer/Deposit');
+                      }}
+                    >
+                      Deposit Saldo
+                    </button>
                   </div>
                 </>
               ) : (
