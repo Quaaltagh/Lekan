@@ -287,7 +287,7 @@ export default function Navbar() {
                   <p className={styles.dropdownEmail}>{user.email}</p>
                 </div>
                 <hr className={styles.dropdownDivider} />
-                <Link href="" className={styles.dropdownItem}>Profil Saya</Link>
+                <Link href="/buyer/profile" className={styles.dropdownItem}>Profil Saya</Link>
                 <Link href="/buyer/statusLelang/" className={styles.dropdownItem}>Status Lelang</Link>
                 <Link href="/buyer/historiLelang/" className={styles.dropdownItem}>Riwayat Lelang</Link>
                 <hr className={styles.dropdownDivider} />

@@ -11,8 +11,8 @@ export default function SideFisherman() {
     { href: "/fisherman/dashboard", icon: LayoutDashboard, label: "Dashboard" },
     { href: "/fisherman/uploadAuction", icon: Upload, label: "Unggah Lelang" },
     { href: "/fisherman/biddingStatus", icon: Activity, label: "Status Lelang" },
-    { href: "/fisherman/", icon: History, label: "Histori Lelang" },
-    { href: "#", icon: Settings, label: "Pengaturan" },
+    { href: "/fisherman/enchantedAuctionHistory", icon: History, label: "Histori Lelang" },
+    { href: "/fisherman/settingsFisherman", icon: Settings, label: "Pengaturan" },
     { href: "/fisherman/logistics", icon: Truck, label: "Logistic" },
   ];
 
