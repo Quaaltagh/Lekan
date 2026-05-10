@@ -1,124 +1,98 @@
 'use client';
-import React from 'react';
-import { LayoutDashboard, Radio, History, Ship, Settings, Bell, Wallet, Search, Plus } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
 import Navbar from '@/app/components/Navbar';
 import Filter from '@/app/components/Filters';
 import AuctionCard from '@/app/components/AuctionCard';
 import styles from './page.module.css';
-
 import '@/app/globals.css';
-const AUCTIONS = [
-  {
-    id: '1',
-    name: 'Tuna Sirip Kuning',
-    image: 'https://darilaut.id/wp-content/uploads/2021/09/Tuna-3.jpg',
-    weight: '12Kg',
-    grade: 'A+',
-    startingPrice: '2.400.000',
-    highestBid: '3.150.000',
-    timeLeft: '02:14:55'
-  },
-  {
-    id: '2',
-    name: 'Kakap Merah',
-    image: 'https://puloampel-puloampel.desa.id/wp-content/uploads/2023/09/Kakap_merah.jpg',
-    weight: '8Kg',
-    grade: 'Premium',
-    vessel: 'BlueWave',
-    startingPrice: '850.000',
-    highestBid: '1.200.000',
-    timeLeft: '00:45:12'
-  },
-  {
-    id: '3',
-    name: 'Lobster',
-    image: 'https://pict.sindonews.net/dyn/732/pena/news/2020/07/26/713/113940/harga-lobster-anjlok-nelayan-di-pangkep-enggan-jual-hasil-panen-kff.jpg',
-    weight: '3.5Kg',
-    grade: 'Grade-B',
-    origin: 'Bali',
-    startingPrice: '5.000.000',
-    highestBid: '6.450.000',
-    timeLeft: '05:22:10'
-  },
-  {
-    id: '4',
-    name: 'Ikan Tenggiri',
-    image: 'https://images.unsplash.com/photo-1615141982883-c7ad0e69fd62?q=80&w=1000&auto=format&fit=crop',
-    weight: '40Kg',
-    grade: 'Export',
-    origin: 'Jakarta',
-    startingPrice: '1.200.000',
-    highestBid: '1.450.000',
-    timeLeft: '01:10:05'
-  },
-  {
-    id: '5',
-    name: 'Ikan Tenggiri',
-    image: 'https://images.unsplash.com/photo-1615141982883-c7ad0e69fd62?q=80&w=1000&auto=format&fit=crop',
-    weight: '40Kg',
-    grade: 'Export',
-    origin: 'Jakarta',
-    startingPrice: '1.200.000',
-    highestBid: '1.450.000',
-    timeLeft: '01:10:05'
-  },
-  {
-    id: '6',
-    name: 'Tuna Sirip Kuning',
-    image: 'https://darilaut.id/wp-content/uploads/2021/09/Tuna-3.jpg',
-    weight: '12Kg',
-    grade: 'A+',
-    startingPrice: '2.400.000',
-    highestBid: '3.150.000',
-    timeLeft: '02:14:55'
-  },
-  {
-    id: '7',
-    name: 'Kakap Merah',
-    image: 'https://puloampel-puloampel.desa.id/wp-content/uploads/2023/09/Kakap_merah.jpg',
-    weight: '8Kg',
-    grade: 'Premium',
-    vessel: 'BlueWave',
-    startingPrice: '850.000',
-    highestBid: '1.200.000',
-    timeLeft: '00:45:12'
-  },
-  {
-    id: '8',
-    name: 'Lobster',
-    image: 'https://pict.sindonews.net/dyn/732/pena/news/2020/07/26/713/113940/harga-lobster-anjlok-nelayan-di-pangkep-enggan-jual-hasil-panen-kff.jpg',
-    weight: '3.5Kg',
-    grade: 'Grade-B',
-    origin: 'Bali',
-    startingPrice: '5.000.000',
-    highestBid: '6.450.000',
-    timeLeft: '05:22:10'
-  },
-];
+import { useBuyerAuctions, AuctionFilters, formatCountdown, formatRp } from '@/hooks/useBuyerAuctions';
 
+function AuctionCardSkeleton() {
+  return (
+    <div style={{
+      borderRadius: '16px', overflow: 'hidden',
+      background: '#fff', border: '1px solid #f1f5f9',
+      animation: 'pulse 1.5s infinite',
+    }}>
+      <div style={{ height: '200px', background: '#f1f5f9' }} />
+      <div style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+        <div style={{ height: '16px', background: '#e2e8f0', borderRadius: '4px', width: '60%' }} />
+        <div style={{ height: '12px', background: '#e2e8f0', borderRadius: '4px', width: '40%' }} />
+        <div style={{ height: '20px', background: '#e2e8f0', borderRadius: '4px', width: '50%' }} />
+      </div>
+    </div>
+  );
+}
 
 export default function BrowseAuctions() {
-  return(
-    <>
-    <div className={styles.all}>
-      <Navbar />
-      <div className={styles.container}>
-    
-        <div className={styles.banner}>
-          
-        </div>
+  const [filters, setFilters] = useState<AuctionFilters>({ sort: 'newest' });
+  const [countdowns, setCountdowns] = useState<Record<string, string>>({});
 
-        <Filter />
-        
-        <div className={styles.card}>
-          {AUCTIONS.map((auction) => (
-            <AuctionCard key={auction.id} {...auction} />
-          ))}
+  const { auctions, loading, error, refetch } = useBuyerAuctions(filters);
+
+  // Countdown timer update tiap detik
+  useEffect(() => {
+    if (auctions.length === 0) return;
+    const tick = () => {
+      const next: Record<string, string> = {};
+      auctions.forEach(a => { next[a.id] = formatCountdown(a.ends_at); });
+      setCountdowns(next);
+    };
+    tick();
+    const timer = setInterval(tick, 1000);
+    return () => clearInterval(timer);
+  }, [auctions]);
+
+  const mappedAuctions = auctions.map(a => ({
+    id:            a.id,
+    name:          a.name,
+    image:         a.image_url || 'https://darilaut.id/wp-content/uploads/2021/09/Tuna-3.jpg',
+    weight:        `${a.weight_kg}Kg`,
+    grade:         a.grade || '-',
+    startingPrice: formatRp(a.start_price),
+    highestBid:    formatRp(a.current_bid ?? a.start_price),
+    timeLeft:      countdowns[a.id] || '00:00:00',
+  }));
+
+  return (
+    <>
+      <div className={styles.all}>
+        <Navbar />
+        <div className={styles.container}>
+
+          <div className={styles.banner} />
+
+          {/* Filter — semua apply sekaligus saat klik Apply */}
+          <Filter
+            onApply={(f) => setFilters({ ...f, sort: f.sort || 'newest' })}
+          />
+
+          {error && (
+            <div style={{ textAlign: 'center', padding: '1rem', color: '#dc2626', fontSize: '0.875rem' }}>
+              {error} —{' '}
+              <button onClick={refetch} style={{ textDecoration: 'underline', background: 'none', border: 'none', cursor: 'pointer', color: '#dc2626' }}>
+                Coba lagi
+              </button>
+            </div>
+          )}
+
+          <div className={styles.card}>
+            {loading ? (
+              Array.from({ length: 8 }).map((_, i) => <AuctionCardSkeleton key={i} />)
+            ) : mappedAuctions.length === 0 ? (
+              <div style={{ gridColumn: '1/-1', textAlign: 'center', padding: '4rem', color: '#94a3b8' }}>
+                <p style={{ fontSize: '1.125rem', fontWeight: '500' }}>Tidak ada lelang ditemukan</p>
+                <p style={{ fontSize: '0.875rem', marginTop: '0.5rem' }}>Coba ubah filter atau cari kata lain</p>
+              </div>
+            ) : (
+              mappedAuctions.map(auction => (
+                <AuctionCard key={auction.id} {...auction} />
+              ))
+            )}
+          </div>
+
         </div>
       </div>
-        
-    </div>
-    
     </>
   );
 }

@@ -206,3 +206,48 @@ export const deleteAuction = async (req: Request, res: Response): Promise<void> 
   if (error) { res.status(500).json({ error: error.message }); return; }
   res.status(200).json({ message: 'Lelang berhasil dihapus.' });
 };
+
+
+// ─── GET lelang aktif dengan filter & search (untuk buyer homepage) ───────────
+export const getBuyerAuctions = async (req: Request, res: Response): Promise<void> => {
+  const { search, grade, species, status, min_price, max_price, sort } = req.query;
+
+  // Default tampilkan active, kecuali ada filter status spesifik
+  const filterStatus = (status && typeof status === 'string' && status !== 'all') ? status : 'active';
+
+  let query = supabase
+    .from('auctions')
+    .select('*')
+    .eq('status', filterStatus);
+
+  // Filter search by name atau species
+  if (search && typeof search === 'string') {
+    query = query.or(`name.ilike.%${search}%,species.ilike.%${search}%`);
+  }
+
+  // Filter grade
+  if (grade && typeof grade === 'string' && grade !== 'all') {
+    query = query.eq('grade', grade);
+  }
+
+  // Filter species
+  if (species && typeof species === 'string' && species !== 'all') {
+    query = query.ilike('species', species);
+  }
+
+  // Filter harga
+  if (min_price) query = query.gte('current_bid', Number(min_price));
+  if (max_price) query = query.lte('current_bid', Number(max_price));
+
+  // Sorting
+  switch (sort) {
+    case 'price_asc':  query = query.order('current_bid', { ascending: true });  break;
+    case 'price_desc': query = query.order('current_bid', { ascending: false }); break;
+    case 'ending':     query = query.order('ends_at',     { ascending: true });  break;
+    default:           query = query.order('created_at',  { ascending: false }); break;
+  }
+
+  const { data, error } = await query;
+  if (error) { res.status(500).json({ error: error.message }); return; }
+  res.status(200).json(data);
+};
