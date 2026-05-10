@@ -10,6 +10,7 @@ import { startAuctionExpiryJob } from './jobs/auctionExpiry';
 import depositRoutes from './routes/depositRoutes';
 import historyRoutes from './routes/historyRoutes';
 import statusLelangRoutes from './routes/statusLelangRoutes';
+import profileRoutes from './routes/profileRoutes';
 
 dotenv.config();
 
@@ -32,6 +33,7 @@ app.use("/api/logistics", logisticsRoutes);
 app.use('/api/deposit', depositRoutes);
 app.use('/api/history', historyRoutes);
 app.use('/api/status-lelang', statusLelangRoutes);
+app.use('/api/profile', profileRoutes);
 
 // Health check
 app.get('/api/health', (_req, res) => {
