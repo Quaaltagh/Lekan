@@ -1,11 +1,120 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useMemo, useEffect }  from 'react';
 import styles from './page.module.css';
 import SideFisherman from '../../components/sideFisherman';
 import NavbarFisherman from '../../components/NavbarFisherman';
-import { Fish } from 'lucide-react';
+import { Fish, Search, ChevronLeft, ChevronRight, ChevronDown, CalendarIcon } from 'lucide-react';
 import { useSellerAuctions } from '@/hooks/useSellerAuctions';
+
+
+import {
+  format,
+  startOfMonth, endOfMonth,
+  startOfWeek, endOfWeek,
+  eachDayOfInterval,
+  isSameMonth, isSameDay,
+  addMonths, subMonths,
+  isWithinInterval,
+  isBefore,
+  startOfDay, endOfDay,
+} from 'date-fns';
+
+
+// ─── Types ────────────────────────────────────────────────────────────────────
+interface DateRange {
+  start: Date | null;
+  end: Date | null;
+}
+
+// ─── CalendarPicker ───────────────────────────────────────────────────────────
+function CalendarPicker({ onSelect, dateRange, onClose }: {
+  onSelect: (range: DateRange) => void;
+  dateRange: DateRange;
+  onClose: () => void;
+}) {
+  const [currentMonth, setCurrentMonth] = useState(dateRange.start || new Date());
+  const [selectingStep, setSelectingStep] = useState<'START' | 'END'>(
+    dateRange.start ? 'END' : 'START'
+  );
+
+  const days = useMemo(() => {
+    const startIdx = startOfWeek(startOfMonth(currentMonth));
+    const endIdx = endOfWeek(endOfMonth(currentMonth));
+    return eachDayOfInterval({ start: startIdx, end: endIdx });
+  }, [currentMonth]);
+
+  const handleDateClick = (day: Date) => {
+    if (selectingStep === 'START' || !dateRange.start || isBefore(day, dateRange.start)) {
+      onSelect({ start: day, end: null });
+      setSelectingStep('END');
+    } else {
+      onSelect({ ...dateRange, end: day });
+      setSelectingStep('START');
+    }
+  };
+
+  return (
+    <div className={styles.calendarcontainer}>
+      <div className={styles.calendarheader}>
+        <h4 className={styles.calendartitle}>{format(currentMonth, 'MMMM yyyy')}</h4>
+        <div className={styles.calendarnav}>
+          <button onClick={() => setCurrentMonth(subMonths(currentMonth, 1))} className={styles.calendarnavButton}>
+            <ChevronLeft className={styles.calendarnavIcon} />
+          </button>
+          <button onClick={() => setCurrentMonth(addMonths(currentMonth, 1))} className={styles.calendarnavButton}>
+            <ChevronRight className={styles.calendarnavIcon} />
+          </button>
+        </div>
+      </div>
+
+      <div className={styles.calendardaysHeader}>
+        {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((d, i) => (
+          <div key={i} className={styles.calendardayLabel}>{d}</div>
+        ))}
+      </div>
+
+      <div className={styles.calendargrid}>
+        {days.map((day, i) => {
+          const isSelectedStart = dateRange.start && isSameDay(day, dateRange.start);
+          const isSelectedEnd = dateRange.end && isSameDay(day, dateRange.end);
+          const isInRange = dateRange.start && dateRange.end &&
+            isWithinInterval(day, { start: startOfDay(dateRange.start), end: endOfDay(dateRange.end) });
+          const isCurrentMonth = isSameMonth(day, currentMonth);
+
+          return (
+            <button
+              key={i}
+              onClick={() => handleDateClick(day)}
+              className={`
+                ${styles.calendarday}
+                ${!isCurrentMonth ? styles.calendardayOutside : styles.calendardayCurrent}
+                ${isInRange ? styles.calendardayInRange : ''}
+                ${isSelectedStart ? styles.calendardayStart : ''}
+                ${isSelectedEnd ? styles.calendardayEnd : ''}
+                ${isSelectedStart && dateRange.end ? styles.calendarroundRightNone : ''}
+                ${isSelectedEnd && dateRange.start ? styles.calendarroundLeftNone : ''}
+              `}
+            >
+              {format(day, 'd')}
+            </button>
+          );
+        })}
+      </div>
+
+      <div className={styles.calendarfooter}>
+        <button onClick={() => { onSelect({ start: null, end: null }); setSelectingStep('START'); }}
+          className={styles.calendarclearButton}>
+          Clear
+        </button>
+        <button onClick={onClose} className={styles.calendardoneButton}>
+          {dateRange.start && !dateRange.end ? 'Select End' : 'Done'}
+        </button>
+      </div>
+    </div>
+  );
+}
+
 
 function TransactionItem({ item }: any) {
   return (
@@ -54,7 +163,7 @@ function TransactionItem({ item }: any) {
           : `Rp ${item.start_price.toLocaleString('id-ID')}`}
       </td>
 
-      <td>
+      {/* <td>
         <span
           className={`${styles.status} ${
             styles[item.status]
@@ -62,7 +171,7 @@ function TransactionItem({ item }: any) {
         >
           ● {item.status.toUpperCase()}
         </span>
-      </td>
+      </td> */}
 
       <td>
         <button className={styles.detailBtn}>
@@ -80,6 +189,20 @@ export default function AuctionHistory() {
 
   // TAMPILKAN SEMUA STATUS TERMASUK ACTIVE
   const historyAuctions = auctions;
+
+// Filter state
+  const [searchQuery, setSearchQuery]             = useState('');
+  const [dateRange, setDateRange]                 = useState<DateRange>({ start: null, end: null });
+  const [isStatusDropdownOpen, setIsStatusDropdownOpen] = useState(false);
+  const [isDateDropdownOpen, setIsDateDropdownOpen]     = useState(false);
+  
+// ── Label tombol kalender ───────────────────────────────────────────────
+  const getLabel = () => {
+    if (!dateRange.start) return 'Date Range';
+    if (dateRange.end) return `${format(dateRange.start, 'dd MMM')} - ${format(dateRange.end, 'dd MMM yyyy')}`;
+    return format(dateRange.start, 'dd MMM yyyy');
+  };
+
 
   return (
     <div className={styles.container}>
@@ -115,6 +238,44 @@ export default function AuctionHistory() {
             </div>
           )}
 
+          <div className={styles.contentcontainer}>
+
+          {/* Search */}
+          <div className={styles.searchWrapper}>
+            <Search className={styles.searchIcon} />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+              placeholder="Search fish species, vessel, or seller..."
+              className={styles.searchinput}
+            />
+          </div>
+
+          {/* Controls */}
+          <div className={styles.controls}>
+            {/* Date dropdown */}
+            <div className={styles.dropdownWrapper}>
+              <button onClick={() => setIsDateDropdownOpen(!isDateDropdownOpen)} className={styles.filterButton}>
+                {getLabel()}
+                <CalendarIcon className={styles.icon} />
+              </button>
+
+              {isDateDropdownOpen && (
+                <>
+                  <div className={styles.overlay} onClick={() => setIsDateDropdownOpen(false)} />
+                  <CalendarPicker
+                    dateRange={dateRange}
+                    onSelect={setDateRange}
+                    onClose={() => { if (dateRange.start && dateRange.end) setIsDateDropdownOpen(false); }}
+                  />
+                </>
+              )}
+            </div>
+
+          </div>
+        </div>
+
           <section className={styles.tableContainer}>
 
             <table className={styles.table}>
@@ -125,7 +286,7 @@ export default function AuctionHistory() {
                   <th>TANGGAL TRANSAKSI</th>
                   <th>PEMBELI</th>
                   <th>HARGA AKHIR</th>
-                  <th>STATUS</th>
+                  {/* <th>STATUS</th> */}
                   <th></th>
                 </tr>
               </thead>

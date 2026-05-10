@@ -166,6 +166,69 @@ function HistoryCard({ name, image, vessel, seller, finalPrice, date, status }: 
   );
 }
 
+function HistoryRow({ name, image, vessel, seller, finalPrice, date, status }: HistoryItem) {
+
+  const getStatusBadge = () => {
+    switch (status) {
+      case 'Won':
+        return (
+          <div className={`${styles.itembadge} ${styles.itembadgeWon}`}>
+            <div className={styles.itemdot}></div>
+            SOLD
+          </div>
+        );
+      case 'Lost':
+        return (
+          <div className={`${styles.itembadge} ${styles.itembadgeLost}`}>
+            Lost
+          </div>
+        );
+    }
+  };
+
+  return (
+    <div className={styles.itemrow}>
+      {/* Product */}
+      <div className={styles.itemproduct}>
+        <div className={styles.itemimageWrapper}>
+          <img src={image} className={styles.itemimage} alt={name} />
+        </div>
+        <div>
+          <h4 className={styles.itemname}>{name}</h4>
+          <p className={styles.itemmeta}>
+            <span>KM {vessel}</span>
+              <span className={styles.itemseparator}>|</span>
+              <span>SELLER: {seller}</span>
+          </p>
+        </div>
+      </div>
+
+      {/* Date */}
+      <div className={styles.itemtext}>{date}</div>
+
+
+      {/* Price */}
+      <div className={styles.itempriceWrapper}>
+        <span className={styles.itemcurrency}>Rp</span>
+        <span className={`${styles.itemprice} ${status === 'Lost' ? styles.itempriceLost : ''}`}>
+          {finalPrice}
+        </span>
+      </div>
+
+      {/* Status & Action */}
+      <div className={styles.itemactions}>
+        {getStatusBadge()}
+      </div>
+
+      <div className={styles.itemactions}>
+        <button className={styles.itembutton}>
+          View Detail
+        </button>
+      </div>
+    </div>
+  );
+}
+
 // ─── Main Page ────────────────────────────────────────────────────────────────
 export default function HistoriLelang() {
   const { user, token } = useAuth();
@@ -286,7 +349,8 @@ export default function HistoriLelang() {
         </div>
 
         {/* Cards */}
-        <div className={styles.cardcontainer}>
+        {/* <div className={styles.cardcontainer}>
+          
           {loading ? (
             <div style={{ padding: '3rem', textAlign: 'center', color: '#94a3b8' }}>
               Memuat histori lelang...
@@ -299,6 +363,10 @@ export default function HistoriLelang() {
             historyItems.map(item => (
               <HistoryCard key={item.id} {...item} />
             ))
+
+
+
+
           ) : (
             <div className={styles.emptyState}>
               <h3 className={styles.emptytitle}>No results found</h3>
@@ -307,7 +375,46 @@ export default function HistoriLelang() {
               </p>
             </div>
           )}
-        </div>
+        </div> */}
+
+        <div className={styles.cardcontainer}>
+          {/* Table Header */}
+          <div className={styles.cardheader}>
+            <div className={styles.cardheaderText}>
+              Fish Species
+            </div>
+            <div className={styles.cardheaderText}>Transaction Date</div>
+            <div className={styles.cardheaderText}>Final Price</div>
+            <div className={styles.cardheaderText}>Market Status</div>
+          </div>
+
+            {/* List Items */}
+            <div>
+              <div>
+                {loading ? (
+            <div style={{ padding: '3rem', textAlign: 'center', color: '#94a3b8' }}>
+              Memuat histori lelang...
+            </div>
+          ) : fetchError ? (
+            <div style={{ padding: '3rem', textAlign: 'center', color: '#dc2626' }}>
+              {fetchError}
+            </div>
+          ) : historyItems.length > 0 ? (
+            historyItems.map(item => (
+              <HistoryRow key={item.id} {...item} />
+            ))
+
+          ) : (
+            <div className={styles.emptyState}>
+              <h3 className={styles.emptytitle}>No results found</h3>
+              <p className={styles.emptydescription}>
+                Try adjusting your search or filters to find what you're looking for.
+              </p>
+            </div>
+          )}
+              </div>
+            </div>
+          </div>
 
       </div>
     </div>
