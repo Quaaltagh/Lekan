@@ -405,3 +405,150 @@
 .preftoggleDotInactive {
   transform: translateX(4px);
 }
+
+/* ── Popup ────────────────────────────────────────────────────────────────── */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(2px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.popup {
+  position: relative;
+  background: white;
+  border-radius: 1.25rem;
+  padding: 2rem 2rem 1.75rem;
+  width: 340px;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(15, 23, 42, 0.15);
+  border: 1px solid #f1f5f9;
+}
+
+.popupClose {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: #f1f5f9;
+  border: none;
+  border-radius: 0.5rem;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #64748b;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.popupClose:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+.popupIconWrap {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: #eff6ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.25rem;
+}
+
+.popupCheckIcon {
+  color: #1e40af;
+}
+
+.popupTitle {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0 0 0.4rem;
+}
+
+.popupDesc {
+  font-size: 0.875rem;
+  color: #64748b;
+  margin: 0 0 1.5rem;
+  line-height: 1.5;
+}
+
+.popupButton {
+  background: #1e40af;
+  color: white;
+  border: none;
+  padding: 0.75rem 2rem;
+  border-radius: 0.75rem;
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: background 0.15s;
+  width: 100%;
+}
+
+.popupButton:hover {
+  background: #1d4ed8;
+}
+
+/* ── Password Dropdown (baru) ─────────────────────────────────────────────── */
+
+/* Tombol "Ganti Password" / "Batal Ganti Password" */
+.passwordToggleBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.75rem;
+  padding: 0.7rem 1.1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #1e40af;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+  margin-bottom: 0;
+}
+
+.passwordToggleBtn:hover {
+  background: #eff6ff;
+  border-color: #bfdbfe;
+}
+
+/* Area yang muncul saat dropdown terbuka */
+.passwordDropdown {
+  margin-top: 1.25rem;
+  padding: 1.25rem;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 1rem;
+  animation: slideDown 0.18s ease;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.passwordDropdownHint {
+  font-size: 0.8rem;
+  color: #64748b;
+  margin: 0 0 1rem;
+}
+
+/* Input password di dalam dropdown (tanpa border sendiri, pakai .passwordWrapper) */
+.passwordInput {
+  flex: 1;
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 0.92rem;
+  color: #0f172a;
+  min-width: 0;
+}

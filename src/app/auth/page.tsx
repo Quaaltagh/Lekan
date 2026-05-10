@@ -66,7 +66,7 @@ export default function LoginPage() {
     <div className="flex h-screen bg-white">
       {/* Kiri - Hero */}
       <div className="hidden md:flex md:w-1/2 bg-slate-900 relative flex-col justify-between p-12 text-white overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-slate-800 to-blue-900 opacity-90 z-0"></div>
+        <div className="absolute inset-0 bg-linear-to-b from-slate-800 to-blue-900 opacity-90 z-0"></div>
         <div className="z-10 relative">
           <h1 className="text-4xl font-bold mb-2">LEKAN</h1>
           <p className="text-slate-300 text-lg">
