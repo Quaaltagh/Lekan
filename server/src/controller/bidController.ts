@@ -24,18 +24,23 @@ export const submitBid = async (req: Request, res: Response): Promise<void> => {
   }
 
   // ── 1. Cek auction masih aktif ──────────────────────────────────────────
-  const { data: auction } = await supabase
+  const { data: auction, error: auctionError } = await supabase
     .from('auctions')
     .select('status, current_bid, start_price, ends_at, seller_id')
     .eq('id', auctionId)
     .single();
 
+  if (auctionError) { res.status(500).json({ error: auctionError.message }); return; }
   if (!auction) { res.status(404).json({ error: 'Lelang tidak ditemukan.' }); return; }
   if (auction.status !== 'active') { res.status(400).json({ error: 'Lelang sudah berakhir.' }); return; }
   if (new Date(auction.ends_at) < new Date()) { res.status(400).json({ error: 'Waktu lelang sudah habis.' }); return; }
   if (auction.seller_id === bidder_id) { res.status(400).json({ error: 'Tidak bisa bid di lelang sendiri.' }); return; }
 
+  // FIX: pakai current_bid dari DB sebagai acuan, bukan dari bids table
   const currentBid = auction.current_bid ?? auction.start_price;
+
+  console.log(`[BID] auction ${auctionId} | currentBid: ${currentBid} | incoming: ${amount} | bidder: ${bidder_id}`);
+
   if (amount <= currentBid) {
     res.status(400).json({ error: `Bid harus lebih dari Rp ${currentBid.toLocaleString('id-ID')}` });
     return;
@@ -45,7 +50,19 @@ export const submitBid = async (req: Request, res: Response): Promise<void> => {
     return;
   }
 
-  // ── 2. Cek & kunci saldo penawar baru (escrow) ──────────────────────────
+  // ── 2. Cari penawar tertinggi saat ini SEBELUM bid baru masuk ──────────
+  // FIX: ambil dulu sebelum escrow, supaya refund ke orang yang tepat
+  const { data: prevTopBid } = await supabase
+    .from('bids')
+    .select('bidder_id, amount')
+    .eq('auction_id', auctionId)
+    .order('amount', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  console.log(`[BID] prevTopBid:`, prevTopBid);
+
+  // ── 3. Cek & kunci saldo penawar baru (escrow) ──────────────────────────
   const { data: bidderWallet } = await supabase
     .from('wallets')
     .select('id, balance, pending')
@@ -56,6 +73,9 @@ export const submitBid = async (req: Request, res: Response): Promise<void> => {
     res.status(400).json({ error: 'Wallet tidak ditemukan. Silakan deposit terlebih dahulu.' });
     return;
   }
+
+  console.log(`[BID] bidderWallet balance: ${bidderWallet.balance} | pending: ${bidderWallet.pending}`);
+
   if (bidderWallet.balance < amount) {
     res.status(400).json({ error: `Saldo tidak mencukupi. Saldo kamu: Rp ${bidderWallet.balance.toLocaleString('id-ID')}` });
     return;
@@ -72,19 +92,14 @@ export const submitBid = async (req: Request, res: Response): Promise<void> => {
     .eq('user_id', bidder_id);
 
   if (escrowError) {
+    console.error('[BID] escrow error:', escrowError.message);
     res.status(500).json({ error: 'Gagal mengunci saldo: ' + escrowError.message });
     return;
   }
 
-  // ── 3. Refund pemenang lama (kembalikan pending → balance) ──────────────
-  const { data: prevTopBid } = await supabase
-    .from('bids')
-    .select('bidder_id, amount')
-    .eq('auction_id', auctionId)
-    .order('amount', { ascending: false })
-    .limit(1)
-    .maybeSingle();
-
+  // ── 4. Refund penawar lama ──────────────────────────────────────────────
+  // FIX: gunakan prevTopBid yang diambil di step 2 (sebelum bid baru masuk)
+  // FIX: skip refund kalau penawar lama adalah orang yang sama (bid ulang)
   if (prevTopBid && prevTopBid.bidder_id !== bidder_id) {
     const { data: prevWallet } = await supabase
       .from('wallets')
@@ -92,8 +107,10 @@ export const submitBid = async (req: Request, res: Response): Promise<void> => {
       .eq('user_id', prevTopBid.bidder_id)
       .single();
 
+    console.log(`[BID] refund to ${prevTopBid.bidder_id} | amount: ${prevTopBid.amount} | prevWallet:`, prevWallet);
+
     if (prevWallet) {
-      await supabase
+      const { error: refundError } = await supabase
         .from('wallets')
         .update({
           balance: (prevWallet.balance ?? 0) + prevTopBid.amount,
@@ -102,7 +119,19 @@ export const submitBid = async (req: Request, res: Response): Promise<void> => {
         })
         .eq('user_id', prevTopBid.bidder_id);
 
-      // Catat transaksi refund untuk penawar lama
+      if (refundError) {
+        console.error('[BID] refund error:', refundError.message);
+        // Rollback escrow penawar baru
+        await supabase.from('wallets').update({
+          balance: bidderWallet.balance,
+          pending: bidderWallet.pending ?? 0,
+          updated_at: new Date().toISOString(),
+        }).eq('user_id', bidder_id);
+
+        res.status(500).json({ error: 'Gagal refund penawar sebelumnya.' });
+        return;
+      }
+
       await supabase.from('transactions').insert({
         user_id: prevTopBid.bidder_id,
         type: 'refund',
@@ -114,7 +143,7 @@ export const submitBid = async (req: Request, res: Response): Promise<void> => {
     }
   }
 
-  // ── 4. Insert bid baru ──────────────────────────────────────────────────
+  // ── 5. Insert bid baru ──────────────────────────────────────────────────
   const { data: bid, error: bidError } = await supabase
     .from('bids')
     .insert({ auction_id: auctionId, bidder_id, amount })
@@ -122,25 +151,31 @@ export const submitBid = async (req: Request, res: Response): Promise<void> => {
     .single();
 
   if (bidError) {
-    // Rollback escrow kalau insert bid gagal
-    await supabase
-      .from('wallets')
-      .update({
-        balance: bidderWallet.balance,      // kembalikan ke semula
-        pending: bidderWallet.pending ?? 0,
-        updated_at: new Date().toISOString(),
-      })
-      .eq('user_id', bidder_id);
+    console.error('[BID] insert error:', bidError.message);
+    // Rollback escrow
+    await supabase.from('wallets').update({
+      balance: bidderWallet.balance,
+      pending: bidderWallet.pending ?? 0,
+      updated_at: new Date().toISOString(),
+    }).eq('user_id', bidder_id);
 
     res.status(500).json({ error: bidError.message });
     return;
   }
 
-  // ── 5. Update current_bid di auctions ──────────────────────────────────
-  await supabase
+  // ── 6. Update current_bid di auctions ──────────────────────────────────
+  // FIX: tambah error handling supaya ketahuan kalau step ini gagal
+  const { error: updateAuctionError } = await supabase
     .from('auctions')
     .update({ current_bid: amount, updated_at: new Date().toISOString() })
     .eq('id', auctionId);
 
+  if (updateAuctionError) {
+    console.error('[BID] update current_bid error:', updateAuctionError.message);
+    // Bid sudah masuk tapi current_bid tidak terupdate — log saja, jangan rollback
+    // karena bid sudah valid. Bisa di-fix manual atau lewat cron.
+  }
+
+  console.log(`[BID] success | new current_bid: ${amount}`);
   res.status(201).json(bid);
 };
