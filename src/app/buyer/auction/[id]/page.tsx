@@ -172,7 +172,7 @@ export default function AuctionDetailPage() {
   // Total yang akan dibayar = currentBid + increment yang diinput user
   const incrementNumeric = parseInt(bidIncrement.replace(/\./g, '')) || 0;
   const totalBidAmount  = currentBid + incrementNumeric;
-  const isInsufficient  = walletBalance < totalBidAmount;
+  const isInsufficient  = walletBalance < incrementNumeric;
   const minIncrement    = 50000;
 
   const tags = [
@@ -189,6 +189,11 @@ export default function AuctionDetailPage() {
     }
     setBidError('');
     setBidSuccess('');
+    
+    if (walletBalance < incrementNumeric) {
+      setBidError(`Saldo tidak mencukupi untuk kenaikan Rp ${incrementNumeric.toLocaleString('id-ID')}.`);
+      return;
+    }
 
     if (incrementNumeric < minIncrement) {
       setBidError(`Minimum kenaikan bid adalah Rp ${minIncrement.toLocaleString('id-ID')}`);
@@ -487,7 +492,7 @@ export default function AuctionDetailPage() {
                       <div className={styles.warningBox}>
                         <AlertCircle className={styles.warningIcon} />
                         <span className={styles.warningText}>
-                          Saldo tidak cukup. Butuh Rp {(totalBidAmount - walletBalance).toLocaleString('id-ID')} lagi.
+                          Saldo tidak cukup untuk kenaikan ini. Butuh Rp {(incrementNumeric - walletBalance).toLocaleString('id-ID')} lagi.
                         </span>
                       </div>
                     )}
