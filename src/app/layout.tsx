@@ -4,7 +4,7 @@ import { AuthProvider } from '@/context/AuthContext';
 
 
 export const metadata: Metadata = {
-  title: 'LEKAN - Seafood Marketplace',
+  title: 'LEKAN ',
   description: 'Platform pelelangan ikan digital terpercaya',
 };
 
