@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useState } from 'react';
 import styles from '@/app/buyer/transactionHistory/page.module.css';
 import Navbar from '@/app/components/Navbar';
+import Link from 'next/link';
 
 const transactions = [
   { title: "Auction Won: Lot #8492", description: "Payment to Blue Horizon Fleet", amount: "12,450.00", date: "OCT 24, 14:30", isPositive: false, icon: <Coins size={24} color='#000000'></Coins> },
@@ -28,7 +29,7 @@ export default function TransactionHistory() {
                             Manage your funds and view recent financial activity.
                         </p>
                     </div>
-                    <a href="#" className={styles.viewAll}>←    Kembali ke halaman Dompet </a>
+                    <Link href="/buyer/Dompet" className={styles.viewAll}>←    Kembali ke halaman Dompet </Link>
                 </div>
             </div>
 
