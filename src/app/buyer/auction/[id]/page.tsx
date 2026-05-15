@@ -278,7 +278,7 @@ export default function AuctionDetailPage() {
               <div className={styles.badgeWrapper}>
                 <span className={styles.liveBadge}>
                   <span className={styles.dot}></span>
-                  {auction.status === 'active' ? 'Live Now' : 'Ended'}
+                  {auction.status === 'active' ? 'Sedang Berlangsung' : 'Selesai'}
                 </span>
               </div>
               <img
@@ -320,15 +320,15 @@ export default function AuctionDetailPage() {
                       {lastUpdated.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
                     </span>
                   )}
-                  <span className={styles.bidtotalBids}>{bids.length} Total Bids</span>
+                  <span className={styles.bidtotalBids}>{bids.length} Total Penawaran</span>
                 </div>
               </div>
 
               <div className={styles.bidtable}>
                 <div className={styles.bidtableHeader}>
-                  <span>Bidder</span>
-                  <span>Time</span>
-                  <span>Amount</span>
+                  <span>Penawar</span>
+                  <span>Waktu</span>
+                  <span>Jumlah</span>
                 </div>
 
                 {bids.length === 0 ? (
@@ -344,9 +344,9 @@ export default function AuctionDetailPage() {
                         </div>
                         <div className={styles.bidderNameWrapper}>
                           <span className={styles.bidderName}>
-                            {bid.bidder_id === user?.id ? 'Anda' : `Bidder ${bid.bidder_id.slice(0, 6)}...`}
+                            {bid.bidder_id === user?.id ? 'Anda' : `Penawar ${bid.bidder_id.slice(0, 6)}...`}
                           </span>
-                          {idx === 0 && <span className={styles.highestBadge}>Highest</span>}
+                          {idx === 0 && <span className={styles.highestBadge}>Tertinggi</span>}
                         </div>
                       </div>
                       <div className={styles.time}>
@@ -371,7 +371,7 @@ export default function AuctionDetailPage() {
 
               {/* Current Bid */}
               <div>
-                <span className={styles.rightlabel}>Current Highest Bid</span>
+                <span className={styles.rightlabel}>Bid Tertinggi Saat Ini</span>
                 <div className={styles.priceRow}>
                   <span className={styles.currency}>Rp</span>
                   <span className={styles.price}>{currentBid.toLocaleString('id-ID')}</span>
@@ -381,7 +381,7 @@ export default function AuctionDetailPage() {
               {/* Timer */}
               <div className={styles.timerCard}>
                 <div>
-                  <span className={styles.timerLabel}>Time Remaining</span>
+                  <span className={styles.timerLabel}>Sisa Waktu</span>
                   <span className={styles.timerValue}>{countdown}</span>
                 </div>
                 <div className={styles.iconWrapper}>
@@ -523,13 +523,13 @@ export default function AuctionDetailPage() {
                   </div>
                 </div>
                 <div>
-                  <span className={styles.sellerlabel}>Seller</span>
+                  <span className={styles.sellerlabel}>Penjual</span>
                   <h5 className={styles.sellername}>
                     {seller?.full_name || 'Nelayan Terverifikasi'}
                     {seller?.verified && <ShieldCheck className={styles.verifiedIcon} />}
                   </h5>
                   <p className={styles.sellermeta}>
-                    Verified Merchant{seller?.vessel_name ? ` • ${seller.vessel_name}` : ''}
+                    Pedagang Terverifikasi{seller?.vessel_name ? ` • ${seller.vessel_name}` : ''}
                   </p>
                 </div>
               </div>
@@ -542,11 +542,11 @@ export default function AuctionDetailPage() {
             <div className={styles.icongrid}>
               <div className={styles.iconcard}>
                 <ShieldCheck className={styles.icon} />
-                <span className={styles.text}>Payment Held in Escrow</span>
+                <span className={styles.text}>Pembayaran Tertahan di Escrow</span>
               </div>
               <div className={styles.iconcard}>
                 <Truck className={styles.icon} />
-                <span className={styles.text}>Insured Cold Chain</span>
+                <span className={styles.text}>Rantai Dingin Terjamin</span>
               </div>
             </div>
           </div>

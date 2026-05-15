@@ -14,10 +14,10 @@ type Method = 'bank_transfer' | 'e_wallet' | 'card' | 'qris';
 type Status  = 'idle' | 'loading' | 'success' | 'error';
 
 const METHODS: { id: Method; label: string; sub: string; icon: React.ReactNode }[] = [
-  { id: 'bank_transfer', label: 'Bank Transfer', sub: 'BCA, Mandiri, BNI, BRI', icon: <Landmark   size={24} color="#004370" /> },
-  { id: 'e_wallet',      label: 'E-Wallet',      sub: 'OVO, DANA, GoPay',       icon: <Wallet     size={24} color="#004370" /> },
-  { id: 'card',          label: 'Cards',          sub: 'Visa, Mastercard',       icon: <CreditCard size={24} color="#004370" /> },
-  { id: 'qris',          label: 'QRIS',           sub: 'Scan & Pay',             icon: <QrCode     size={24} color="#004370" /> },
+  { id: 'bank_transfer', label: 'Transfer Bank', sub: 'BCA, Mandiri, BNI, BRI', icon: <Landmark   size={24} color="#004370" /> },
+  { id: 'e_wallet',      label: 'Dompet Digital', sub: 'OVO, DANA, GoPay',      icon: <Wallet     size={24} color="#004370" /> },
+  { id: 'card',          label: 'Kartu',         sub: 'Visa, Mastercard',       icon: <CreditCard size={24} color="#004370" /> },
+  { id: 'qris',          label: 'QRIS',          sub: 'Pindai & Bayar',        icon: <QrCode     size={24} color="#004370" /> },
 ];
 
 function parseInput(raw: string): number {
@@ -56,7 +56,7 @@ const DepositPage: React.FC = () => {
     setStatus('loading');
 
     try {
-      await walletService.deposit(user.id, token, amount, `Deposit via ${method}`);
+      await walletService.deposit(user.id, token, amount, `Deposit melalui ${method}`);
       setWalletBal(prev => (prev ?? 0) + amount);
       setStatus('success');
     } catch (err) {
@@ -110,18 +110,18 @@ const DepositPage: React.FC = () => {
         <div className={styles.mainContent}>
           {/* Balance Header */}
           <header className={styles.balanceHeader}>
-            <p className={styles.label}>TOTAL BALANCE</p>
+            <p className={styles.label}>TOTAL SALDO</p>
             <h1 className={styles.balanceValue}>
               {walletBal !== null ? formatRupiah(walletBal) : '—'}
             </h1>
-            <p className={styles.subtext}>Available for bidding</p>
+            <p className={styles.subtext}>Tersedia untuk menawar</p>
           </header>
 
           {/* Step 1: Amount */}
           <section className={styles.stepSection}>
             <div className={styles.stepTitle}>
               <span className={styles.stepNumber}>1</span>
-              <h3>Select Deposit Amount</h3>
+              <h3>Pilih Jumlah Deposit</h3>
             </div>
 
             <div className={styles.amountGrid}>
@@ -137,12 +137,12 @@ const DepositPage: React.FC = () => {
             </div>
 
             <div className={styles.customInputWrapper}>
-              <label>CUSTOM AMOUNT</label>
+              <label>Jumlah Custom</label>
               <div className={styles.inputField}>
                 <span>Rp</span>
                 <input
                   type="text"
-                  placeholder="Enter amount..."
+                  placeholder="Masukkan jumlah..."
                   value={custom}
                   onChange={e => { setCustom(e.target.value); setPreset(null); }}
                 />
@@ -150,11 +150,11 @@ const DepositPage: React.FC = () => {
             </div>
           </section>
 
-          {/* Step 2: Payment Method */}
+          {/* Langkah 2: Metode Pembayaran */}
           <section className={styles.stepSection}>
             <div className={styles.stepTitle}>
               <span className={styles.stepNumber}>2</span>
-              <h3>Payment Method</h3>
+              <h3>Metode Pembayaran</h3>
             </div>
 
             <div className={styles.methodGrid}>
@@ -180,36 +180,35 @@ const DepositPage: React.FC = () => {
         {/* Sidebar */}
         <aside className={styles.sidebar}>
           <div className={styles.safetyCard}>
-            <p className={styles.safetyLabel}>SAFETY DEPOSIT</p>
+            <p className={styles.safetyLabel}>DEPOSIT KEAMANAN</p>
             <p className={styles.safetyValue}>Rp 2.000.000</p>
-            <p className={styles.safetySub}>Reserved for insurance compliance</p>
+            <p className={styles.safetySub}>Cadangan untuk kepatuhan asuransi</p>
           </div>
-
           <div className={styles.summaryCard}>
-            <h3>Summary</h3>
+            <h3>Ringkasan</h3>
             <div className={styles.summaryRow}>
-              <span>Amount</span>
+              <span>Jumlah</span>
               <span>{amount > 0 ? formatRupiah(amount) : '—'}</span>
             </div>
             <div className={styles.summaryRow}>
-              <span>Service Fee</span>
+              <span>Biaya Layanan</span>
               <span>{formatRupiah(SERVICE_FEE)}</span>
             </div>
             <div className={styles.summaryRow}>
-              <span>Admin Fee</span>
-              <span className={styles.freeText}>Free</span>
+              <span>Biaya Admin</span>
+              <span className={styles.freeText}>Gratis</span>
             </div>
             <div className={styles.totalRow}>
               <div className={styles.totalLabel}>
                 <p>Total</p>
-                <p>Bill</p>
+                <p>Tagihan</p>
               </div>
               <p className={styles.totalAmount}>{total > 0 ? formatRupiah(total) : '—'}</p>
             </div>
 
             <div className={styles.infoBox}>
               <div className={styles.infoIcon}><Info size={24} color="#000" /></div>
-              <p>Deposits via Bank Transfer usually settle within 2–5 minutes after verification.</p>
+              <p>Deposit melalui Transfer Bank biasanya diproses dalam 2–5 menit setelah verifikasi.</p>
             </div>
 
             {errMsg && (
@@ -225,20 +224,20 @@ const DepositPage: React.FC = () => {
               style={{ opacity: status === 'loading' || amount < 10_000 ? 0.6 : 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}
             >
               {status === 'loading' && <Loader2 size={16} style={{ animation: 'spin 1s linear infinite' }} />}
-              {status === 'loading' ? 'Memproses...' : 'Deposit Now'}
+              {status === 'loading' ? 'Memproses...' : 'Deposit Sekarang'}
             </button>
 
             <div className={styles.secureText}>
               <div className={styles.secureIcon}><ShieldAlert size={24} color="#000" /></div>
-              <p>Secured by Maritime Exchange Payment Engine</p>
+              <p>Dijamin oleh Sistem Pembayaran Maritime Exchange</p>
             </div>
           </div>
 
           <div className={styles.helpCard}>
             <div className={styles.helpIcon}><Headset size={24} color="#adb5bd" /></div>
             <div>
-              <p className={styles.helpTitle}>Need help?</p>
-              <p className={styles.helpSub}>Contact 24/7 Priority Support</p>
+              <p className={styles.helpTitle}>Butuh bantuan?</p>
+              <p className={styles.helpSub}>Hubungi Dukungan Prioritas 24/7</p>
             </div>
           </div>
         </aside>

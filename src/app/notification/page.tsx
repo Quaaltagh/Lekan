@@ -8,7 +8,7 @@ import Navbar from '@/app/components/Navbar';
 
 interface NotificationItemProps {
   id: string;
-  type: 'bidding' | 'payment' | 'transaction' | 'security' | 'vessel';
+  type: 'lelang' | 'pembayaran' | 'transaksi' | 'keamanan' | 'kapal';
   title: string;
   description: string;
   time: string;
@@ -20,28 +20,28 @@ function NotificationCard({ type, title, description, time, isNew}: Notification
   const getIcon = () => {
     if(isNew === true){
         switch (type) {
-            case 'bidding': 
+            case 'lelang': 
                 return <Bell className={`${styles.icon} ${styles.iconBlue}`} />;
-            case 'payment': 
+            case 'pembayaran': 
                 return <CreditCard className={`${styles.icon} ${styles.iconBlue}`} />;
-            case 'transaction': 
+            case 'transaksi': 
                 return <FileText className={`${styles.icon} ${styles.iconBlue}`} />;
-            case 'security': 
+            case 'keamanan': 
                 return <Shield className={`${styles.icon} ${styles.iconBlue}`} />;
-            case 'vessel': 
+            case 'kapal': 
                 return <Ship className={`${styles.icon} ${styles.iconBlue}`} />;
         }
     }else{
         switch (type) {
-            case 'bidding': 
+            case 'lelang': 
                 return <Bell className={`${styles.icon} ${styles.iconSeen}`} />;
-            case 'payment': 
+            case 'pembayaran': 
                 return <CreditCard className={`${styles.icon} ${styles.iconSeen}`} />;
-            case 'transaction': 
+            case 'transaksi': 
                 return <FileText className={`${styles.icon} ${styles.iconSeen}`} />;
-            case 'security': 
+            case 'keamanan': 
                 return <Shield className={`${styles.icon} ${styles.iconSeen}`} />;
-            case 'vessel': 
+            case 'kapal': 
                 return <Ship className={`${styles.icon} ${styles.iconSeen}`} />;
         }
     }
@@ -73,7 +73,7 @@ function NotificationCard({ type, title, description, time, isNew}: Notification
                     {isNew && (
                     <div className={styles.newBadge}>
                         <span className={styles.newDot}></span>
-                        <span className={styles.newText}>New</span>
+                        <span className={styles.newText}>Baru</span>
                     </div>
                     )}
                 </div>
@@ -97,58 +97,58 @@ function NotificationCard({ type, title, description, time, isNew}: Notification
 }
 
 export default function Notifications({ onBack }: { onBack: () => void }) {
-  const [activeFilter, setActiveFilter] = useState('All');
-  const filters = ['All', 'Transactions', 'Bidding', 'Payments', 'System'];
+  const [activeFilter, setActiveFilter] = useState('Semua');
+  const filters = ['Semua', 'Transaksi', 'Lelang', 'Pembayaran', 'Sistem'];
 
   const [notifications, setNotifications] = useState<NotificationItemProps[]>([
     {
       id: '1',
-      type: 'bidding',
-      title: 'Outbid Notice: Bluefin Tuna Batch #092',
-      description: 'Your bid of $2,450.00 was surpassed by a verified buyer. The current highest bid is $2,600.00.',
-      time: '2 minutes ago',
+      type: 'lelang',
+      title: 'Pemberitahuan Tertawar: Batch Tuna Bluefin #092',
+      description: 'Tawaran Anda sebesar Rp 2.450.000 dikalahkan oleh pembeli terverifikasi. Tawaran tertinggi saat ini Rp 2.600.000.',
+      time: '2 menit lalu',
       isNew: true
     },
     {
       id: '2',
-      type: 'payment',
-      title: 'Payment Successful',
-      description: 'Funds for "Atlantic Mackerel Shipment - INV-882" have been released to your escrow account.',
-      time: '14 minutes ago',
+      type: 'pembayaran',
+      title: 'Pembayaran Berhasil',
+      description: 'Dana untuk "Pengiriman Makarel Atlantik - INV-882" telah dikirim ke rekening escrow Anda.',
+      time: '14 menit lalu',
       isNew: true
     },
     {
       id: '3',
-      type: 'transaction',
-      title: 'Transaction Complete',
-      description: 'The vessel "Ocean Harvest" has confirmed delivery at Port of Lisbon. Transaction finalized.',
-      time: '3 hours ago',
+      type: 'transaksi',
+      title: 'Transaksi Selesai',
+      description: 'Kapal "Ocean Harvest" telah dikonfirmasi tiba di Pelabuhan Lisbon. Transaksi selesai.',
+      time: '3 jam lalu',
       isNew: false
     },
     {
       id: '4',
-      type: 'security',
-      title: 'Security Update',
-      description: 'Your account security settings were updated from a new device in Tokyo, Japan. Was this you?',
-      time: 'Yesterday, 11:20 PM',
+      type: 'keamanan',
+      title: 'Pembaruan Keamanan',
+      description: 'Pengaturan keamanan akun Anda diperbarui dari perangkat baru di Tokyo, Jepang. Apakah ini Anda?',
+      time: 'Kemarin, 23:20',
       isNew: false
     },
     {
       id: '5',
-      type: 'vessel',
-      title: 'Vessel Departure',
-      description: 'Vessel "The Northern Star" has departed from docking station Alpha-4 heading to North Atlantic Zone.',
-      time: 'Yesterday, 09:45 AM',
+      type: 'kapal',
+      title: 'Keberangkatan Kapal',
+      description: 'Kapal "The Northern Star" berangkat dari dermaga Alpha-4 menuju Zona Atlantik Utara.',
+      time: 'Kemarin, 09:45',
       isNew: false
     }
   ]);
 
   const filteredNotifications = notifications.filter(notif => {
-    if (activeFilter === 'All') return true;
-    if (activeFilter === 'Transactions') return notif.type === 'transaction';
-    if (activeFilter === 'Bidding') return notif.type === 'bidding';
-    if (activeFilter === 'Payments') return notif.type === 'payment';
-    if (activeFilter === 'System') return notif.type === 'security' || notif.type === 'vessel';
+    if (activeFilter === 'Semua') return true;
+    if (activeFilter === 'Transaksi') return notif.type === 'transaksi';
+    if (activeFilter === 'Lelang') return notif.type === 'lelang';
+    if (activeFilter === 'Pembayaran') return notif.type === 'pembayaran';
+    if (activeFilter === 'Sistem') return notif.type === 'keamanan' || notif.type === 'kapal';
     return true;
   });
 
@@ -175,7 +175,7 @@ export default function Notifications({ onBack }: { onBack: () => void }) {
                 onClick={markAllAsRead}
                 className={styles.markReadButton}
                 >
-                        Mark all as read
+                        Tandai semua sudah dibaca
                 </button>
             </div>
 
@@ -210,7 +210,7 @@ export default function Notifications({ onBack }: { onBack: () => void }) {
                         className={styles.emptyState}
                     >
                         <p className={styles.emptyText}>
-                        No signals found for {activeFilter}
+                        Tidak ada notifikasi untuk {activeFilter}
                         </p>
                     </motion.div>
                     )}

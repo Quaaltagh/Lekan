@@ -56,13 +56,13 @@ function AuctionItem({ auction }: { auction: Auction }) {
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1rem', marginBottom: '1rem' }}>
           <div>
-            <p style={{ fontSize: '0.75rem', color: '#94a3b8' }}>CURRENT BID</p>
+            <p style={{ fontSize: '0.75rem', color: '#94a3b8' }}>Bid Saat Ini</p>
             <p style={{ fontWeight: 'bold', color: '#1e40af' }}>
               {currentPrice.toLocaleString('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 })}
             </p>
           </div>
           <div>
-            <p style={{ fontSize: '0.75rem', color: '#94a3b8' }}>WEIGHT</p>
+            <p style={{ fontSize: '0.75rem', color: '#94a3b8' }}>Berat</p>
             <p style={{ fontWeight: 'bold' }}>{auction.weight_kg} kg</p>
           </div>
           <div>
@@ -84,11 +84,11 @@ function AuctionItem({ auction }: { auction: Auction }) {
 
         <div style={{ display: 'flex', gap: '0.75rem' }}>
           <button style={{ flex: 1, padding: '0.5rem', borderRadius: '0.5rem', border: '1px solid #e2e8f0', background: '#f8fafc', cursor: 'pointer' }}>
-            Details
+            Detail
           </button>
           {auction.status === 'active' && (
             <button style={{ flex: 1, padding: '0.5rem', borderRadius: '0.5rem', background: '#1e40af', color: 'white', border: 'none', cursor: 'pointer' }}>
-              Boost
+              Tingkatkan
             </button>
           )}
         </div>
@@ -147,12 +147,12 @@ export default function FishermanDashboard() {
                   <div style={{ backgroundColor: '#eff6ff', color: '#2563eb', padding: '0.75rem', borderRadius: '0.75rem' }}>
                     <Activity size={20} />
                   </div>
-                  {activeCount > 0 && <span className={styles.badgeLive}>LIVE</span>}
+                  {activeCount > 0 && <span className={styles.badgeLive}>SEDANG</span>}
                 </div>
-                <p style={{ fontSize: '0.875rem', color: '#64748b' }}>Active Auctions</p>
+                <p style={{ fontSize: '0.875rem', color: '#64748b' }}>Lelang Aktif</p>
                 <h3 style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>
                   {loading ? '—' : activeCount}{' '}
-                  <span style={{ fontSize: '0.875rem', color: '#64748bbc', fontWeight: 'normal' }}>Lots</span>
+                  <span style={{ fontSize: '0.875rem', color: '#64748bbc', fontWeight: 'normal' }}>Lot</span>
                 </h3>
               </div>
 
@@ -162,7 +162,7 @@ export default function FishermanDashboard() {
                     <Wallet size={20} />
                   </div>
                 </div>
-                <p style={{ fontSize: '0.875rem', color: '#64748b' }}>Total Earnings</p>
+                <p style={{ fontSize: '0.875rem', color: '#64748b' }}>Total Pendapatan</p>
                 <h3 style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>
                   {loading ? '—' : formatRp(totalEarnings)}
                 </h3>
@@ -225,7 +225,7 @@ export default function FishermanDashboard() {
             </div>
 
             <div style={{ marginTop: '1.5rem' }}>
-              <p className={styles.marketTrendTitle}>Market Trend</p>
+              <p className={styles.marketTrendTitle}>Trend Pasar</p>
               <div className={styles.marketTrendCard}>
                 {[
                   { name: 'Cakalang',     change: '+12.4%', positive: true },

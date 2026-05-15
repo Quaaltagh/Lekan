@@ -19,12 +19,22 @@ import {
   formatTxDate,
   txLabel,
   isIncome,
-  type WalletData,
+  type Wallet as WalletType,
   type Transaction,
 } from "../../../services/walletService";
 
+const formatTxStatus = (status: string) => {
+  const map: Record<string, string> = {
+    completed: 'Selesai',
+    pending: 'Diproses',
+    failed: 'Gagal',
+    cancelled: 'Dibatalkan',
+  };
+  return map[status] ?? status.charAt(0).toUpperCase() + status.slice(1);
+};
+
 export default function DompetPage() {
-  const [data, setData] = useState<WalletData | null>(null);
+  const [data, setData] = useState<{ wallet: WalletType; transactions: Transaction[] } | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -50,18 +60,18 @@ export default function DompetPage() {
   // Derived stats from the last 10 transactions in the response
   const totalEarned =
     data?.transactions
-      .filter((tx) => tx.type === "auction_payout" && tx.status === "completed")
-      .reduce((s, tx) => s + tx.amount, 0) ?? 0;
+      .filter((tx: Transaction) => tx.type === "auction_payout" && tx.status === "completed")
+      .reduce((s: number, tx: Transaction) => s + tx.amount, 0) ?? 0;
 
   const successfulBids =
     data?.transactions.filter(
-      (tx) => tx.type === "auction_payout" && tx.status === "completed",
+      (tx: Transaction) => tx.type === "auction_payout" && tx.status === "completed",
     ).length ?? 0;
 
   const totalWithdrawn =
     data?.transactions
-      .filter((tx) => tx.type === "withdrawal" && tx.status === "completed")
-      .reduce((s, tx) => s + tx.amount, 0) ?? 0;
+      .filter((tx: Transaction) => tx.type === "withdrawal" && tx.status === "completed")
+      .reduce((s: number, tx: Transaction) => s + tx.amount, 0) ?? 0;
 
   return (
     <div className={styles.layout}>
@@ -74,11 +84,11 @@ export default function DompetPage() {
             <div>
               <h1 className={styles.pageTitle}>Dompet</h1>
               <p className={styles.pageSubtitle}>
-                Manage your maritime earnings and withdrawals.
+                Kelola penghasilan dan penarikan Anda.
               </p>
             </div>
             <button className={styles.withdrawBtn}>
-              <Wallet size={16} /> Withdraw Funds
+              <Wallet size={16} /> Tarik Dana
             </button>
           </div>
 
@@ -119,18 +129,17 @@ export default function DompetPage() {
               <div className={styles.balanceCard}>
                 <div className={styles.balanceLeft}>
                   <span className={styles.balanceLabel}>
-                    TOTAL AVAILABLE BALANCE
+                    TOTAL SALDO TERSEDIA
                   </span>
                   <span className={styles.balanceAmount}>
                     {formatRupiah(data.wallet.balance)}
                   </span>
                   <span className={styles.balanceSafe}>
-                    <span className={styles.safeIcon}>✓</span> Funds are secure
-                    and ready for withdrawal.
+                    <span className={styles.safeIcon}>✓</span> Dana aman dan siap ditarik.
                   </span>
                 </div>
                 <div className={styles.pendingBox}>
-                  <span className={styles.pendingLabel}>PENDING CLEARANCE</span>
+                  <span className={styles.pendingLabel}>MENUNGGU PROSES</span>
                   <span className={styles.pendingAmount}>
                     {formatRupiah(data.wallet.pending)}
                   </span>
@@ -139,7 +148,7 @@ export default function DompetPage() {
 
               {/* Earnings Overview */}
               <section className={styles.section}>
-                <h2 className={styles.sectionTitle}>Earnings Overview</h2>
+                <h2 className={styles.sectionTitle}>Ringkasan Pendapatan</h2>
                 <div className={styles.statsGrid}>
                   <div className={styles.statCard}>
                     <div className={styles.statTopRow}>
@@ -148,9 +157,9 @@ export default function DompetPage() {
                       >
                         <TrendingUp size={18} />
                       </div>
-                      <span className={styles.statBadge}>Recent</span>
+                      <span className={styles.statBadge}>Terbaru</span>
                     </div>
-                    <span className={styles.statLabel}>TOTAL EARNED</span>
+                    <span className={styles.statLabel}>TOTAL PENDAPATAN</span>
                     <span className={styles.statValue}>
                       {formatRupiah(totalEarned)}
                     </span>
@@ -162,9 +171,9 @@ export default function DompetPage() {
                       >
                         <Anchor size={18} />
                       </div>
-                      <span className={styles.statBadge}>Auctions</span>
+                      <span className={styles.statBadge}>Lelang</span>
                     </div>
-                    <span className={styles.statLabel}>SUCCESSFUL BIDS</span>
+                    <span className={styles.statLabel}>LELANG SUKSES</span>
                     <span className={styles.statValue}>{successfulBids}</span>
                   </div>
                   <div className={styles.statCard}>
@@ -174,9 +183,9 @@ export default function DompetPage() {
                       >
                         <Landmark size={18} />
                       </div>
-                      <span className={styles.statBadge}>Recent</span>
+                      <span className={styles.statBadge}>Terbaru</span>
                     </div>
-                    <span className={styles.statLabel}>TOTAL WITHDRAWN</span>
+                    <span className={styles.statLabel}>TOTAL PENARIKAN</span>
                     <span className={styles.statValue}>
                       {formatRupiah(totalWithdrawn)}
                     </span>
@@ -187,9 +196,9 @@ export default function DompetPage() {
               {/* Recent Transactions */}
               <section className={styles.section}>
                 <div className={styles.sectionHeader}>
-                  <h2 className={styles.sectionTitle}>Recent Transactions</h2>
+                  <h2 className={styles.sectionTitle}>Transaksi Terbaru</h2>
                   <button className={styles.viewAllBtn}>
-                    View All <ChevronRight size={14} />
+                    Lihat Semua <ChevronRight size={14} />
                   </button>
                 </div>
                 <div className={styles.transactionList}>
@@ -233,8 +242,7 @@ export default function DompetPage() {
                           {isIncome(tx) ? "+" : "-"} {formatRupiah(tx.amount)}
                         </span>
                         <span className={styles.txStatus}>
-                          {tx.status.charAt(0).toUpperCase() +
-                            tx.status.slice(1)}
+                          {formatTxStatus(tx.status)}
                         </span>
                       </div>
                     </div>

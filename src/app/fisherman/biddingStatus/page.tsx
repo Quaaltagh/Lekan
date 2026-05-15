@@ -21,8 +21,7 @@ const formatCurrency = (amount: number) => {
 // Utility to format time remaining
 const getEndsIn = (endsAt: string) => {
   const diff = new Date(endsAt).getTime() - new Date().getTime();
-  if (diff <= 0) return "Ended";
-  
+  if (diff <= 0) return "Sudah Berakhir";
   const hours = Math.floor(diff / (1000 * 60 * 60));
   const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
   
@@ -46,7 +45,7 @@ export default function BiddingStatusPage() {
       setData(result);
       setError(null);
     } catch (err: any) {
-      setError(err.message || "Failed to load bidding status");
+      setError(err.message || "Gagal memuat status lelang");
     } finally {
       setLoading(false);
     }
@@ -58,7 +57,7 @@ export default function BiddingStatusPage() {
 
   // If user is not ready but it's initially loading
   if (!user && !loading) {
-    return <div className={styles.errorState}>Please login to view this page.</div>;
+    return <div className={styles.errorState}>Silakan masuk untuk melihat halaman ini.</div>;
   }
 
   return (
@@ -73,7 +72,7 @@ export default function BiddingStatusPage() {
             <div>
               <h1 className={styles.pageTitle}>Status Lelang</h1>
               <p className={styles.pageSubtitle}>
-                Monitor your active listings and review finished auctions.
+                Pantau daftar aktif Anda dan tinjau lelang yang sudah selesai.
               </p>
             </div>
             <div className={styles.searchBar}>
@@ -81,7 +80,7 @@ export default function BiddingStatusPage() {
                 <Search size={16} className={styles.searchIcon} />
                 <input 
                   type="text" 
-                  placeholder="Search auctions..." 
+                  placeholder="Cari lelang..." 
                   className={styles.searchInput}
                 />
               </div>
@@ -94,7 +93,7 @@ export default function BiddingStatusPage() {
           {loading && (
             <div className={styles.loadingState}>
               <Loader2 size={32} className="animate-spin" style={{ margin: "0 auto 16px" }} />
-              Loading your auctions...
+              Memuat lelang Anda...
             </div>
           )}
 
@@ -108,15 +107,15 @@ export default function BiddingStatusPage() {
             <>
               {/* Active Auctions Section */}
               <div className={styles.sectionTitleWrap}>
-                <h2 className={styles.sectionTitle}>Active Auctions</h2>
+                <h2 className={styles.sectionTitle}>Lelang Aktif</h2>
                 <div className={styles.liveBadge}>
                   <div className={styles.liveDot}></div>
-                  LIVE NOW
+                  SEDANG BERLANGSUNG
                 </div>
               </div>
 
               {data.active.length === 0 ? (
-                <div className={styles.emptyState}>No active auctions right now.</div>
+                <div className={styles.emptyState}>Tidak ada lelang aktif saat ini.</div>
               ) : (
                 <div className={styles.activeAuctionsGrid}>
                   {data.active.map((auction) => (
@@ -134,27 +133,25 @@ export default function BiddingStatusPage() {
                         <div className={styles.auctionHeader}>
                           <h3 className={styles.auctionName}>{auction.name}</h3>
                           <div className={styles.endsInWrap}>
-                            <span className={styles.endsInLabel}>Ends in</span>
+                            <span className={styles.endsInLabel}>Berakhir dalam</span>
                             <span className={styles.endsInTime}>{getEndsIn(auction.ends_at)}</span>
                           </div>
                         </div>
-                        
                         <div className={styles.metaRow}>
-                          <span>WEIGHT: {auction.weight_kg}KG</span>
-                          {auction.grade && <span>GRADE: {auction.grade}</span>}
+                          <span>BERAT: {auction.weight_kg}KG</span>
+                          {auction.grade && <span>KELAS: {auction.grade}</span>}
                         </div>
-                        
                         <div className={styles.bidRow}>
                           <div>
                             <div className={styles.currentBidLabel}>
-                              Current Bid ({auction.bidders_count} Bidders)
+                              Bid Saat Ini ({auction.bidders_count} Penawar)
                             </div>
                             <div className={styles.currentBidPrice}>
                               {formatCurrency(auction.current_bid || auction.start_price)}
                             </div>
                           </div>
                           <button className={styles.viewDetailBtn}>
-                            View Detail
+                            Lihat Detail
                           </button>
                         </div>
                       </div>
@@ -165,21 +162,21 @@ export default function BiddingStatusPage() {
 
               {/* Finished Auctions Section */}
               <div className={styles.sectionTitleWrap} style={{ marginTop: "40px" }}>
-                <h2 className={styles.sectionTitle}>Finished Auctions</h2>
+                <h2 className={styles.sectionTitle}>Lelang Selesai</h2>
               </div>
 
               {data.finished.length === 0 ? (
-                <div className={styles.emptyState}>No finished auctions yet.</div>
+                <div className={styles.emptyState}>Belum ada lelang selesai.</div>
               ) : (
                 <div className={styles.finishedContainer}>
                   <table className={styles.table}>
                     <thead>
                       <tr>
-                        <th>FISH DETAILS</th>
-                        <th>FINAL BID</th>
-                        <th>BIDDERS</th>
-                        <th>WINNER</th>
-                        <th style={{ textAlign: "right" }}>ACTIONS</th>
+                        <th>DETAIL IKAN</th>
+                        <th>BID AKHIR</th>
+                        <th>PENAWAR</th>
+                        <th>PEMENANG</th>
+                        <th style={{ textAlign: "right" }}>AKSI</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -197,7 +194,7 @@ export default function BiddingStatusPage() {
                               />
                               <div>
                                 <h4 className={styles.fishDetailName}>{auction.name}</h4>
-                                <p className={styles.fishDetailWeight}>WEIGHT: {auction.weight_kg}KG</p>
+                                <p className={styles.fishDetailWeight}>BERAT: {auction.weight_kg}KG</p>
                               </div>
                             </div>
                           </td>
@@ -208,18 +205,18 @@ export default function BiddingStatusPage() {
                           </td>
                           <td>
                             <div className={styles.biddersCount}>
-                              {auction.bidders_count} Bidders
+                              {auction.bidders_count} Penawar
                             </div>
                           </td>
                           <td>
                             <div className={styles.winnerWrap}>
                               <ShieldCheck size={16} color="#94a3b8" />
-                              {auction.winner_name || "No Winner"}
+                              {auction.winner_name || "Belum Ada Pemenang"}
                             </div>
                           </td>
                           <td style={{ textAlign: "right" }}>
                             <a href={`/fisherman/AuctionDetail/${auction.id}`} className={styles.actionLink}>
-                              View Detail
+                              Lihat Detail
                             </a>
                           </td>
                         </tr>

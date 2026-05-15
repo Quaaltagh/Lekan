@@ -24,9 +24,9 @@ export default function TransactionHistory() {
             <div className={styles.header}>
                 <div className={styles.notiHeader}>
                     <div>
-                        <h1 className={styles.notiTitle}>Transaction History</h1>
+                        <h1 className={styles.notiTitle}>Riwayat Transaksi</h1>
                         <p className={styles.notiDescription}>
-                            Manage your funds and view recent financial activity.
+                            Kelola dana Anda dan lihat aktivitas keuangan terbaru.
                         </p>
                     </div>
                     <Link href="/buyer/Dompet" className={styles.viewAll}>←    Kembali ke halaman Dompet </Link>

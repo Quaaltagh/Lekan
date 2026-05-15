@@ -35,7 +35,7 @@ export default function Invoice() {
     const pdfHeight = (imgProperties.height * pdfWidth) / imgProperties.width;
 
     pdf.addImage(data, "PNG", 0, 0, pdfWidth, pdfHeight);
-    pdf.save("inovoice.pdf");
+    pdf.save("invoice.pdf");
     };
   return(
     <>
@@ -45,17 +45,17 @@ export default function Invoice() {
 
             <div className={styles.titlewrapper}>
                 <div className={styles.titleSection}>
-                    <span className={styles.tag}>Transaction Record</span>
+                    <span className={styles.tag}>Catatan Transaksi</span>
 
                     <h1 className={styles.title}>
-                    Invoice
+                    Faktur
                     </h1>
                 </div>
 
                 <div className={styles.actions} onClick={handleDownloadPdf}>
                     <button className={styles.downloadBtn}>
                     <Download className={styles.icon} />
-                    Download PDF
+                    Unduh PDF
                     </button>
                 </div>
             </div>
@@ -68,23 +68,23 @@ export default function Invoice() {
                     <div className={styles.metaWrapper}>
                         <div className={styles.leftMeta}>
                             <div>
-                                <span className={styles.paidBadge}>• PAID</span>
+                                <span className={styles.paidBadge}>• LUNAS</span>
 
-                                <span className={styles.label}>Invoice Number</span>
+                                <span className={styles.label}>Nomor Faktur</span>
                                 <h3 className={styles.invoiceNumber}>#ME-2024-88492</h3>
                             </div>
                         </div>
 
                         <div className={styles.rightMeta}>
                             <div className={styles.metaBlock}>
-                                <span className={styles.label}>Transaction Date</span>
-                                <p className={styles.date}>October 24, 2023 • 14:32 GMT</p>
+                                <span className={styles.label}>Tanggal Transaksi</span>
+                                <p className={styles.date}>24 Oktober 2023 • 14:32 GMT</p>
                                 </div>
 
                                 <div className={styles.metaBlock}>
-                                <span className={styles.label}>Billed To</span>
-                                <h4 className={styles.name}>Captain Sam</h4>
-                                <p className={styles.subText}>Verified Merchant #9921</p>
+                                <span className={styles.label}>Ditagihkan Ke</span>
+                                <h4 className={styles.name}>Kapten Sam</h4>
+                                <p className={styles.subText}>Pedagang Terverifikasi #9921</p>
                             </div>
                         </div>
                     </div>
@@ -92,8 +92,8 @@ export default function Invoice() {
                     <div className={styles.tablewrapper}>
                         {/* Header */}
                         <div className={styles.headerRow}>
-                            <span className={styles.label}>Item Description</span>
-                            <span className={styles.label}>Final Price</span>
+                            <span className={styles.label}>Deskripsi Item</span>
+                            <span className={styles.label}>Harga Akhir</span>
                         </div>
 
                         {/* Content */}
@@ -114,7 +114,7 @@ export default function Invoice() {
                                 </h5>
 
                                 <p className={styles.itemsubtitle}>
-                                Weight: 43.5 KG • Grade: A+
+                                Berat: 43,5 KG • Kelas: A+
                                 </p>
                             </div>
                             </div>
@@ -132,21 +132,21 @@ export default function Invoice() {
                             {/* Subtotal */}
                             <div className={styles.sumrow}>
                                 <span className={styles.labelMuted}>Subtotal</span>
-                                <span className={styles.sumvalue}>Rp 12,450,000</span>
+                                <span className={styles.sumvalue}>Rp 12.450.000</span>
                             </div>
 
                             {/* Fee */}
                             <div className={styles.sumrow}>
                                 <span className={styles.labelMuted}>
-                                    Auction Platform Fee (2%)
+                                    Biaya Platform Lelang (2%)
                                 </span>
-                                <span className={styles.sumvalue}>Rp 249,000</span>
+                                <span className={styles.sumvalue}>Rp 249.000</span>
                             </div>
 
                             {/* Logistics */}
                             <div className={styles.sumrow}>
-                                <span className={styles.labelMuted}>Logistics & Handling</span>
-                                <span className={styles.sumvalue}>Rp 120,000</span>
+                                <span className={styles.labelMuted}>Logistik & Penanganan</span>
+                                <span className={styles.sumvalue}>Rp 120.000</span>
                             </div>
 
                             <div className={styles.divider} />
@@ -154,12 +154,12 @@ export default function Invoice() {
                             {/* Grand Total */}
                             <div className={styles.totalRow}>
                                 <div>
-                                    <span className={styles.totalLabel}>Grand Total</span>
-                                    <span className={styles.vat}>VAT Included</span>
+                                    <span className={styles.totalLabel}>Total Keseluruhan</span>
+                                    <span className={styles.vat}>Termasuk PPN</span>
                                 </div>
 
                                 <span className={styles.totalValue}>
-                                    Rp 12,819,000
+                                    Rp 12.819.000
                                 </span>
                             </div>
                         </div>
@@ -171,7 +171,7 @@ export default function Invoice() {
                             <ShieldCheck className={styles.verificon} />
 
                             <p className={styles.veriftext}>
-                            This transaction is secured and verified by Lekan Exchange Ledger Protocol.
+                            Transaksi ini diamankan dan diverifikasi oleh Protokol Ledger Lekan Exchange.
                             </p>
                         </div>
 
@@ -180,7 +180,7 @@ export default function Invoice() {
                             <QrCode className={styles.qrIcon} />
 
                             <div className={styles.verifmeta}>
-                                <span className={styles.verifmetaLabel}>Digital Fingerprint</span>
+                                <span className={styles.verifmetaLabel}>Sidik Jari Digital</span>
                                 <span className={styles.verifhash}>
                                     SHA-256: 8F2A...C3FD
                                 </span>
@@ -197,7 +197,7 @@ export default function Invoice() {
             <div className={styles.backwrapper}>
                 <button className={styles.backbutton}>
                     <ArrowLeft className={styles.backicon} />
-                    Return to Transaction History
+                    Kembali ke Riwayat Transaksi
                 </button>
             </div>
 

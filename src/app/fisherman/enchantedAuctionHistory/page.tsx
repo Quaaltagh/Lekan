@@ -105,10 +105,10 @@ function CalendarPicker({ onSelect, dateRange, onClose }: {
       <div className={styles.calendarfooter}>
         <button onClick={() => { onSelect({ start: null, end: null }); setSelectingStep('START'); }}
           className={styles.calendarclearButton}>
-          Clear
+          Bersihkan
         </button>
         <button onClick={onClose} className={styles.calendardoneButton}>
-          {dateRange.start && !dateRange.end ? 'Select End' : 'Done'}
+          {dateRange.start && !dateRange.end ? 'Pilih Akhir' : 'Selesai'}
         </button>
       </div>
     </div>
@@ -142,7 +142,7 @@ function TransactionItem({ item }: any) {
             <strong>{item.name}</strong>
 
             <p>
-              {item.grade || 'STANDARD'} • {item.weight_kg}KG
+              {item.grade || 'STANDAR'} • {item.weight_kg}KG
             </p>
           </div>
 
@@ -154,7 +154,7 @@ function TransactionItem({ item }: any) {
       </td>
 
       <td>
-        Marketplace Buyer
+        Pembeli Pasar
       </td>
 
       <td className={styles.price}>
@@ -175,7 +175,7 @@ function TransactionItem({ item }: any) {
 
       <td>
         <button className={styles.detailBtn}>
-          View Detail
+          Lihat Detail
         </button>
       </td>
     </tr>
@@ -198,7 +198,7 @@ export default function AuctionHistory() {
   
 // ── Label tombol kalender ───────────────────────────────────────────────
   const getLabel = () => {
-    if (!dateRange.start) return 'Date Range';
+    if (!dateRange.start) return 'Rentang Tanggal';
     if (dateRange.end) return `${format(dateRange.start, 'dd MMM')} - ${format(dateRange.end, 'dd MMM yyyy')}`;
     return format(dateRange.start, 'dd MMM yyyy');
   };
@@ -247,7 +247,7 @@ export default function AuctionHistory() {
               type="text"
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
-              placeholder="Search fish species, vessel, or seller..."
+              placeholder="Cari spesies ikan, kapal, atau pembeli..."
               className={styles.searchinput}
             />
           </div>
