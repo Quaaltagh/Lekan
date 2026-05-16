@@ -14,10 +14,10 @@ type Method = 'bank_transfer' | 'e_wallet' | 'card' | 'qris';
 type Status  = 'idle' | 'loading' | 'success' | 'error';
 
 const METHODS: { id: Method; label: string; sub: string; icon: React.ReactNode }[] = [
-  { id: 'bank_transfer', label: 'Transfer Bank', sub: 'BCA, Mandiri, BNI, BRI', icon: <Landmark   size={24} color="#004370" /> },
-  { id: 'e_wallet',      label: 'Dompet Digital', sub: 'OVO, DANA, GoPay',      icon: <Wallet     size={24} color="#004370" /> },
-  { id: 'card',          label: 'Kartu',         sub: 'Visa, Mastercard',       icon: <CreditCard size={24} color="#004370" /> },
-  { id: 'qris',          label: 'QRIS',          sub: 'Pindai & Bayar',        icon: <QrCode     size={24} color="#004370" /> },
+  { id: 'bank_transfer', label: 'Bank Transfer', sub: 'BCA, Mandiri, BNI, BRI', icon: <Landmark   size={24} color="#004370" /> },
+  { id: 'e_wallet',      label: 'E-Wallet',      sub: 'OVO, DANA, GoPay',       icon: <Wallet     size={24} color="#004370" /> },
+  { id: 'card',          label: 'Cards',          sub: 'Visa, Mastercard',       icon: <CreditCard size={24} color="#004370" /> },
+  { id: 'qris',          label: 'QRIS',           sub: 'Scan & Pay',             icon: <QrCode     size={24} color="#004370" /> },
 ];
 
 function parseInput(raw: string): number {
@@ -150,7 +150,7 @@ const DepositPage: React.FC = () => {
             </div>
           </section>
 
-          {/* Langkah 2: Metode Pembayaran */}
+          {/* Step 2: Payment Method */}
           <section className={styles.stepSection}>
             <div className={styles.stepTitle}>
               <span className={styles.stepNumber}>2</span>

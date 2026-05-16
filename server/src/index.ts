@@ -11,6 +11,7 @@ import depositRoutes from './routes/depositRoutes';
 import historyRoutes from './routes/historyRoutes';
 import statusLelangRoutes from './routes/statusLelangRoutes';
 import profileRoutes from './routes/profileRoutes';
+import notificationRoutes from './routes/notificationRoutes';
 
 dotenv.config();
 
@@ -34,6 +35,7 @@ app.use('/api/deposit', depositRoutes);
 app.use('/api/history', historyRoutes);
 app.use('/api/status-lelang', statusLelangRoutes);
 app.use('/api/profile', profileRoutes);
+app.use('/api/notifications', notificationRoutes);
 
 // Health check
 app.get('/api/health', (_req, res) => {
