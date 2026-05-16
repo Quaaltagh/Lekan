@@ -245,9 +245,9 @@ export default function Profile() {
               <div className={`${styles.formGroup} ${styles.fullWidth}`}>
                 <div className={styles.preferencewrapper}>
                   {[
-                    { id: 'alerts',    title: 'Auction Alerts',    description: 'Get notified when watched items go live.', icon: Zap,         state: auctionAlerts,    setter: setAuctionAlerts },
-                    { id: 'confirm',   title: 'Bid Confirmations', description: 'Email receipts for successful bids.',      icon: Mail,        state: bidConfirmations, setter: setBidConfirmations },
-                    { id: 'marketing', title: 'Marketing Updates', description: 'Newsletters and promotional offers.',      icon: ShieldCheck, state: marketingUpdates, setter: setMarketingUpdates },
+                    { id: 'alerts',    title: 'Notifikasi Lelang',    description: 'Dapatkan notifikasi saat item yang dipantau mulai dilelang.', icon: Zap,         state: auctionAlerts,    setter: setAuctionAlerts },
+                    { id: 'confirm',   title: 'Konfirmasi Penawaran', description: 'Terima email bukti untuk penawaran yang berhasil.',      icon: Mail,        state: bidConfirmations, setter: setBidConfirmations },
+                    { id: 'marketing', title: 'Pembaruan Promosi', description: 'Newsletter dan penawaran promosi terbaru.',      icon: ShieldCheck, state: marketingUpdates, setter: setMarketingUpdates },
                   ].map(item => {
                     const Icon = item.icon;
                     return (

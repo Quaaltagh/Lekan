@@ -49,14 +49,14 @@ export default function Filters({ onApply }: FiltersProps) {
 
         {/* Species */}
         <div className={styles.colQuarter}>
-          <label className={styles.label}>Species</label>
+          <label className={styles.label}>Jenis Ikan</label>
           <div className={styles.selectWrapper}>
             <select
               className={styles.select}
               value={species}
               onChange={e => setSpecies(e.target.value)}
             >
-              <option value="all">All Types</option>
+              <option value="all">Semua Jenis</option>
               {speciesList.length === 0 ? (
                 <option disabled>Memuat...</option>
               ) : (
@@ -71,7 +71,7 @@ export default function Filters({ onApply }: FiltersProps) {
 
         {/* Price Range */}
         <div className={styles.colThird}>
-          <label className={styles.label}>Price Range (IDR)</label>
+          <label className={styles.label}>Rentang Harga (IDR)</label>
           <div className={styles.range}>
             <input
               type="text"
@@ -93,7 +93,7 @@ export default function Filters({ onApply }: FiltersProps) {
 
         {/* Sort By */}
         <div className={styles.colQuarter}>
-          <label className={styles.label}>Sort By</label>
+          <label className={styles.label}>Urutkan</label>
           <div className={styles.selectWrapper}>
             <select
               className={styles.select}
@@ -117,13 +117,13 @@ export default function Filters({ onApply }: FiltersProps) {
               onClick={() => setStatus('active')}
               className={status === 'active' ? styles.activeBtn : styles.inactiveBtn}
             >
-              Live Now
+              Sedang Berlangsung
             </button>
             <button
               onClick={() => setStatus('done')}
               className={status === 'done' ? styles.activeBtn : styles.inactiveBtn}
             >
-              Ended
+              Berakhir
             </button>
           </div>
         </div>
@@ -131,7 +131,7 @@ export default function Filters({ onApply }: FiltersProps) {
         {/* Apply */}
         <button className={styles.applyBtn} onClick={handleApply}>
           <Filter className={styles.filterIcon} />
-          Apply
+          Terapkan
         </button>
 
       </div>

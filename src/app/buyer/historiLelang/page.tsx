@@ -116,11 +116,13 @@ function CalendarPicker({ onSelect, dateRange, onClose }: {
 function HistoryCard({ name, image, vessel, seller, finalPrice, date, status }: HistoryItem) {
   const isWon = status === 'Won';
 
+  const getStatusText = () => status === 'Won' ? 'Menang' : 'Kalah';
+
   return (
     <div className={styles.itemcard}>
       <div className={styles.itembadgeWrapper}>
         <div className={`${styles.itembadge} ${isWon ? styles.itembadgeWon : styles.itembadgeLost}`}>
-          {status}
+          {getStatusText()}
         </div>
       </div>
 
@@ -143,12 +145,12 @@ function HistoryCard({ name, image, vessel, seller, finalPrice, date, status }: 
           <div className={styles.iteminfoBox}>
             <div className={styles.iteminfowrap}>
               <div>
-                <span className={styles.itemlabel}>{isWon ? 'FINAL PRICE' : 'WINNING BID'}</span>
+                <span className={styles.itemlabel}>{isWon ? 'HARGA AKHIR' : 'TAWARAN MENANG'}</span>
                 <span className={styles.itemprice}>Rp {finalPrice}</span>
               </div>
               <div className={styles.itemdivider}></div>
               <div>
-                <span className={styles.itemlabel}>DATE</span>
+                <span className={styles.itemlabel}>TANGGAL</span>
                 <span className={styles.itemdate}>{date}</span>
               </div>
             </div>
@@ -157,10 +159,73 @@ function HistoryCard({ name, image, vessel, seller, finalPrice, date, status }: 
 
         <div className={styles.itemaction}>
           <button className={`${styles.itembutton} ${isWon ? styles.itembuttonWon : styles.itembuttonLost}`}>
-            View Detail
+            Lihat Detail
             {isWon && <ArrowRight className={styles.itemicon} />}
           </button>
         </div>
+      </div>
+    </div>
+  );
+}
+
+function HistoryRow({ name, image, vessel, seller, finalPrice, date, status }: HistoryItem) {
+
+  const getStatusBadge = () => {
+    switch (status) {
+      case 'Won':
+        return (
+          <div className={`${styles.itembadge} ${styles.itembadgeWon}`}>
+            <div className={styles.itemdot}></div>
+            Menang
+          </div>
+        );
+      case 'Lost':
+        return (
+          <div className={`${styles.itembadge} ${styles.itembadgeLost}`}>
+            Kalah
+          </div>
+        );
+    }
+  };
+
+  return (
+    <div className={styles.itemrow}>
+      {/* Product */}
+      <div className={styles.itemproduct}>
+        <div className={styles.itemimageWrapper}>
+          <img src={image} className={styles.itemimage} alt={name} />
+        </div>
+        <div>
+          <h4 className={styles.itemname}>{name}</h4>
+          <p className={styles.itemmeta}>
+            <span>KM {vessel}</span>
+              <span className={styles.itemseparator}>|</span>
+              <span>SELLER: {seller}</span>
+          </p>
+        </div>
+      </div>
+
+      {/* Date */}
+      <div className={styles.itemtext}>{date}</div>
+
+
+      {/* Price */}
+      <div className={styles.itempriceWrapper}>
+        <span className={styles.itemcurrency}>Rp</span>
+        <span className={`${styles.itemprice} ${status === 'Lost' ? styles.itempriceLost : ''}`}>
+          {finalPrice}
+        </span>
+      </div>
+
+      {/* Status & Action */}
+      <div className={styles.itemactions}>
+        {getStatusBadge()}
+      </div>
+
+      <div className={styles.itemactions}>
+        <button className={styles.itembutton}>
+          Lihat Detail
+        </button>
       </div>
     </div>
   );
@@ -172,7 +237,7 @@ export default function HistoriLelang() {
 
   // Filter state
   const [searchQuery, setSearchQuery]             = useState('');
-  const [statusFilter, setStatusFilter]           = useState<'All' | 'Won' | 'Lost'>('All');
+  const [statusFilter, setStatusFilter]           = useState<'Semua' | 'Menang' | 'Kalah'>('Semua');
   const [dateRange, setDateRange]                 = useState<DateRange>({ start: null, end: null });
   const [isStatusDropdownOpen, setIsStatusDropdownOpen] = useState(false);
   const [isDateDropdownOpen, setIsDateDropdownOpen]     = useState(false);
@@ -192,7 +257,7 @@ export default function HistoriLelang() {
 
     getBidHistory(user.id, token, {
       search:    searchQuery || undefined,
-      status:    statusFilter,
+      status:    statusFilter === 'Semua' ? 'All' : statusFilter === 'Menang' ? 'Won' : 'Lost',
       startDate: dateRange.start?.toISOString(),
       endDate:   dateRange.end?.toISOString(),
     })
@@ -207,7 +272,7 @@ export default function HistoriLelang() {
 
   // ── Label tombol kalender ───────────────────────────────────────────────
   const getLabel = () => {
-    if (!dateRange.start) return 'Date Range';
+    if (!dateRange.start) return 'Rentang Tanggal';
     if (dateRange.end) return `${format(dateRange.start, 'dd MMM')} - ${format(dateRange.end, 'dd MMM yyyy')}`;
     return format(dateRange.start, 'dd MMM yyyy');
   };
@@ -220,7 +285,7 @@ export default function HistoriLelang() {
 
         <div className={styles.titlecontainer}>
           <h1 className={styles.title}>Histori Lelang</h1>
-          <p className={styles.titledescription}>Review your past auction activities and outcomes.</p>
+          <p className={styles.titledescription}>Tinjau aktivitas dan hasil lelang Anda sebelumnya.</p>
         </div>
 
         <div className={styles.contentcontainer}>
@@ -232,7 +297,7 @@ export default function HistoriLelang() {
               type="text"
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
-              placeholder="Search fish species, vessel, or seller..."
+              placeholder="Cari spesies ikan, kapal, atau penjual..."
               className={styles.searchinput}
             />
           </div>
@@ -251,7 +316,7 @@ export default function HistoriLelang() {
                 <>
                   <div className={styles.overlay} onClick={() => setIsStatusDropdownOpen(false)} />
                   <div className={styles.dropdown}>
-                    {(['All', 'Won', 'Lost'] as const).map(s => (
+                    {(['Semua', 'Menang', 'Kalah'] as const).map(s => (
                       <button key={s}
                         onClick={() => { setStatusFilter(s); setIsStatusDropdownOpen(false); }}
                         className={`${styles.dropdownItem} ${statusFilter === s ? styles.dropdownItemActive : ''}`}>
@@ -286,7 +351,8 @@ export default function HistoriLelang() {
         </div>
 
         {/* Cards */}
-        <div className={styles.cardcontainer}>
+        {/* <div className={styles.cardcontainer}>
+          
           {loading ? (
             <div style={{ padding: '3rem', textAlign: 'center', color: '#94a3b8' }}>
               Memuat histori lelang...
@@ -299,6 +365,10 @@ export default function HistoriLelang() {
             historyItems.map(item => (
               <HistoryCard key={item.id} {...item} />
             ))
+
+
+
+
           ) : (
             <div className={styles.emptyState}>
               <h3 className={styles.emptytitle}>No results found</h3>
@@ -307,7 +377,46 @@ export default function HistoriLelang() {
               </p>
             </div>
           )}
-        </div>
+        </div> */}
+
+        <div className={styles.cardcontainer}>
+          {/* Table Header */}
+          <div className={styles.cardheader}>
+            <div className={styles.cardheaderText}>
+              Spesies Ikan
+            </div>
+            <div className={styles.cardheaderText}>Tanggal Transaksi</div>
+            <div className={styles.cardheaderText}>Harga Akhir</div>
+            <div className={styles.cardheaderText}>Status Pasar</div>
+          </div>
+
+            {/* List Items */}
+            <div>
+              <div>
+                {loading ? (
+            <div style={{ padding: '3rem', textAlign: 'center', color: '#94a3b8' }}>
+              Memuat histori lelang...
+            </div>
+          ) : fetchError ? (
+            <div style={{ padding: '3rem', textAlign: 'center', color: '#dc2626' }}>
+              {fetchError}
+            </div>
+          ) : historyItems.length > 0 ? (
+            historyItems.map(item => (
+              <HistoryRow key={item.id} {...item} />
+            ))
+
+          ) : (
+            <div className={styles.emptyState}>
+              <h3 className={styles.emptytitle}>Tidak ada hasil ditemukan</h3>
+              <p className={styles.emptydescription}>
+                Coba sesuaikan pencarian atau filter Anda untuk menemukan apa yang Anda cari.
+              </p>
+            </div>
+          )}
+              </div>
+            </div>
+          </div>
 
       </div>
     </div>

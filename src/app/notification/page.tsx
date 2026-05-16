@@ -1,225 +1,188 @@
 'use client'
-import { Bell, Circle, Clock, CreditCard, FileText, Shield, Ship, ChevronDown,Search,User,ArrowLeft
-} from 'lucide-react';
+import { Bell, Clock, CreditCard, FileText, Shield, Ship } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import styles from './page.module.css';
 import Navbar from '@/app/components/Navbar';
+import { useAuth } from '@/context/AuthContext';
+import {
+  getNotifications,
+  markAllAsRead as apiMarkAllAsRead,
+  Notification,
+} from '@/services/notificationService';
 
-interface NotificationItemProps {
-  id: string;
-  type: 'bidding' | 'payment' | 'transaction' | 'security' | 'vessel';
-  title: string;
-  description: string;
-  time: string;
-  isNew: boolean;
-}
-
-function NotificationCard({ type, title, description, time, isNew}: NotificationItemProps) {
+function NotificationCard({ type, title, description, created_at, is_read }: Notification) {
+  const iconClass = is_read ? styles.iconSeen : styles.iconBlue;
+  const bgClass   = is_read ? styles.bgDefault : styles.bgBidding;
 
   const getIcon = () => {
-    if(isNew === true){
-        switch (type) {
-            case 'bidding': 
-                return <Bell className={`${styles.icon} ${styles.iconBlue}`} />;
-            case 'payment': 
-                return <CreditCard className={`${styles.icon} ${styles.iconBlue}`} />;
-            case 'transaction': 
-                return <FileText className={`${styles.icon} ${styles.iconBlue}`} />;
-            case 'security': 
-                return <Shield className={`${styles.icon} ${styles.iconBlue}`} />;
-            case 'vessel': 
-                return <Ship className={`${styles.icon} ${styles.iconBlue}`} />;
-        }
-    }else{
-        switch (type) {
-            case 'bidding': 
-                return <Bell className={`${styles.icon} ${styles.iconSeen}`} />;
-            case 'payment': 
-                return <CreditCard className={`${styles.icon} ${styles.iconSeen}`} />;
-            case 'transaction': 
-                return <FileText className={`${styles.icon} ${styles.iconSeen}`} />;
-            case 'security': 
-                return <Shield className={`${styles.icon} ${styles.iconSeen}`} />;
-            case 'vessel': 
-                return <Ship className={`${styles.icon} ${styles.iconSeen}`} />;
-        }
-    }
-    
-  };
-  
-
-  const getIconBg = () => {
-    if (isNew === true) {
-        return styles.bgBidding;
-    } else {
-        return styles.bgDefault;
+    switch (type) {
+      case 'lelang':     return <Bell        className={`${styles.icon} ${iconClass}`} />;
+      case 'pembayaran': return <CreditCard  className={`${styles.icon} ${iconClass}`} />;
+      case 'transaksi':  return <FileText    className={`${styles.icon} ${iconClass}`} />;
+      case 'keamanan':   return <Shield      className={`${styles.icon} ${iconClass}`} />;
+      case 'kapal':      return <Ship        className={`${styles.icon} ${iconClass}`} />;
     }
   };
 
-  return(
-    <div className={`${styles.card} ${isNew ? styles.cardNew : styles.cardOld}`}>
-        <div className={styles.cardContent}>
-            <div className={`${styles.iconWrapper} ${getIconBg()}`}>
-            {getIcon()}
-            </div>
-            
-            <div className={styles.cardBody}>
-                <div className={styles.cardHeader}>
-                    <h4 className={`${styles.title} ${isNew ? styles.titleNew : styles.titleOld}`}>
-                    {title}
-                    </h4>
+  // Format timestamp → relative time label
+  const formatTime = (iso: string) => {
+    const diff = Date.now() - new Date(iso).getTime();
+    const mins  = Math.floor(diff / 60000);
+    const hours = Math.floor(diff / 3600000);
+    const days  = Math.floor(diff / 86400000);
+    if (mins  < 1)  return 'Baru saja';
+    if (mins  < 60) return `${mins} menit lalu`;
+    if (hours < 24) return `${hours} jam lalu`;
+    return `${days} hari lalu`;
+  };
 
-                    {isNew && (
-                    <div className={styles.newBadge}>
-                        <span className={styles.newDot}></span>
-                        <span className={styles.newText}>New</span>
-                    </div>
-                    )}
-                </div>
-            
-           
-            <p className={styles.description}>
-                {description}
-            </p>
-            
-            <div className={styles.footer}>
-                <div className={styles.time}>
-                <Clock className={styles.timeIcon} />
-                {time}
-                </div>
-
-            </div>
-            </div> 
+  return (
+    <div className={`${styles.card} ${!is_read ? styles.cardNew : styles.cardOld}`}>
+      <div className={styles.cardContent}>
+        <div className={`${styles.iconWrapper} ${bgClass}`}>
+          {getIcon()}
         </div>
+
+        <div className={styles.cardBody}>
+          <div className={styles.cardHeader}>
+            <h4 className={`${styles.title} ${!is_read ? styles.titleNew : styles.titleOld}`}>
+              {title}
+            </h4>
+            {!is_read && (
+              <div className={styles.newBadge}>
+                <span className={styles.newDot}></span>
+                <span className={styles.newText}>Baru</span>
+              </div>
+            )}
+          </div>
+
+          <p className={styles.description}>{description}</p>
+
+          <div className={styles.footer}>
+            <div className={styles.time}>
+              <Clock className={styles.timeIcon} />
+              {formatTime(created_at)}
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
 
 export default function Notifications({ onBack }: { onBack: () => void }) {
-  const [activeFilter, setActiveFilter] = useState('All');
-  const filters = ['All', 'Transactions', 'Bidding', 'Payments', 'System'];
+  const { user } = useAuth();
+  const [activeFilter, setActiveFilter]       = useState('Semua');
+  const [notifications, setNotifications]     = useState<Notification[]>([]);
+  const [isLoading, setIsLoading]             = useState(true);
+  const [error, setError]                     = useState('');
 
-  const [notifications, setNotifications] = useState<NotificationItemProps[]>([
-    {
-      id: '1',
-      type: 'bidding',
-      title: 'Outbid Notice: Bluefin Tuna Batch #092',
-      description: 'Your bid of $2,450.00 was surpassed by a verified buyer. The current highest bid is $2,600.00.',
-      time: '2 minutes ago',
-      isNew: true
-    },
-    {
-      id: '2',
-      type: 'payment',
-      title: 'Payment Successful',
-      description: 'Funds for "Atlantic Mackerel Shipment - INV-882" have been released to your escrow account.',
-      time: '14 minutes ago',
-      isNew: true
-    },
-    {
-      id: '3',
-      type: 'transaction',
-      title: 'Transaction Complete',
-      description: 'The vessel "Ocean Harvest" has confirmed delivery at Port of Lisbon. Transaction finalized.',
-      time: '3 hours ago',
-      isNew: false
-    },
-    {
-      id: '4',
-      type: 'security',
-      title: 'Security Update',
-      description: 'Your account security settings were updated from a new device in Tokyo, Japan. Was this you?',
-      time: 'Yesterday, 11:20 PM',
-      isNew: false
-    },
-    {
-      id: '5',
-      type: 'vessel',
-      title: 'Vessel Departure',
-      description: 'Vessel "The Northern Star" has departed from docking station Alpha-4 heading to North Atlantic Zone.',
-      time: 'Yesterday, 09:45 AM',
-      isNew: false
-    }
-  ]);
+  const filters = ['Semua', 'Transaksi', 'Lelang', 'Pembayaran', 'Sistem'];
 
+  // ── Fetch from backend on mount ──────────────────────────────────────────
+  useEffect(() => {
+    if (!user?.id) return;
+
+    const fetchNotifications = async () => {
+      try {
+        setIsLoading(true);
+        const data = await getNotifications(user.id);
+        setNotifications(data);
+      } catch (err) {
+        setError('Gagal memuat notifikasi. Coba lagi.');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchNotifications();
+  }, [user?.id]);
+
+  // ── Filter ────────────────────────────────────────────────────────────────
   const filteredNotifications = notifications.filter(notif => {
-    if (activeFilter === 'All') return true;
-    if (activeFilter === 'Transactions') return notif.type === 'transaction';
-    if (activeFilter === 'Bidding') return notif.type === 'bidding';
-    if (activeFilter === 'Payments') return notif.type === 'payment';
-    if (activeFilter === 'System') return notif.type === 'security' || notif.type === 'vessel';
+    if (activeFilter === 'Semua')      return true;
+    if (activeFilter === 'Transaksi')  return notif.type === 'transaksi';
+    if (activeFilter === 'Lelang')     return notif.type === 'lelang';
+    if (activeFilter === 'Pembayaran') return notif.type === 'pembayaran';
+    if (activeFilter === 'Sistem')     return notif.type === 'keamanan' || notif.type === 'kapal';
     return true;
   });
 
-  const markAllAsRead = () => {
-    setNotifications(prev => prev.map(n => ({ ...n, isNew: false })));
+  // ── Mark all as read ──────────────────────────────────────────────────────
+  const markAllAsRead = async () => {
+    if (!user?.id) return;
+    try {
+      await apiMarkAllAsRead(user.id);
+      setNotifications(prev => prev.map(n => ({ ...n, is_read: true })));
+    } catch {
+      setError('Gagal menandai notifikasi.');
+    }
   };
 
-  return(
+  return (
     <div className={styles.all}>
       <Navbar />
 
-        <main className={styles.mainContainer}>
-            {/* Header */}
-            <div className={styles.header}>
-                <div className={styles.notiHeader}>
-                    <div>
-                        <h1 className={styles.notiTitle}>Notifikasi</h1>
-                        <p className={styles.notiDescription}>
-                            Kelola pembaruan secara real-time dan aktivitas ledger Anda.
-                        </p>
-                    </div>
-                </div>
-                <button 
-                onClick={markAllAsRead}
-                className={styles.markReadButton}
+      <main className={styles.mainContainer}>
+        {/* Header */}
+        <div className={styles.header}>
+          <div className={styles.notiHeader}>
+            <div>
+              <h1 className={styles.notiTitle}>Notifikasi</h1>
+              <p className={styles.notiDescription}>
+                Kelola pembaruan secara real-time dan aktivitas ledger Anda.
+              </p>
+            </div>
+          </div>
+          <button onClick={markAllAsRead} className={styles.markReadButton}>
+            Tandai semua sudah dibaca
+          </button>
+        </div>
+
+        {/* Filter */}
+        <div className={styles.filterContainer}>
+          {filters.map(filter => (
+            <button
+              key={filter}
+              onClick={() => setActiveFilter(filter)}
+              className={`${styles.filterButton} ${
+                activeFilter === filter ? styles.filterActive : styles.filterInactive
+              }`}
+            >
+              {filter}
+            </button>
+          ))}
+        </div>
+
+        {/* Notification List */}
+        <div className={styles.notificationWrapper}>
+          {isLoading ? (
+            <p className={styles.emptyText}>Memuat notifikasi...</p>
+          ) : error ? (
+            <p className={styles.emptyText}>{error}</p>
+          ) : (
+            <AnimatePresence mode="popLayout">
+              {filteredNotifications.length > 0 ? (
+                filteredNotifications.map(notif => (
+                  <NotificationCard key={notif.id} {...notif} />
+                ))
+              ) : (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className={styles.emptyState}
                 >
-                        Mark all as read
-                </button>
-            </div>
-
-            {/* filter */}
-            <div className={styles.filterContainer}>
-                {filters.map((filter) => (
-                    <button
-                    key={filter}
-                    onClick={() => setActiveFilter(filter)}
-                    className={`${styles.filterButton} ${
-                        activeFilter === filter
-                        ? styles.filterActive
-                        : styles.filterInactive
-                    }`}
-                    >
-                    {filter}
-                    </button>
-                ))}
-            </div>
-            {/* Notification List */}
-            <div className={styles.notificationWrapper}>
-                <AnimatePresence mode="popLayout">
-                    {filteredNotifications.length > 0 ? (
-                    filteredNotifications.map((notif) => (
-                        <NotificationCard key={notif.id} {...notif} />
-                    ))
-                    ) : (
-                    <motion.div 
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        className={styles.emptyState}
-                    >
-                        <p className={styles.emptyText}>
-                        No signals found for {activeFilter}
-                        </p>
-                    </motion.div>
-                    )}
-                </AnimatePresence>
-            </div>
-
-            
-        </main>
-
+                  <p className={styles.emptyText}>
+                    Tidak ada notifikasi untuk {activeFilter}
+                  </p>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          )}
+        </div>
+      </main>
     </div>
   );
 }
