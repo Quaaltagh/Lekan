@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { supabase } from '../config/supabaseClient';
 import { CreateAuctionPayload, UpdateAuctionPayload } from '../models/auctionModel';
+import { sendNotification } from '../lib/NotificationHelper';
 
 // ─── GET semua lelang milik seller ───────────────────────────────────────────
 export const getAuctionsBySeller = async (req: Request, res: Response): Promise<void> => {
@@ -250,4 +251,67 @@ export const getBuyerAuctions = async (req: Request, res: Response): Promise<voi
   const { data, error } = await query;
   if (error) { res.status(500).json({ error: error.message }); return; }
   res.status(200).json(data);
+};
+
+export const completeAuction = async (req: Request, res: Response): Promise<void> => {
+  const { id } = req.params;
+ 
+  // Ambil lelang + bid tertinggi
+  const { data: auction, error } = await supabase
+    .from('auctions')
+    .select('*, bids(bidder_id, amount)')
+    .eq('id', id)
+    .single();
+ 
+  if (error || !auction) {
+    res.status(404).json({ error: 'Lelang tidak ditemukan.' });
+    return;
+  }
+ 
+  if (auction.status !== 'active') {
+    res.status(400).json({ error: 'Lelang sudah tidak aktif.' });
+    return;
+  }
+ 
+  // Cari pemenang (bid tertinggi)
+  const bids = auction.bids ?? [];
+  const winner = bids.reduce(
+    (prev: any, curr: any) => (curr.amount > (prev?.amount ?? 0) ? curr : prev),
+    null
+  );
+ 
+  // Update status lelang → completed
+  const { error: updateError } = await supabase
+    .from('auctions')
+    .update({
+      status:      'completed',
+      final_price: winner?.amount ?? null,
+      updated_at:  new Date().toISOString(),
+    })
+    .eq('id', id);
+ 
+  if (updateError) {
+    res.status(500).json({ error: updateError.message });
+    return;
+  }
+ 
+  // ── NOTIF: ke buyer pemenang ────────────────────────────────────────────
+  if (winner?.bidder_id) {
+    await sendNotification(
+      winner.bidder_id,
+      'lelang',
+      `Selamat! Kamu Memenangkan Lelang`,
+      `Kamu memenangkan lelang "${auction.name}" dengan tawaran Rp ${winner.amount.toLocaleString('id-ID')}. Silakan lanjutkan ke pembayaran.`
+    );
+  }
+ 
+  // ── NOTIF: ke seller bahwa lelang selesai ───────────────────────────────
+  await sendNotification(
+    auction.seller_id,
+    'transaksi',
+    'Lelang Selesai',
+    `Lelang "${auction.name}" telah berakhir. Harga final: Rp ${winner?.amount?.toLocaleString('id-ID') ?? 'tidak ada penawar'}.`
+  );
+ 
+  res.status(200).json({ message: 'Lelang selesai.', winner });
 };

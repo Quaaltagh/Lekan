@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { supabase } from '../config/supabaseClient';
 import { LoginPayload, RegisterPayload } from '../models/userModel';
+import { sendNotification } from '../lib/NotificationHelper';
 
 // ─── LOGIN ────────────────────────────────────────────────────────────────────
 export const login = async (req: Request, res: Response): Promise<void> => {
