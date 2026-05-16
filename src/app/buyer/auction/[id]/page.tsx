@@ -7,7 +7,7 @@ import { useAuth } from '@/context/AuthContext';
 import styles from './page.module.css';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
-const POLL_INTERVAL = 5000; // refresh tiap 5 detik
+const POLL_INTERVAL = 5000;
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 interface AuctionDetail {
@@ -50,31 +50,40 @@ function formatCountdown(endsAt: string): string {
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 export default function AuctionDetailPage() {
-  const { id }      = useParams<{ id: string }>();
-  const router      = useRouter();
+  const { id }          = useParams<{ id: string }>();
+  const router          = useRouter();
   const { user, token } = useAuth();
 
-  const [auction,    setAuction]    = useState<AuctionDetail | null>(null);
-  const [seller,     setSeller]     = useState<SellerProfile | null>(null);
-  const [bids,       setBids]       = useState<BidEntry[]>([]);
-  const [loading,    setLoading]    = useState(true);
-  const [error,      setError]      = useState('');
-  const [countdown,  setCountdown]  = useState('');
-  const [submitting, setSubmitting] = useState(false);
-  const [bidError,   setBidError]   = useState('');
-  const [bidSuccess, setBidSuccess] = useState('');
-  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
-
-  // Increment yang user input (bukan total)
-  // Default: 50.000 (minimum increment)
+  const [auction,      setAuction]      = useState<AuctionDetail | null>(null);
+  const [seller,       setSeller]       = useState<SellerProfile | null>(null);
+  const [bids,         setBids]         = useState<BidEntry[]>([]);
+  const [loading,      setLoading]      = useState(true);
+  const [error,        setError]        = useState('');
+  const [countdown,    setCountdown]    = useState('');
+  const [submitting,   setSubmitting]   = useState(false);
+  const [bidError,     setBidError]     = useState('');
+  const [bidSuccess,   setBidSuccess]   = useState('');
+  const [lastUpdated,  setLastUpdated]  = useState<Date | null>(null);
   const [bidIncrement, setBidIncrement] = useState('50.000');
-
   const [walletBalance, setWalletBalance] = useState(0);
   const [walletLoading, setWalletLoading] = useState(false);
 
-  // Ref untuk polling — simpan auction ref agar tidak stale di interval
   const auctionRef = useRef<AuctionDetail | null>(null);
   auctionRef.current = auction;
+
+  // ── Derived values ────────────────────────────────────────────────────────
+  const currentBid              = auction?.current_bid ?? auction?.start_price ?? 0;
+  const incrementNumeric        = parseInt(bidIncrement.replace(/\./g, '')) || 0;
+  const totalBidAmount          = currentBid + incrementNumeric;
+  const minIncrement            = 50000;
+  const isInsufficient          = walletBalance < incrementNumeric;
+  const isCurrentHighestBidder  = bids.length > 0 && bids[0].bidder_id === user?.id;
+
+  const tags = [
+    'SUSTAINABLE',
+    auction?.grade ? `GRADE ${auction.grade}` : 'SASHIMI GRADE',
+    'VERIFIED SELLER',
+  ];
 
   // ── Fetch wallet ────────────────────────────────────────────────────────
   const fetchWallet = useCallback(async () => {
@@ -93,7 +102,7 @@ export default function AuctionDetailPage() {
     }
   }, [user?.id, token]);
 
-  // ── Fetch auction + bids (juga dipakai polling) ─────────────────────────
+  // ── Fetch auction + bids ──────────────────────────────────────────────────
   const fetchAuctionAndBids = useCallback(async (isInitial = false) => {
     if (!id) return;
     try {
@@ -107,28 +116,31 @@ export default function AuctionDetailPage() {
       const bData: BidEntry[]    = bRes.ok ? await bRes.json() : [];
 
       setAuction(prev => {
-        // Kalau current_bid berubah → reset increment ke minimum
-        if (prev && prev.current_bid !== aData.current_bid) {
+        if (prev && prev.current_bid !== aData.current_bid && !isInitial) {
           setBidIncrement('50.000');
-          // Tampilkan notif harga berubah (tapi hanya kalau bukan initial load)
-          if (!isInitial) {
-            setBidSuccess('');
-            setBidError('Harga bid telah berubah. Input kenaikan diperbarui.');
-            setTimeout(() => setBidError(''), 3000);
-          }
+          setBidSuccess('');
+          setBidError('Harga bid telah diperbarui oleh penawar lain.');
+          setTimeout(() => setBidError(''), 3000);
         }
         return aData;
       });
 
-      setBids(bData);
+      // Deduplikasi by id — server sebagai sumber kebenaran
+      setBids(() => {
+        const seen = new Set<string>();
+        return bData.filter(b => {
+          if (seen.has(b.id)) return false;
+          seen.add(b.id);
+          return true;
+        });
+      });
+
       setLastUpdated(new Date());
 
-      // Fetch seller hanya sekali (initial)
       if (isInitial) {
         const sRes = await fetch(`${API_URL}/api/auth/profile/${aData.seller_id}`);
         if (sRes.ok) setSeller(await sRes.json());
       }
-
     } catch (err) {
       if (isInitial) setError(err instanceof Error ? err.message : 'Terjadi kesalahan.');
     } finally {
@@ -136,16 +148,15 @@ export default function AuctionDetailPage() {
     }
   }, [id]);
 
-  // ── Initial load ────────────────────────────────────────────────────────
+  // ── Initial load ──────────────────────────────────────────────────────────
   useEffect(() => {
     fetchAuctionAndBids(true);
   }, [fetchAuctionAndBids]);
 
-  // ── Polling tiap 5 detik ────────────────────────────────────────────────
+  // ── Polling tiap 5 detik ──────────────────────────────────────────────────
   useEffect(() => {
     if (!id) return;
     const interval = setInterval(() => {
-      // Hanya poll kalau auction masih aktif
       if (auctionRef.current?.status === 'active') {
         fetchAuctionAndBids(false);
       }
@@ -153,54 +164,38 @@ export default function AuctionDetailPage() {
     return () => clearInterval(interval);
   }, [id, fetchAuctionAndBids]);
 
-  // ── Fetch wallet saat user tersedia ─────────────────────────────────────
+  // ── Fetch wallet saat user ready ──────────────────────────────────────────
   useEffect(() => {
     if (user?.id && token) fetchWallet();
   }, [user?.id, token, fetchWallet]);
 
-  // ── Countdown ───────────────────────────────────────────────────────────
+  // ── Countdown ─────────────────────────────────────────────────────────────
   useEffect(() => {
-    if (!auction) return;
+    if (!auction?.ends_at) return;
     const tick = () => setCountdown(formatCountdown(auction.ends_at));
     tick();
     const timer = setInterval(tick, 1000);
     return () => clearInterval(timer);
   }, [auction?.ends_at]);
 
-  // ── Derived values ──────────────────────────────────────────────────────
-  const currentBid      = auction?.current_bid ?? auction?.start_price ?? 0;
-  // Total yang akan dibayar = currentBid + increment yang diinput user
-  const incrementNumeric = parseInt(bidIncrement.replace(/\./g, '')) || 0;
-  const totalBidAmount  = currentBid + incrementNumeric;
-  const isInsufficient  = walletBalance < incrementNumeric;
-  const minIncrement    = 50000;
-
-  const tags = [
-    'SUSTAINABLE',
-    auction?.grade ? `GRADE ${auction.grade}` : 'SASHIMI GRADE',
-    'VERIFIED SELLER',
-  ];
-
-  // ── Submit bid ────────────────────────────────────────────────────────
+  // ── Submit bid ─────────────────────────────────────────────────────────────
   const handleBid = async () => {
-    if (!auction || !user) {
-      router.push('/auth?mode=login');
-      return;
-    }
+    if (!user) { router.push('/auth?mode=login'); return; }
+    if (!auction) return;
+
     setBidError('');
     setBidSuccess('');
-    
-    if (walletBalance < incrementNumeric) {
-      setBidError(`Saldo tidak mencukupi untuk kenaikan Rp ${incrementNumeric.toLocaleString('id-ID')}.`);
+
+    if (isCurrentHighestBidder) {
+      setBidError('Kamu sudah menjadi penawar tertinggi saat ini.');
       return;
     }
-
     if (incrementNumeric < minIncrement) {
       setBidError(`Minimum kenaikan bid adalah Rp ${minIncrement.toLocaleString('id-ID')}`);
       return;
     }
-    if (isInsufficient) {
-      setBidError('Saldo wallet tidak mencukupi.');
+    if (walletBalance < incrementNumeric) {
+      setBidError(`Saldo tidak mencukupi. Butuh Rp ${incrementNumeric.toLocaleString('id-ID')} tapi saldo Rp ${walletBalance.toLocaleString('id-ID')}.`);
       return;
     }
 
@@ -218,14 +213,13 @@ export default function AuctionDetailPage() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Gagal melakukan bid.');
 
-      // Update state lokal langsung (tidak tunggu polling)
-      setAuction(prev => prev ? { ...prev, current_bid: totalBidAmount } : prev);
-      setBids(prev => [data, ...prev]);
-      setBidIncrement('50.000'); // reset ke minimum
+      // Fetch ulang dari server — hindari duplikat key
+      await fetchAuctionAndBids(false);
+      await fetchWallet();
+
+      setBidIncrement('50.000');
       setBidSuccess(`Bid Rp ${totalBidAmount.toLocaleString('id-ID')} berhasil! Kamu penawar tertinggi.`);
       setLastUpdated(new Date());
-
-      await fetchWallet();
 
     } catch (err) {
       setBidError(err instanceof Error ? err.message : 'Terjadi kesalahan.');
@@ -234,7 +228,7 @@ export default function AuctionDetailPage() {
     }
   };
 
-  // ── Loading ─────────────────────────────────────────────────────────────
+  // ── Loading / Error ────────────────────────────────────────────────────────
   if (loading) return (
     <div className={styles.all}>
       <Navbar />
@@ -261,6 +255,7 @@ export default function AuctionDetailPage() {
     </div>
   );
 
+  // ── Render ────────────────────────────────────────────────────────────────
   return (
     <div className={styles.all}>
       <Navbar />
@@ -274,6 +269,7 @@ export default function AuctionDetailPage() {
               <ArrowLeft size={16} /> Kembali
             </button>
 
+            {/* Image */}
             <div className={styles.imageContainer}>
               <div className={styles.badgeWrapper}>
                 <span className={styles.liveBadge}>
@@ -288,31 +284,38 @@ export default function AuctionDetailPage() {
               />
             </div>
 
+            {/* Header */}
             <div className={styles.headerContainer}>
               <div className={styles.titleWrapper}>
                 <h1 className={styles.title}>{auction.name}</h1>
                 <p className={styles.subtitle}>
-                  {auction.species || 'Ikan Segar'} • Ditambahkan {new Date(auction.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
+                  {auction.species || 'Ikan Segar'} • Ditambahkan{' '}
+                  {new Date(auction.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
                 </p>
               </div>
               <div className={styles.weightBox}>
                 <span className={styles.weightLabel}>Berat</span>
-                <span className={styles.weightValue}>{auction.weight_kg} <span className={styles.unit}>KG</span></span>
+                <span className={styles.weightValue}>
+                  {auction.weight_kg} <span className={styles.unit}>KG</span>
+                </span>
               </div>
             </div>
 
+            {/* Tags */}
             <div className={styles.tagContainer}>
               {tags.map(tag => <span key={tag} className={styles.tag}>{tag}</span>)}
             </div>
 
             <p className={styles.descriptionText}>
-              Produk segar berkualitas tinggi dari nelayan terverifikasi. Ditangkap dengan metode yang berkelanjutan dan diproses dengan protokol rantai dingin ketat untuk menjaga kesegaran dan kualitas optimal.
+              Produk segar berkualitas tinggi dari nelayan terverifikasi. Ditangkap dengan metode yang
+              berkelanjutan dan diproses dengan protokol rantai dingin ketat untuk menjaga kesegaran
+              dan kualitas optimal.
             </p>
 
             {/* Bid History */}
             <div>
               <div className={styles.bidheader}>
-                <h3 className={styles.bidtitle}>Bid History</h3>
+                <h3 className={styles.bidtitle}>Riwayat Penawaran</h3>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                   {lastUpdated && (
                     <span style={{ fontSize: '0.7rem', color: '#94a3b8', display: 'flex', alignItems: 'center', gap: '4px' }}>
@@ -333,7 +336,7 @@ export default function AuctionDetailPage() {
 
                 {bids.length === 0 ? (
                   <div style={{ padding: '2rem', textAlign: 'center', color: '#94a3b8', fontSize: '0.875rem' }}>
-                    Belum ada bid — jadilah yang pertama!
+                    Belum ada penawaran — jadilah yang pertama!
                   </div>
                 ) : (
                   bids.map((bid, idx) => (
@@ -389,74 +392,85 @@ export default function AuctionDetailPage() {
                 </div>
               </div>
 
+              {/* Badge leading — tampil kalau sudah jadi penawar tertinggi */}
+              {auction.status === 'active' && isCurrentHighestBidder && (
+                <div style={{
+                  background: '#f0fdf4',
+                  border: '1.5px solid #bbf7d0',
+                  borderRadius: '8px',
+                  padding: '10px 14px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  fontSize: '0.8rem',
+                  color: '#16a34a',
+                  fontWeight: 600,
+                }}>
+                  <ShieldCheck size={16} />
+                  Kamu sedang memimpin penawaran!
+                </div>
+              )}
+
               {auction.status === 'active' ? (
                 <>
-                  {/* ── Bid Input ── */}
-                  <div>
-                    <label className={styles.inputlabel}>Kenaikan Bid Anda</label>
+                  {/* Bid Input — sembunyikan kalau sudah jadi penawar tertinggi */}
+                  {!isCurrentHighestBidder && (
+                    <div>
+                      <label className={styles.inputlabel}>Kenaikan Bid Anda</label>
 
-                    {/* Quick increment buttons */}
-                    <div style={{ display: 'flex', gap: '6px', marginBottom: '8px' }}>
-                      {[50000, 100000, 250000, 500000].map(val => (
-                        <button
-                          key={val}
-                          onClick={() => setBidIncrement(val.toLocaleString('id-ID'))}
-                          style={{
-                            flex: 1,
-                            padding: '4px 0',
-                            fontSize: '0.65rem',
-                            fontWeight: 600,
-                            border: `1.5px solid ${incrementNumeric === val ? '#1e3a8a' : '#e2e8f0'}`,
-                            borderRadius: '6px',
-                            background: incrementNumeric === val ? '#eff6ff' : '#f8fafc',
-                            color: incrementNumeric === val ? '#1e3a8a' : '#64748b',
-                            cursor: 'pointer',
-                            transition: 'all 0.15s',
+                      {/* Quick increment buttons */}
+                      <div style={{ display: 'flex', gap: '6px', marginBottom: '8px' }}>
+                        {[50000, 100000, 250000, 500000].map(val => (
+                          <button
+                            key={val}
+                            onClick={() => setBidIncrement(val.toLocaleString('id-ID'))}
+                            style={{
+                              flex: 1, padding: '4px 0', fontSize: '0.65rem', fontWeight: 600,
+                              border: `1.5px solid ${incrementNumeric === val ? '#1e3a8a' : '#e2e8f0'}`,
+                              borderRadius: '6px',
+                              background: incrementNumeric === val ? '#eff6ff' : '#f8fafc',
+                              color: incrementNumeric === val ? '#1e3a8a' : '#64748b',
+                              cursor: 'pointer', transition: 'all 0.15s',
+                            }}
+                          >
+                            +{val >= 1000000 ? `${val / 1000000}M` : `${val / 1000}K`}
+                          </button>
+                        ))}
+                      </div>
+
+                      {/* Input kenaikan */}
+                      <div className={styles.inputWrapper}>
+                        <span className={styles.inputcurrency}>+Rp</span>
+                        <input
+                          type="text"
+                          value={bidIncrement}
+                          onChange={e => {
+                            const raw = e.target.value.replace(/\./g, '').replace(/\D/g, '');
+                            setBidIncrement(raw ? Number(raw).toLocaleString('id-ID') : '');
                           }}
-                        >
-                          +{val >= 1000000 ? `${val/1000000}M` : `${val/1000}K`}
-                        </button>
-                      ))}
-                    </div>
+                          className={styles.input}
+                          placeholder="50.000"
+                        />
+                      </div>
+                      <p className={styles.hint}>Min. kenaikan Rp 50.000</p>
 
-                    {/* Input kenaikan */}
-                    <div className={styles.inputWrapper}>
-                      <span className={styles.inputcurrency}>+Rp</span>
-                      <input
-                        type="text"
-                        value={bidIncrement}
-                        onChange={e => {
-                          const raw = e.target.value.replace(/\./g, '').replace(/\D/g, '');
-                          setBidIncrement(raw ? Number(raw).toLocaleString('id-ID') : '');
-                        }}
-                        className={styles.input}
-                        placeholder="50.000"
-                      />
-                    </div>
-                    <p className={styles.hint}>Min. kenaikan Rp 50.000</p>
-
-                    {/* Total yang akan dibayar */}
-                    <div style={{
-                      marginTop: '10px',
-                      padding: '10px 12px',
-                      background: '#f8fafc',
-                      borderRadius: '8px',
-                      border: '1px solid #e2e8f0',
-                    }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <span style={{ fontSize: '0.75rem', color: '#64748b' }}>Harga saat ini</span>
-                        <span style={{ fontSize: '0.8rem', color: '#64748b' }}>Rp {currentBid.toLocaleString('id-ID')}</span>
-                      </div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '4px' }}>
-                        <span style={{ fontSize: '0.75rem', color: '#64748b' }}>Kenaikan Anda</span>
-                        <span style={{ fontSize: '0.8rem', color: '#16a34a' }}>+Rp {incrementNumeric.toLocaleString('id-ID')}</span>
-                      </div>
-                      <div style={{ borderTop: '1px solid #e2e8f0', marginTop: '8px', paddingTop: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#0f172a' }}>Total Bid Anda</span>
-                        <span style={{ fontSize: '1rem', fontWeight: 700, color: '#1e3a8a' }}>Rp {totalBidAmount.toLocaleString('id-ID')}</span>
+                      {/* Breakdown harga */}
+                      <div style={{ marginTop: '10px', padding: '10px 12px', background: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <span style={{ fontSize: '0.75rem', color: '#64748b' }}>Harga saat ini</span>
+                          <span style={{ fontSize: '0.8rem', color: '#64748b' }}>Rp {currentBid.toLocaleString('id-ID')}</span>
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '4px' }}>
+                          <span style={{ fontSize: '0.75rem', color: '#64748b' }}>Kenaikan Anda</span>
+                          <span style={{ fontSize: '0.8rem', color: '#16a34a' }}>+Rp {incrementNumeric.toLocaleString('id-ID')}</span>
+                        </div>
+                        <div style={{ borderTop: '1px solid #e2e8f0', marginTop: '8px', paddingTop: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#0f172a' }}>Total Bid Anda</span>
+                          <span style={{ fontSize: '1rem', fontWeight: 700, color: '#1e3a8a' }}>Rp {totalBidAmount.toLocaleString('id-ID')}</span>
+                        </div>
                       </div>
                     </div>
-                  </div>
+                  )}
 
                   {bidError && (
                     <div style={{ background: '#fef2f2', border: '1px solid #fecaca', color: '#dc2626', padding: '0.5rem 0.75rem', borderRadius: '0.5rem', fontSize: '0.8rem' }}>
@@ -472,10 +486,17 @@ export default function AuctionDetailPage() {
                   <button
                     className={styles.button}
                     onClick={handleBid}
-                    disabled={submitting || isInsufficient || incrementNumeric < minIncrement}
-                    style={{ opacity: (submitting || isInsufficient || incrementNumeric < minIncrement) ? 0.6 : 1 }}
+                    disabled={submitting || isInsufficient || incrementNumeric < minIncrement || isCurrentHighestBidder}
+                    style={{
+                      opacity: (submitting || isInsufficient || incrementNumeric < minIncrement || isCurrentHighestBidder) ? 0.6 : 1,
+                      cursor: (isCurrentHighestBidder || submitting) ? 'not-allowed' : 'pointer',
+                    }}
                   >
-                    {submitting ? 'Memproses...' : `Tawar Rp ${totalBidAmount.toLocaleString('id-ID')}`}
+                    {submitting
+                      ? 'Memproses...'
+                      : isCurrentHighestBidder
+                        ? '✓ Kamu Penawar Tertinggi'
+                        : `Tawar Rp ${totalBidAmount.toLocaleString('id-ID')}`}
                   </button>
 
                   <div className={styles.devide} />
@@ -488,11 +509,11 @@ export default function AuctionDetailPage() {
                         {walletLoading ? '...' : `Rp ${walletBalance.toLocaleString('id-ID')}`}
                       </span>
                     </div>
-                    {isInsufficient && (
+                    {isInsufficient && !isCurrentHighestBidder && (
                       <div className={styles.warningBox}>
                         <AlertCircle className={styles.warningIcon} />
                         <span className={styles.warningText}>
-                          Saldo tidak cukup untuk kenaikan ini. Butuh Rp {(incrementNumeric - walletBalance).toLocaleString('id-ID')} lagi.
+                          Saldo tidak cukup. Butuh Rp {(incrementNumeric - walletBalance).toLocaleString('id-ID')} lagi.
                         </span>
                       </div>
                     )}
