@@ -40,7 +40,7 @@ export default function NavbarFisherman() {
       <div className={styles.navRight}>
 
         {/* ── Bell ── */}
-        <a href="#"><Bell className={styles.icon} size={20} /></a>
+        <a href="/notification"><Bell className={styles.icon} size={20} /></a>
 
         {/* ── Wallet Dropdown ── */}
         <div className={styles.dropdownWrapper} ref={walletRef}>

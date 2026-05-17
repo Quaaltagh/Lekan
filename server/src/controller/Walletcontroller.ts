@@ -117,6 +117,15 @@ export const withdraw = async (req: Request, res: Response): Promise<void> => {
       .select().single();
     if (txError) { res.status(500).json({ error: txError.message }); return; }
     res.status(200).json({ message: 'Penarikan berhasil.', transaction: tx });
+
+    // ── NOTIF: penarikan dana ─────────────────────────────────────────────
+    await sendNotification(
+      userId,
+      'pembayaran',
+      'Penarikan Dana Berhasil',
+      `Dana sebesar Rp ${amount.toLocaleString('id-ID')} berhasil ditarik dari dompet kamu.`
+    );
+
   } catch (err: any) {
     res.status(500).json({ error: err.message });
   }
@@ -182,6 +191,12 @@ export const releasePending = async (req: Request, res: Response): Promise<void>
     if (transaction_id) {
       await supabase.from('transactions').update({ status: 'completed' }).eq('id', transaction_id);
     }
+    await sendNotification(
+      userId,
+      'transaksi',
+      'Dana Escrow Dicairkan',
+      `Dana sebesar Rp ${amount.toLocaleString('id-ID')} berhasil dicairkan.`
+    );
     res.status(200).json({ message: 'Pending berhasil dicairkan.' });
   } catch (err: any) {
     res.status(500).json({ error: err.message });

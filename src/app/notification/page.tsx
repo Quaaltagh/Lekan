@@ -3,7 +3,9 @@ import { Bell, Clock, CreditCard, FileText, Shield, Ship } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect } from 'react';
 import styles from './page.module.css';
-import Navbar from '@/app/components/Navbar';
+import BuyerNavbar from '@/app/components/Navbar';
+import SellerNavbar from '@/app/components/NavbarFisherman';
+import SideFisherman from '@/app/components/sideFisherman'
 import { useAuth } from '@/context/AuthContext';
 import {
   getNotifications,
@@ -73,6 +75,8 @@ function NotificationCard({ type, title, description, created_at, is_read }: Not
 
 export default function Notifications({ onBack }: { onBack: () => void }) {
   const { user } = useAuth();
+  const isSeller = user?.role === 'nelayan';
+
   const [activeFilter, setActiveFilter]       = useState('Semua');
   const [notifications, setNotifications]     = useState<Notification[]>([]);
   const [isLoading, setIsLoading]             = useState(true);
@@ -120,69 +124,87 @@ export default function Notifications({ onBack }: { onBack: () => void }) {
     }
   };
 
+
+  const content = (
+        <main className={styles.mainContainer}>
+          {/* Header */}
+          <div className={styles.header}>
+            <div className={styles.notiHeader}>
+              <div>
+                <h1 className={styles.notiTitle}>Notifikasi</h1>
+                <p className={styles.notiDescription}>
+                  Kelola pembaruan secara real-time dan aktivitas ledger Anda.
+                </p>
+              </div>
+            </div>
+            <button onClick={markAllAsRead} className={styles.markReadButton}>
+              Tandai semua sudah dibaca
+            </button>
+          </div>
+
+          {/* Filter */}
+          <div className={styles.filterContainer}>
+            {filters.map(filter => (
+              <button
+                key={filter}
+                onClick={() => setActiveFilter(filter)}
+                className={`${styles.filterButton} ${
+                  activeFilter === filter ? styles.filterActive : styles.filterInactive
+                }`}
+              >
+                {filter}
+              </button>
+            ))}
+          </div>
+
+          {/* Notification List */}
+          <div className={styles.notificationWrapper}>
+            {isLoading ? (
+              <p className={styles.emptyText}>Memuat notifikasi...</p>
+            ) : error ? (
+              <p className={styles.emptyText}>{error}</p>
+            ) : (
+              <AnimatePresence mode="popLayout">
+                {filteredNotifications.length > 0 ? (
+                  filteredNotifications.map(notif => (
+                    <NotificationCard key={notif.id} {...notif} />
+                  ))
+                ) : (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    className={styles.emptyState}
+                  >
+                    <p className={styles.emptyText}>
+                      Tidak ada notifikasi untuk {activeFilter}
+                    </p>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            )}
+          </div>
+        </main>
+  )
+
+  if(isSeller){
+    return(
+      <div className={styles.all}>
+        <SideFisherman />
+           <div className={styles.container}>
+            <SellerNavbar />
+            {content}
+          </div>
+      </div>
+    )
+  }
+
   return (
     <div className={styles.all}>
-      <Navbar />
-
-      <main className={styles.mainContainer}>
-        {/* Header */}
-        <div className={styles.header}>
-          <div className={styles.notiHeader}>
-            <div>
-              <h1 className={styles.notiTitle}>Notifikasi</h1>
-              <p className={styles.notiDescription}>
-                Kelola pembaruan secara real-time dan aktivitas ledger Anda.
-              </p>
-            </div>
-          </div>
-          <button onClick={markAllAsRead} className={styles.markReadButton}>
-            Tandai semua sudah dibaca
-          </button>
-        </div>
-
-        {/* Filter */}
-        <div className={styles.filterContainer}>
-          {filters.map(filter => (
-            <button
-              key={filter}
-              onClick={() => setActiveFilter(filter)}
-              className={`${styles.filterButton} ${
-                activeFilter === filter ? styles.filterActive : styles.filterInactive
-              }`}
-            >
-              {filter}
-            </button>
-          ))}
-        </div>
-
-        {/* Notification List */}
-        <div className={styles.notificationWrapper}>
-          {isLoading ? (
-            <p className={styles.emptyText}>Memuat notifikasi...</p>
-          ) : error ? (
-            <p className={styles.emptyText}>{error}</p>
-          ) : (
-            <AnimatePresence mode="popLayout">
-              {filteredNotifications.length > 0 ? (
-                filteredNotifications.map(notif => (
-                  <NotificationCard key={notif.id} {...notif} />
-                ))
-              ) : (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  className={styles.emptyState}
-                >
-                  <p className={styles.emptyText}>
-                    Tidak ada notifikasi untuk {activeFilter}
-                  </p>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          )}
-        </div>
-      </main>
+      <div className={styles.container}>
+          <BuyerNavbar />
+          {content}
+      </div>
     </div>
   );
 }
