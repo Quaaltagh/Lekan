@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { supabase } from '../config/supabaseClient';
 import { WithdrawPayload, DepositPayload, CreditWalletPayload, AddPendingPayload, ReleasePendingPayload } from '../models/Walletmodel';
+import { sendNotification } from '../lib/NotificationHelper';
 
 // ─── Helper ───────────────────────────────────────────────────────────────────
 async function getOrCreateWallet(userId: string) {
@@ -81,6 +82,15 @@ export const deposit = async (req: Request, res: Response): Promise<void> => {
       .from('transactions')
       .insert({ user_id: userId, type: 'deposit', amount, description: description || 'Deposit saldo', auction_id: null, status: 'completed' })
       .select().single();
+
+    // ── NOTIF: deposit berhasil ─────────────────────────────────────────────
+    await sendNotification(
+      userId,
+      'pembayaran',
+      'Deposit Berhasil',
+      `Dana sebesar Rp ${amount.toLocaleString('id-ID')} berhasil ditambahkan ke dompet kamu.`
+    );
+
     if (txError) { res.status(500).json({ error: txError.message }); return; }
     res.status(201).json({ message: 'Deposit berhasil.', transaction: tx, new_balance: wallet.balance + amount });
   } catch (err: any) {
