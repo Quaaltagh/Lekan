@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { supabase } from '../config/supabaseClient';
+import { sendNotification } from '../lib/NotificationHelper';
 
 // ── GET /api/profile/:userId ───────────────────────────────────────────────
 export const getProfile = async (req: Request, res: Response): Promise<void> => {
@@ -100,6 +101,14 @@ export const updatePassword = async (req: Request, res: Response): Promise<void>
     res.status(500).json({ error: 'Gagal update password: ' + updateError.message });
     return;
   }
+
+   // ── NOTIF: keamanan — password berhasil diganti ─────────────────────────
+  await sendNotification(
+    userId,
+    'keamanan',
+    'Password Berhasil Diubah',
+    'Password akun kamu baru saja diubah. Jika bukan kamu yang melakukan ini, segera hubungi support.'
+  );
 
   res.status(200).json({ message: 'Password berhasil diperbarui.' });
 };

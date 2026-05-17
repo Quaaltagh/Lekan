@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { supabase } from '../config/supabaseClient';
+import { sendNotification } from '../lib/NotificationHelper';
 
 export const getBidsByAuction = async (req: Request, res: Response): Promise<void> => {
   const { auctionId } = req.params;
@@ -26,7 +27,7 @@ export const submitBid = async (req: Request, res: Response): Promise<void> => {
   // ── 1. Cek auction masih aktif ──────────────────────────────────────────
   const { data: auction, error: auctionError } = await supabase
     .from('auctions')
-    .select('status, current_bid, start_price, ends_at, seller_id')
+    .select('status, current_bid, start_price, ends_at, seller_id, name')
     .eq('id', auctionId)
     .single();
 
@@ -203,5 +204,18 @@ export const submitBid = async (req: Request, res: Response): Promise<void> => {
     console.log(`[BID] success | new current_bid: ${updatedAuction?.current_bid}`);
   }
 
+    console.error('[BID] update current_bid error:', updateAuctionError.message);
+    // Bid sudah masuk tapi current_bid tidak terupdate — log saja, jangan rollback
+    // karena bid sudah valid. Bisa di-fix manual atau lewat cron.
+  }
+
+  await sendNotification(
+    auction.seller_id,
+    'lelang',
+    `Tawaran Baru: ${auction.name}`,
+    `Ada tawaran baru sebesar Rp ${amount.toLocaleString('id-ID')} pada lelang kamu.`
+  );
+  
+  console.log(`[BID] success | new current_bid: ${amount}`);
   res.status(201).json(bid);
 };

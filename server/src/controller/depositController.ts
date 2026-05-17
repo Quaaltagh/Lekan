@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { supabase } from '../config/supabaseClient';
+import { sendNotification } from '../lib/NotificationHelper';
 
 const SERVICE_FEE = 2_500;
 
@@ -145,6 +146,13 @@ async function confirmDeposit(
     .eq('id', txId);
 
   if (tErr) return { ok: false, error: tErr.message };
+
+  await sendNotification(
+    userId,
+    'pembayaran',
+    'Deposit Berhasil',
+    `Dana sebesar Rp ${amount.toLocaleString('id-ID')} berhasil ditambahkan ke dompet kamu.`
+  );
 
   return { ok: true, newBalance };
 }

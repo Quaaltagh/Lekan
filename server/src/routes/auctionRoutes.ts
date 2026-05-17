@@ -8,6 +8,7 @@ import {
   updateAuction,
   deleteAuction,
   getSellerBiddingStatus,
+  completeAuction,
 } from '../controller/auctionController';
 
 const router = Router();
@@ -38,4 +39,5 @@ router.put('/seller/:sellerId/:id', updateAuction);
 // DELETE /api/auctions/seller/:sellerId/:id
 router.delete('/seller/:sellerId/:id', deleteAuction);
 
+router.patch('/:id/complete', completeAuction);
 export default router;
