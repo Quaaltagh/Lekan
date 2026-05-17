@@ -203,12 +203,7 @@ export const submitBid = async (req: Request, res: Response): Promise<void> => {
   } else {
     console.log(`[BID] success | new current_bid: ${updatedAuction?.current_bid}`);
   }
-
-    console.error('[BID] update current_bid error:', updateAuctionError.message);
-    // Bid sudah masuk tapi current_bid tidak terupdate — log saja, jangan rollback
-    // karena bid sudah valid. Bisa di-fix manual atau lewat cron.
-  }
-
+  
   await sendNotification(
     auction.seller_id,
     'lelang',
