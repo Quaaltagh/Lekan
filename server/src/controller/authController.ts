@@ -1,9 +1,11 @@
 import { Request, Response } from 'express';
-import { supabase } from '../config/supabaseClient';
+import { supabase, supabaseAuth } from '../config/supabaseClient';
 import { LoginPayload, RegisterPayload } from '../models/userModel';
 import { sendNotification } from '../lib/NotificationHelper';
 
 // ─── LOGIN ────────────────────────────────────────────────────────────────────
+// Pakai supabaseAuth (anon key) untuk signInWithPassword
+// sehingga session tidak merusak shared supabase client (service role)
 export const login = async (req: Request, res: Response): Promise<void> => {
   const { email, password, role }: LoginPayload = req.body;
 
@@ -12,7 +14,8 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     return;
   }
 
-  const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+  // ✅ Pakai supabaseAuth — bukan supabase (service role)
+  const { data: authData, error: authError } = await supabaseAuth.auth.signInWithPassword({
     email,
     password,
   });
@@ -22,6 +25,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     return;
   }
 
+  // ✅ Query DB tetap pakai supabase (service role) — tidak terpengaruh session
   const { data: profile, error: profileError } = await supabase
     .from('profiles')
     .select('*')
@@ -64,19 +68,15 @@ export const register = async (req: Request, res: Response): Promise<void> => {
     return;
   }
 
-  // Daftar via Supabase Auth
-  const { data: authData, error: authError } = await supabase.auth.signUp({
+  // Pakai admin API (service role) agar bisa langsung confirm email
+  const { data: authData, error: authError } = await supabase.auth.admin.createUser({
     email,
     password,
+    email_confirm: true, // bypass email verification
   });
 
-  if (authError) {
-    res.status(400).json({ error: authError.message });
-    return;
-  }
-
-  if (!authData.user) {
-    res.status(400).json({ error: 'Registrasi gagal, coba lagi.' });
+  if (authError || !authData.user) {
+    res.status(400).json({ error: authError?.message || 'Registrasi gagal, coba lagi.' });
     return;
   }
 
@@ -90,19 +90,26 @@ export const register = async (req: Request, res: Response): Promise<void> => {
 
   if (profileError) {
     console.error('Profile insert error:', profileError);
-
-    // Rollback: hapus user dari auth.users supaya bisa register ulang
     await supabase.auth.admin.deleteUser(authData.user.id);
-
-    res.status(500).json({
-      error: `Gagal menyimpan profil: ${profileError.message}`,
-    });
+    res.status(500).json({ error: `Gagal menyimpan profil: ${profileError.message}` });
     return;
   }
 
+  // Auto-create wallet
+  const { error: walletError } = await supabase
+    .from('wallets')
+    .insert({ user_id: authData.user.id, balance: 0, pending: 0 });
+
+  if (walletError) {
+    console.error('[register] Wallet creation failed (non-critical):', walletError.message);
+  }
+
+  // Login otomatis setelah register untuk dapat token
+  const { data: loginData } = await supabaseAuth.auth.signInWithPassword({ email, password });
+
   res.status(201).json({
     message: 'Registrasi berhasil.',
-    token: authData.session?.access_token,
+    token: loginData?.session?.access_token ?? null,
     user: {
       id: authData.user.id,
       email,
@@ -113,15 +120,17 @@ export const register = async (req: Request, res: Response): Promise<void> => {
 };
 
 // ─── LOGOUT ───────────────────────────────────────────────────────────────────
+// Logout cukup di sisi frontend (hapus token dari localStorage)
+// Backend tidak perlu signOut() karena JWT stateless
+// Memanggil supabase.auth.signOut() pada shared service-role client
+// akan merusak semua query berikutnya → response [] sampai restart
 export const logout = async (_req: Request, res: Response): Promise<void> => {
-  await supabase.auth.signOut();
+  // ✅ Tidak memanggil supabase.auth.signOut() sama sekali
+  // Token invalidation ditangani di frontend (hapus dari localStorage)
   res.status(200).json({ message: 'Logout berhasil.' });
 };
 
-// ─── GET profil user berdasarkan ID (untuk halaman detail lelang) ─────────────
-// FIX: tambah logging error asli agar bisa debug penyebab "Profil tidak ditemukan."
-// Penyebab umum: RLS blocking (pastikan supabaseClient pakai SERVICE_ROLE_KEY),
-// atau user ada di auth.users tapi row-nya tidak ada di tabel profiles.
+// ─── GET profil user berdasarkan ID ───────────────────────────────────────────
 export const getProfileById = async (req: Request, res: Response): Promise<void> => {
   const { userId } = req.params;
 
@@ -132,16 +141,11 @@ export const getProfileById = async (req: Request, res: Response): Promise<void>
     .single();
 
   if (error) {
-    // Log error asli ke console server — berguna untuk debug RLS vs not found
     console.error('[getProfileById] error code:', error.code, '| message:', error.message);
-
-    // PGRST116 = row tidak ditemukan (.single() tidak dapat baris)
     if (error.code === 'PGRST116') {
       res.status(404).json({ error: 'Profil tidak ditemukan.' });
       return;
     }
-
-    // Error lain: kemungkinan RLS block, koneksi DB, dsb
     res.status(500).json({ error: 'Gagal mengambil profil: ' + error.message });
     return;
   }
