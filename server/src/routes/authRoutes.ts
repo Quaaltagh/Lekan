@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { login, register, logout } from '../controller/authController';
+import { login, register, logout, getProfileById } from '../controller/authController';
 
 const router = Router();
 
@@ -11,5 +11,8 @@ router.post('/register', register);
 
 // POST /api/auth/logout
 router.post('/logout', logout);
+
+// GET /api/auth/profile/:userId
+router.get('/profile/:userId', getProfileById);
 
 export default router;

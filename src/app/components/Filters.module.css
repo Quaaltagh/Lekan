@@ -4,15 +4,15 @@
   padding: 16px;
   margin-bottom: 32px;
   border: 1px solid #f3f4f6;
+  align-items: center;
 }
 
 .wrapper {
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
+  align-items: center;
   width: 100%;
   justify-items: center;
-  align-items: center;
   justify-content: space-between;
 }
 
@@ -29,8 +29,8 @@
 .colAuto { width: 100%; }
 
 @media (min-width: 1024px) {
-  .colQuarter { width: 25%; }
-  .colThird { width: 33.333%; }
+  .colQuarter { width: 20%; }
+  .colThird { width: 20%; }
   .colAuto { width: auto; }
 }
 
@@ -52,7 +52,7 @@
 
 .select {
   appearance: none;
-  width: 100%;
+  width: 80%;
   background-color: white;
   border: 1px solid #e5e7eb;
   border-radius: 0.75rem;
@@ -165,7 +165,7 @@
   border: none;
   cursor: pointer;
   transition: all 0.2s ease;
-
+  margin-top:20px;
   box-shadow: 0 5px 20px rgba(30,58,138,0.2);
 }
 

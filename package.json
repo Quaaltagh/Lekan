@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@tailwindcss/oxide-win32-x64-msvc": "^4.2.2",
+    "date-fns": "^4.1.0",
     "framer-motion": "^12.38.0",
     "html2canvas": "^1.4.1",
     "jspdf": "^4.2.1",
