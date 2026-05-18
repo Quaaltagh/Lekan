@@ -164,6 +164,22 @@ export default function SettingsPage() {
                   />
                 </div>
 
+                <div className={styles.formGroup}>
+                  <label>NOMOR HP</label>
+                  <input
+                  type="tel"
+                  defaultValue="0812-3456-7890"
+                  />
+                </div>
+
+                <div className={`${styles.formGroup} ${styles.fullWidth}`}>
+                  <label>ALAMAT</label>
+                  <textarea
+                  defaultValue="Jl. Pantai Utara No. 12, Cirebon, Jawa Barat"
+                  rows={3}
+                  />
+                </div>
+
                 <div className={`${styles.formGroup} ${styles.fullWidth}`}>
                   <label>BIO</label>
                   <textarea
