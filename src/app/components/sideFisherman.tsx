@@ -22,16 +22,9 @@ export default function SideFisherman() {
         <div>
           <div className={styles.sidebarHeader}>
             <div className={styles.logo}>
-              <a href="#">
+              <Link href="/fisherman/dashboard/">
                 <img src="/images/Lekan logo with tulisan.png" alt="LEKAN" className={styles.logoimages} />
-              </a>
-            </div>
-            <div className={styles.profileSection}>
-              <div className={styles.avatar}>CS</div>
-              <div>
-                <p className={styles.profilename}>Captain Sam</p>
-                <p className={styles.profiledesc}> Verified Merchant</p>
-              </div>
+              </Link>
             </div>
           </div>
 

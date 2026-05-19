@@ -212,7 +212,7 @@ export default function FishermanDashboard() {
           </div>
 
           {/* Sidebar Kanan */}
-          <div style={{ width: '20rem' }}>
+          {/* <div style={{ width: '20rem' }}>
             <div className={styles.ctaBox}>
               <h3 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>Siap Melantai di Bursa?</h3>
               <p style={{ color: '#bfdbfe', fontSize: '0.875rem', marginBottom: '1.5rem' }}>
@@ -222,29 +222,8 @@ export default function FishermanDashboard() {
               onClick={() => router.push('/fisherman/uploadAuction/')}>
                 + Unggah Lelang Baru
               </button>
-            </div>
-
-            <div style={{ marginTop: '1.5rem' }}>
-              <p className={styles.marketTrendTitle}>Trend Pasar</p>
-              <div className={styles.marketTrendCard}>
-                {[
-                  { name: 'Cakalang',     change: '+12.4%', positive: true },
-                  { name: 'Udang Vaname', change: '-2.1%',  positive: false },
-                  { name: 'Kerapu',       change: '+8.5%',  positive: true },
-                ].map(item => (
-                  <div key={item.name} className={styles.marketTrendItem}>
-                    <div className={styles.trendInfo}>
-                      <span className={styles.indicatorDot} style={{ backgroundColor: item.positive ? '#3b82f6' : '#ef4444' }} />
-                      {item.name}
-                    </div>
-                    <span className={item.positive ? styles.trendPositive : styles.trendNegative}>
-                      {item.change}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
+            </div> */}
+          {/* </div> */}
         </div>
       </main>
     </div>

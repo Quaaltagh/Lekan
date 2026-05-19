@@ -37,6 +37,39 @@ function formatCountdown(endsAt: string): string {
   return `${m}m ${s}s`;
 }
 
+function getInitials(name?: string, email?: string): string {
+  if (name) return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+  if (email) return email[0].toUpperCase();
+  return '?';
+}
+
+// ─── Avatar component — foto jika ada, fallback ke inisial ───────────────────
+function UserAvatar({ avatarUrl, name, email }: {
+  avatarUrl: string | null;
+  name?: string;
+  email?: string;
+}) {
+  const [imgError, setImgError] = useState(false);
+
+  if (avatarUrl && !imgError) {
+    return (
+      <img
+        src={avatarUrl}
+        alt={name || 'Avatar'}
+        className={styles.avatarImg}
+        onError={() => setImgError(true)}
+      />
+    );
+  }
+
+  // Fallback: inisial
+  return (
+    <div className={styles.avatarFallback}>
+      {getInitials(name, email)}
+    </div>
+  );
+}
+
 // ─── SearchDropdown component ─────────────────────────────────────────────────
 function SearchDropdown({ results, loading, query, onClose }: {
   results: SearchResult[];
@@ -78,7 +111,6 @@ function SearchDropdown({ results, loading, query, onClose }: {
                   onClose();
                 }}
               >
-                {/* Thumbnail */}
                 <div className={styles.searchThumb}>
                   <img
                     src={item.image_url || 'https://darilaut.id/wp-content/uploads/2021/09/Tuna-3.jpg'}
@@ -86,16 +118,12 @@ function SearchDropdown({ results, loading, query, onClose }: {
                     className={styles.searchThumbImg}
                   />
                 </div>
-
-                {/* Info */}
                 <div className={styles.searchItemInfo}>
                   <span className={styles.searchItemName}>{item.name}</span>
                   {item.species && (
                     <span className={styles.searchItemMeta}>{item.species} • {item.weight_kg}kg</span>
                   )}
                 </div>
-
-                {/* Price + timer */}
                 <div className={styles.searchItemRight}>
                   <span className={styles.searchItemPrice}>{formatRp(price)}</span>
                   <span className={styles.searchItemTimer}>{formatCountdown(item.ends_at)}</span>
@@ -111,7 +139,7 @@ function SearchDropdown({ results, loading, query, onClose }: {
 
 // ─── Navbar ───────────────────────────────────────────────────────────────────
 export default function Navbar() {
-  const { user, logout } = useAuth();
+  const { user, token, logout } = useAuth();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const router   = useRouter();
   const pathname = usePathname();
@@ -119,15 +147,50 @@ export default function Navbar() {
   const isNotification = pathname.startsWith('/notification');
   const isWallet       = pathname === '/buyer/Dompet';
 
+  // ── Avatar state ──────────────────────────────────────────────────────────
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+
+  // Fetch avatar_url dari /api/profile/:userId saat user login
+  // Jika profileService sudah expose avatar_url di AuthContext, bisa langsung pakai user.avatar_url
+  useEffect(() => {
+    if (!user?.id || !token) {
+      setAvatarUrl(null);
+      return;
+    }
+
+    // Cek apakah AuthContext sudah menyimpan avatar_url
+    // Kalau ya, pakai langsung tanpa fetch tambahan
+    if ((user as any).avatar_url) {
+      setAvatarUrl((user as any).avatar_url);
+      return;
+    }
+
+    // Fallback: fetch dari /api/profile/:userId
+    fetch(`${API_URL}/api/profile/${user.id}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then(res => res.ok ? res.json() : null)
+      .then(data => {
+        if (data?.avatar_url) setAvatarUrl(data.avatar_url);
+      })
+      .catch(() => {
+        // Gagal fetch avatar — tampilkan inisial saja
+      });
+  }, [user?.id, token]);
+
+  // Reset avatar saat logout
+  useEffect(() => {
+    if (!user) setAvatarUrl(null);
+  }, [user]);
+
   // ── Search state ──────────────────────────────────────────────────────────
   const [searchQuery,   setSearchQuery]   = useState('');
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [searchLoading, setSearchLoading] = useState(false);
   const [searchOpen,    setSearchOpen]    = useState(false);
-  const searchRef  = useRef<HTMLDivElement>(null);
+  const searchRef   = useRef<HTMLDivElement>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Tutup dropdown kalau klik di luar
   useEffect(() => {
     const handler = (e: MouseEvent) => {
       if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
@@ -138,7 +201,6 @@ export default function Navbar() {
     return () => document.removeEventListener('mousedown', handler);
   }, []);
 
-  // Debounce fetch — tunggu 350ms setelah user berhenti mengetik
   const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value;
     setSearchQuery(val);
@@ -161,7 +223,6 @@ export default function Navbar() {
         );
         if (res.ok) {
           const data = await res.json();
-          // Response bisa array langsung atau { data: [] } tergantung controller
           setSearchResults(Array.isArray(data) ? data.slice(0, 5) : (data.data ?? []).slice(0, 5));
         }
       } catch {
@@ -178,18 +239,12 @@ export default function Navbar() {
     setSearchOpen(false);
   };
 
-  // Enter → redirect ke /buyer dengan query
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && searchQuery.trim()) {
       router.push(`/buyer?search=${encodeURIComponent(searchQuery.trim())}`);
       setSearchOpen(false);
     }
     if (e.key === 'Escape') clearSearch();
-  };
-
-  const getInitials = (name?: string) => {
-    if (!name) return '?';
-    return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
   };
 
   return (
@@ -217,7 +272,6 @@ export default function Navbar() {
             onFocus={() => { if (searchQuery.trim()) setSearchOpen(true); }}
             autoComplete="off"
           />
-          {/* Tombol clear */}
           {searchQuery && (
             <button className={styles.searchClear} onClick={clearSearch}>
               <X size={14} />
@@ -225,7 +279,6 @@ export default function Navbar() {
           )}
         </div>
 
-        {/* Live dropdown */}
         {searchOpen && (
           <SearchDropdown
             results={searchResults}
@@ -258,12 +311,13 @@ export default function Navbar() {
             onMouseLeave={() => setDropdownOpen(false)}
           >
             <button className={styles.profileButton}>
-              <div className={styles.avatar} style={{
-                background: '#1e3a8a', color: '#fff',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontSize: '12px', fontWeight: 700,
-              }}>
-                {getInitials(user.full_name || user.email)}
+              {/* Avatar: foto dari profile atau fallback inisial */}
+              <div className={styles.avatar}>
+                <UserAvatar
+                  avatarUrl={avatarUrl}
+                  name={user.full_name}
+                  email={user.email}
+                />
               </div>
               <div className={styles.profileInfo}>
                 <span className={styles.profileName}>
@@ -283,8 +337,18 @@ export default function Navbar() {
             {dropdownOpen && (
               <div className={styles.dropdown}>
                 <div className={styles.dropdownHeader}>
-                  <p className={styles.dropdownName}>{user.full_name || '-'}</p>
-                  <p className={styles.dropdownEmail}>{user.email}</p>
+                  {/* Avatar kecil di dropdown header */}
+                  <div className={styles.dropdownAvatar}>
+                    <UserAvatar
+                      avatarUrl={avatarUrl}
+                      name={user.full_name}
+                      email={user.email}
+                    />
+                  </div>
+                  <div>
+                    <p className={styles.dropdownName}>{user.full_name || '-'}</p>
+                    <p className={styles.dropdownEmail}>{user.email}</p>
+                  </div>
                 </div>
                 <hr className={styles.dropdownDivider} />
                 <Link href="/buyer/profile" className={styles.dropdownItem}>Profil Saya</Link>
