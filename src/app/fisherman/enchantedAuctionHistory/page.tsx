@@ -187,14 +187,37 @@ export default function AuctionHistory() {
   // DATA REALTIME DARI DATABASE
   const { auctions, loading, error } = useSellerAuctions();
 
-  // TAMPILKAN SEMUA STATUS TERMASUK ACTIVE
-  const historyAuctions = auctions;
-
-// Filter state
+  // Filter state
   const [searchQuery, setSearchQuery]             = useState('');
   const [dateRange, setDateRange]                 = useState<DateRange>({ start: null, end: null });
   const [isStatusDropdownOpen, setIsStatusDropdownOpen] = useState(false);
   const [isDateDropdownOpen, setIsDateDropdownOpen]     = useState(false);
+
+  // TAMPILKAN DENGAN FILTER PENCARIAN DAN RENTANG TANGGAL
+  const historyAuctions = useMemo(() => {
+    return auctions.filter((item) => {
+      // 1. Filter Pencarian Nama
+      const matchesSearch = searchQuery
+        ? item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          (item.species && item.species.toLowerCase().includes(searchQuery.toLowerCase()))
+        : true;
+
+      // 2. Filter Rentang Tanggal (ends_at)
+      let matchesDate = true;
+      if (dateRange.start) {
+        const itemDate = new Date(item.ends_at);
+        const start = startOfDay(dateRange.start);
+        if (dateRange.end) {
+          const end = endOfDay(dateRange.end);
+          matchesDate = itemDate >= start && itemDate <= end;
+        } else {
+          matchesDate = itemDate >= start;
+        }
+      }
+
+      return matchesSearch && matchesDate;
+    });
+  }, [auctions, searchQuery, dateRange]);
   
 // ── Label tombol kalender ───────────────────────────────────────────────
   const getLabel = () => {
