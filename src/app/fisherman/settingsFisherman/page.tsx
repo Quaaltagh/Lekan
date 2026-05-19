@@ -329,6 +329,7 @@ export default function SettingsPage() {
                       </div>
                     </div>
 
+                    {/* Password baru */}
                     <div className={styles.formGroup}>
                       <label>PASSWORD BARU</label>
                       <div className={styles.passwordWrapper}>
@@ -345,6 +346,7 @@ export default function SettingsPage() {
                       </div>
                     </div>
 
+                    {/* Konfirmasi password baru */}
                     <div className={styles.formGroup}>
                       <label>KONFIRMASI PASSWORD BARU</label>
                       <div className={styles.passwordWrapper}>

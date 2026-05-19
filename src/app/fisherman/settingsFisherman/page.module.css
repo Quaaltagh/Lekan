@@ -174,6 +174,21 @@
   background: white;
 }
 
+.passwordWrapper{
+  width: 100%;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+  border-radius: 0.85rem;
+  padding: 0.9rem 1rem;
+  font-size: 0.92rem;
+  color: #0f172a;
+  outline: none;
+  transition: 0.2s;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
 /* BUTTONS */
 .btnSecondary {
   background: #e2e8f0;
@@ -257,4 +272,58 @@
   padding: 10px 14px;
   border-radius: 8px;
   cursor: pointer;
+}
+
+/* Tombol "Ganti Password" / "Batal Ganti Password" */
+.passwordToggleBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.75rem;
+  padding: 0.7rem 1.1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #1e40af;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+  margin-bottom: 0;
+}
+
+.passwordToggleBtn:hover {
+  background: #eff6ff;
+  border-color: #bfdbfe;
+}
+
+/* Area yang muncul saat dropdown terbuka */
+.passwordDropdown {
+  margin-top: 1.25rem;
+  padding: 1.25rem;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 1rem;
+  animation: slideDown 0.18s ease;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.passwordDropdownHint {
+  font-size: 0.8rem;
+  color: #64748b;
+  margin: 0 0 1rem;
+}
+
+/* Input password di dalam dropdown (tanpa border sendiri, pakai .passwordWrapper) */
+.passwordInput {
+  flex: 1;
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 0.92rem;
+  color: #0f172a;
+  min-width: 0;
 }
