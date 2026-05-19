@@ -51,6 +51,7 @@ const DepositPage: React.FC = () => {
   const handleDeposit = async () => {
     if (!user || !token) return;
     if (amount < 10_000) { setErrMsg('Minimum deposit Rp 10.000.'); return; }
+    
     setErrMsg('');
     setStatus('loading');
 
