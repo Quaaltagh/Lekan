@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { UserRole } from '@/services/authService';
 import styles from './page.module.css';
+import Link from 'next/link';
 
 type Mode = 'login' | 'register';
 
@@ -220,7 +221,7 @@ export default function AuthPage() {
               <div className={styles.fieldLabelRow}>
                 <label className={styles.fieldLabel}>Kata Sandi</label>
                 {mode === 'login' && (
-                  <a href="#" className={styles.forgotLink}>Lupa Sandi?</a>
+                  <a href="/auth/forgotpassword" className={styles.forgotLink}>Lupa Sandi?</a>
                 )}
               </div>
               <div className={styles.inputWrap}>
@@ -289,15 +290,17 @@ export default function AuthPage() {
           <p className={styles.toggleMode}>
             {mode === 'login' ? (
               <>Belum punya akun?
-                <button className={styles.toggleBtn} onClick={() => switchMode('register')}>
+                {/* <button className={styles.toggleBtn} onClick={() => switchMode('register')}>
                   Daftar Sekarang
-                </button>
+                </button> */}
+                <Link href="/auth?mode=register" className={styles.toggleBtn}>Daftar Sekarang</Link>
               </>
             ) : (
               <>Sudah punya akun?
-                <button className={styles.toggleBtn} onClick={() => switchMode('login')}>
+                {/* <button className={styles.toggleBtn} onClick={() => switchMode('login')}>
                   Masuk
-                </button>
+                </button> */}
+                <Link href="/auth?mode=login" className={styles.toggleBtn}>Masuk</Link>
               </>
             )}
           </p>

@@ -1,6 +1,13 @@
 import { Request, Response } from 'express';
 import { supabase } from '../config/supabaseClient';
-import { format } from 'date-fns';
+
+const formatDate = (date: Date): string => {
+  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const d = String(date.getDate()).padStart(2, '0');
+  const m = months[date.getMonth()];
+  const y = date.getFullYear();
+  return `${d} ${m} ${y}`;
+};
 
 // GET /api/history/:userId
 // Return semua lelang yang pernah di-bid user, dengan status Won/Lost
@@ -123,7 +130,7 @@ export const getBidHistory = async (req: Request, res: Response): Promise<void> 
       vessel: seller?.vessel_name ?? '-',
       seller: seller?.full_name ?? 'Nelayan',
       finalPrice: displayPrice.toLocaleString('id-ID'),
-      date: format(new Date(auction.updated_at), 'dd MMM yyyy'),
+      date: formatDate(new Date(auction.updated_at)),
       status: isWon ? 'Won' : 'Lost',
     };
   });
