@@ -31,10 +31,17 @@ export async function getProfile(userId: string, token: string): Promise<UserPro
   return res.json();
 }
 
+// ── updateProfile — tambah bank_name & bank_account untuk fisherman ───────────
 export async function updateProfile(
   userId: string,
   token: string,
-  payload: { full_name?: string; vessel_name?: string; bio?: string }
+  payload: {
+    full_name?:    string;
+    vessel_name?:  string;
+    bio?:          string;
+    bank_name?:    string;   // ← tambahan untuk fisherman
+    bank_account?: string;   // ← tambahan untuk fisherman
+  }
 ): Promise<UserProfile> {
   const res = await fetch(`${API_URL}/api/profile/${userId}`, {
     method: 'PUT',
