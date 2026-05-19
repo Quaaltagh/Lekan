@@ -69,29 +69,38 @@ export default function LogisticsPage() {
 
   const renderStatusBadge = (status: LogisticsShipment['status']) => {
     switch (status) {
-      case 'in_transit':
+      case 'pending':
         return (
-          <div className={`${styles.badge} ${styles.badgeInTransit}`}>
+          <div className={`${styles.badge} ${styles.badgePending}`}>
             <div className={styles.badgeDot}></div>
-            Sedang Dalam Perjalanan
+            Menunggu Pengiriman
           </div>
         );
-      case 'out_for_delivery':
+      case 'shipped':
         return (
-          <div className={`${styles.badge} ${styles.badgeOutForDelivery}`}>
+          <div className={`${styles.badge} ${styles.badgeShipped}`}>
             <div className={styles.badgeDot}></div>
-            Sedang Dikirim
+            Dalam Perjalanan (OTW)
+          </div>
+        );
+      case 'arrived':
+        return (
+          <div className={`${styles.badge} ${styles.badgeArrived}`}>
+            <div className={styles.badgeDot}></div>
+            Tiba di Pelabuhan
           </div>
         );
       case 'delivered':
         return (
           <div className={`${styles.badge} ${styles.badgeDelivered}`}>
-            Terkirim
+            <div className={styles.badgeDot}></div>
+            Selesai / Terkirim
           </div>
         );
       default:
         return (
-          <div className={`${styles.badge} ${styles.badgeDelivered}`}>
+          <div className={`${styles.badge} ${styles.badgePending}`}>
+            <div className={styles.badgeDot}></div>
             {status}
           </div>
         );
@@ -160,7 +169,7 @@ export default function LogisticsPage() {
                           <div className={styles.estArrival}>
                             Estimasi Sampai: {formatEstArrival(shipment.estimated_arrival)}
                           </div>
-                          <a href="#" className={styles.trackLink}>
+                          <a href={`/fisherman/AuctionDetail/${shipment.auction_id}`} className={styles.trackLink}>
                             Lacak <ArrowRight size={14} />
                           </a>
                         </div>
@@ -185,6 +194,7 @@ export default function LogisticsPage() {
                           <th>TUJUAN</th>
                           <th>KARGO</th>
                           <th>STATUS</th>
+                          <th>AKSI</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -194,6 +204,11 @@ export default function LogisticsPage() {
                             <td className={styles.historyDest}>{shipment.destination || 'Unknown'}</td>
                             <td>{shipment.auctions?.weight_kg || 0}kg {shipment.auctions?.name || 'Barang'}</td>
                             <td>{renderStatusBadge(shipment.status)}</td>
+                            <td>
+                              <a href={`/fisherman/AuctionDetail/${shipment.auction_id}`} className={styles.trackLink}>
+                                Detail
+                              </a>
+                            </td>
                           </tr>
                         ))}
                       </tbody>

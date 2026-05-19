@@ -3,9 +3,70 @@ import { supabase } from '../config/supabaseClient';
 import { CreateAuctionPayload, UpdateAuctionPayload } from '../models/auctionModel';
 import { sendNotification } from '../lib/NotificationHelper';
 
+// Helper: Auto-complete expired auctions
+const checkAndCompleteExpiredAuctions = async (sellerId?: string): Promise<void> => {
+  try {
+    const now = new Date().toISOString();
+    let query = supabase
+      .from('auctions')
+      .select('*, bids(bidder_id, amount)')
+      .eq('status', 'active')
+      .lte('ends_at', now);
+
+    if (sellerId) {
+      query = query.eq('seller_id', sellerId);
+    }
+
+    const { data: expiredAuctions, error } = await query;
+    if (error || !expiredAuctions || expiredAuctions.length === 0) return;
+
+    for (const auction of expiredAuctions) {
+      const bids = auction.bids ?? [];
+      const winner = bids.reduce(
+        (prev: any, curr: any) => (curr.amount > (prev?.amount ?? 0) ? curr : prev),
+        null
+      );
+
+      // Update status lelang → done
+      const { error: updateError } = await supabase
+        .from('auctions')
+        .update({
+          status:      'done',
+          final_price: winner?.amount ?? null,
+          updated_at:  new Date().toISOString(),
+        })
+        .eq('id', auction.id);
+
+      if (!updateError) {
+        // ── NOTIF: ke buyer pemenang ────────────────────────────────────────────
+        if (winner?.bidder_id) {
+          await sendNotification(
+            winner.bidder_id,
+            'lelang',
+            `Selamat! Kamu Memenangkan Lelang`,
+            `Kamu memenangkan lelang "${auction.name}" dengan tawaran Rp ${winner.amount.toLocaleString('id-ID')}. Silakan lanjutkan ke pembayaran.`
+          );
+        }
+
+        // ── NOTIF: ke seller bahwa lelang selesai ───────────────────────────────
+        await sendNotification(
+          auction.seller_id,
+          'transaksi',
+          'Lelang Selesai',
+          `Lelang "${auction.name}" telah berakhir. Harga final: Rp ${winner?.amount?.toLocaleString('id-ID') ?? 'tidak ada penawar'}.`
+        );
+      }
+    }
+  } catch (err) {
+    console.error('Error auto-completing expired auctions:', err);
+  }
+};
+
 // ─── GET semua lelang milik seller ───────────────────────────────────────────
 export const getAuctionsBySeller = async (req: Request, res: Response): Promise<void> => {
   const { sellerId } = req.params;
+
+  await checkAndCompleteExpiredAuctions(sellerId);
 
   const { data, error } = await supabase
     .from('auctions')
@@ -30,6 +91,8 @@ export const getAuctionById = async (req: Request, res: Response): Promise<void>
 
 // ─── GET semua lelang aktif (untuk buyer) ────────────────────────────────────
 export const getActiveAuctions = async (_req: Request, res: Response): Promise<void> => {
+  await checkAndCompleteExpiredAuctions();
+
   const { data, error } = await supabase
     .from('auctions').select('*').eq('status', 'active')
     .order('ends_at', { ascending: true });
@@ -142,6 +205,8 @@ export const updateAuction = async (req: Request, res: Response): Promise<void> 
 export const getSellerBiddingStatus = async (req: Request, res: Response): Promise<void> => {
   const { sellerId } = req.params;
 
+  await checkAndCompleteExpiredAuctions(sellerId);
+
   const { data, error } = await supabase
     .from('auctions')
     .select(`
@@ -184,7 +249,7 @@ export const getSellerBiddingStatus = async (req: Request, res: Response): Promi
 
     if (auction.status === 'active') {
       activeAuctions.push(auctionData);
-    } else if (auction.status === 'completed') {
+    } else if (auction.status === 'done' || auction.status === 'completed') {
       finishedAuctions.push(auctionData);
     }
   }
@@ -212,6 +277,8 @@ export const deleteAuction = async (req: Request, res: Response): Promise<void> 
 // ─── GET lelang aktif dengan filter & search (untuk buyer homepage) ───────────
 export const getBuyerAuctions = async (req: Request, res: Response): Promise<void> => {
   const { search, grade, species, status, min_price, max_price, sort } = req.query;
+
+  await checkAndCompleteExpiredAuctions();
 
   // Default tampilkan active, kecuali ada filter status spesifik
   const filterStatus = (status && typeof status === 'string' && status !== 'all') ? status : 'active';
@@ -280,11 +347,11 @@ export const completeAuction = async (req: Request, res: Response): Promise<void
     null
   );
  
-  // Update status lelang → completed
+  // Update status lelang → done
   const { error: updateError } = await supabase
     .from('auctions')
     .update({
-      status:      'completed',
+      status:      'done',
       final_price: winner?.amount ?? null,
       updated_at:  new Date().toISOString(),
     })

@@ -20,9 +20,14 @@ import {
   walletService,
   formatRupiah,
   formatTxDate,
-  type WalletData,
+  type Wallet,
   type Transaction,
 } from "../../../services/walletService";
+
+type WalletData = {
+  wallet: Wallet;
+  transactions: Transaction[];
+};
 
 // ── Bank list ──────────────────────────────────────────────────────────────
 const BANKS = [
@@ -38,8 +43,7 @@ const BANKS = [
   "Bank BTN",
 ];
 
-const MIN_WITHDRAW = 100_000;
-const MAX_WITHDRAW = 100_000_000;
+const MIN_WITHDRAW = 1;
 
 function statusBadge(status: Transaction["status"]) {
   const map: Record<string, { label: string; cls: string }> = {
@@ -115,14 +119,34 @@ export default function WithdrawPage() {
   const pendingAmount = walletData?.wallet.pending ?? 0;
   const numericAmount = Number(amount.replace(/\D/g, ""));
   const isValidAmount =
-    numericAmount >= MIN_WITHDRAW && numericAmount <= Math.min(MAX_WITHDRAW, balance);
+    numericAmount >= MIN_WITHDRAW && numericAmount <= balance;
 
   const pendingTransactions = walletData?.transactions.filter(
-    (tx) => tx.status === "pending"
+    (tx: Transaction) => tx.type === "withdrawal" && tx.status === "pending"
   ) ?? [];
   const recentHistory = walletData?.transactions.filter(
-    (tx) => tx.type === "withdrawal" && tx.status === "completed"
+    (tx: Transaction) => tx.type === "withdrawal" && tx.status === "completed"
   ) ?? [];
+
+  // ── Polling for pending withdrawals ──────────────────────────────────
+  useEffect(() => {
+    if (!userId || !token) return;
+
+    const hasPendingWithdrawals = walletData?.transactions.some(
+      (tx: Transaction) => tx.type === "withdrawal" && tx.status === "pending"
+    ) ?? false;
+
+    if (!hasPendingWithdrawals) return;
+
+    const interval = setInterval(() => {
+      walletService
+        .getWallet(userId, token)
+        .then(setWalletData)
+        .catch(console.error);
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, [userId, token, walletData?.transactions]);
 
   // ── Handle amount input ────────────────────────────────────────────────
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -133,8 +157,7 @@ export default function WithdrawPage() {
   };
 
   const setMaxAmount = () => {
-    const max = Math.min(MAX_WITHDRAW, balance);
-    setAmount(String(max));
+    setAmount(String(balance));
   };
 
   // ── Handle submit ──────────────────────────────────────────────────────
@@ -146,12 +169,27 @@ export default function WithdrawPage() {
       setErrorMsg("Sesi tidak ditemukan. Silakan login ulang.");
       return;
     }
-    if (!isValidAmount) {
-      setErrorMsg(
-        `Jumlah penarikan harus antara ${formatRupiah(MIN_WITHDRAW)} dan ${formatRupiah(Math.min(MAX_WITHDRAW, balance))}.`
-      );
+    
+    if (numericAmount === 0 || isNaN(numericAmount)) {
+      setErrorMsg("Masukkan jumlah penarikan.");
       return;
     }
+    
+    if (balance <= 0) {
+      setErrorMsg("Saldo Anda kosong.");
+      return;
+    }
+    
+    if (numericAmount < MIN_WITHDRAW) {
+      setErrorMsg(`Jumlah penarikan minimal adalah ${formatRupiah(MIN_WITHDRAW)}.`);
+      return;
+    }
+    
+    if (numericAmount > balance) {
+      setErrorMsg("Saldo tidak mencukupi.");
+      return;
+    }
+
     if (!accountNumber.trim()) {
       setErrorMsg("Nomor rekening wajib diisi.");
       return;
@@ -275,8 +313,7 @@ export default function WithdrawPage() {
                     </button>
                   </div>
                   <p className={styles.amountHint}>
-                    Min. {formatRupiah(MIN_WITHDRAW)} &bull; Maks.{" "}
-                    {formatRupiah(Math.min(MAX_WITHDRAW, balance))}
+                    Min. {formatRupiah(MIN_WITHDRAW)}
                   </p>
 
                   {/* ── Bank Destination ── */}
@@ -379,7 +416,7 @@ export default function WithdrawPage() {
                   {pendingTransactions.length === 0 ? (
                     <p className={styles.emptyHint}>Tidak ada penarikan yang sedang diproses.</p>
                   ) : (
-                    pendingTransactions.map((tx) => (
+                    pendingTransactions.map((tx: Transaction) => (
                       <div key={tx.id} className={styles.pendingItem}>
                         <div className={styles.pendingItemTop}>
                           <span className={styles.pendingTxId}>
@@ -420,7 +457,7 @@ export default function WithdrawPage() {
                     <p className={styles.emptyHint}>Belum ada riwayat penarikan.</p>
                   ) : (
                     <>
-                      {recentHistory.slice(0, 3).map((tx) => {
+                      {recentHistory.slice(0, 3).map((tx: Transaction) => {
                         const badge = statusBadge(tx.status);
                         return (
                           <div key={tx.id} className={styles.historyItem}>

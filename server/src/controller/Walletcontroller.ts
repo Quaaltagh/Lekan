@@ -106,25 +106,49 @@ export const withdraw = async (req: Request, res: Response): Promise<void> => {
   try {
     const wallet = await getOrCreateWallet(userId);
     if (wallet.balance < amount) { res.status(400).json({ error: 'Saldo tidak mencukupi.' }); return; }
+    
+    // Deduct immediately to prevent double withdrawal
     const { error: updateError } = await supabase
       .from('wallets')
       .update({ balance: wallet.balance - amount, updated_at: new Date().toISOString() })
       .eq('user_id', userId);
     if (updateError) { res.status(500).json({ error: updateError.message }); return; }
+    
+    // Create transaction with status 'pending'
     const { data: tx, error: txError } = await supabase
       .from('transactions')
-      .insert({ user_id: userId, type: 'withdrawal', amount, description: description || 'Penarikan dana', auction_id: null, status: 'completed' })
+      .insert({ user_id: userId, type: 'withdrawal', amount, description: description || 'Penarikan dana', auction_id: null, status: 'pending' })
       .select().single();
     if (txError) { res.status(500).json({ error: txError.message }); return; }
-    res.status(200).json({ message: 'Penarikan berhasil.', transaction: tx });
+    
+    res.status(200).json({ message: 'Permintaan penarikan berhasil diajukan.', transaction: tx });
 
-    // ── NOTIF: penarikan dana ─────────────────────────────────────────────
+    // ── NOTIF: permintaan penarikan diproses ─────────────────────────────────
     await sendNotification(
       userId,
       'pembayaran',
-      'Penarikan Dana Berhasil',
-      `Dana sebesar Rp ${amount.toLocaleString('id-ID')} berhasil ditarik dari dompet kamu.`
+      'Permintaan Penarikan Dana Diproses',
+      `Permintaan penarikan dana sebesar Rp ${amount.toLocaleString('id-ID')} sedang diproses.`
     );
+
+    // Simulasi penyelesaian penarikan setelah 5 detik
+    setTimeout(async () => {
+      try {
+        await supabase
+          .from('transactions')
+          .update({ status: 'completed' })
+          .eq('id', tx.id);
+
+        await sendNotification(
+          userId,
+          'pembayaran',
+          'Penarikan Dana Berhasil',
+          `Dana sebesar Rp ${amount.toLocaleString('id-ID')} berhasil ditransfer ke rekening Anda.`
+        );
+      } catch (simError) {
+        console.error('Error during withdraw simulation confirmation:', simError);
+      }
+    }, 5000);
 
   } catch (err: any) {
     res.status(500).json({ error: err.message });

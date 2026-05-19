@@ -122,25 +122,33 @@
   height: 6px;
   border-radius: 50%;
 }
-.badgeInTransit {
+.badgePending {
+  background-color: #fef3c7;
+  color: #d97706;
+}
+.badgePending .badgeDot {
+  background-color: #fbbf24;
+}
+.badgeShipped {
   background-color: #dbeafe;
   color: #1e40af;
 }
-.badgeInTransit .badgeDot {
+.badgeShipped .badgeDot {
   background-color: #3b82f6;
 }
-.badgeOutForDelivery {
-  background-color: #b45309;
-  color: white;
+.badgeArrived {
+  background-color: #ccfbf1;
+  color: #0f766e;
 }
-.badgeOutForDelivery .badgeDot {
-  background-color: #fcd34d;
+.badgeArrived .badgeDot {
+  background-color: #14b8a6;
 }
 .badgeDelivered {
-  background-color: #e2e8f0;
-  color: #475569;
-  padding: 4px 10px;
-  border-radius: 6px;
+  background-color: #dcfce7;
+  color: #15803d;
+}
+.badgeDelivered .badgeDot {
+  background-color: #22c55e;
 }
 
 .shipmentFooter {

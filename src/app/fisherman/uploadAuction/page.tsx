@@ -204,7 +204,7 @@ export default function UploadAuction() {
                         </button>
                       </motion.div>
                     ) : (
-                      <motion.div key="placeholder" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="z-10">
+                      <motion.div key="placeholder" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="z-10 flex flex-col items-center">
                         <div className={styles.iconWrapper}>
                           <Camera className={styles.icon} />
                         </div>
