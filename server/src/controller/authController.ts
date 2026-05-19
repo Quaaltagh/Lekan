@@ -157,3 +157,37 @@ export const getProfileById = async (req: Request, res: Response): Promise<void>
 
   res.status(200).json(data);
 };
+
+
+export const requestPasswordReset = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({
+        error: 'Email wajib diisi',
+      });
+    }
+
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: 'http://localhost:3000/auth/forgotpassword',
+    });
+
+    if (error) {
+      return res.status(400).json({
+        error: error.message,
+      });
+    }
+
+    return res.status(200).json({
+      message: 'Link reset password telah dikirim.',
+    });
+  } catch (err) {
+    return res.status(500).json({
+      error: 'Server error',
+    });
+  }
+};

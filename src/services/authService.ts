@@ -54,4 +54,14 @@ export const authService = {
   logout: async () => {
     await fetch(`${API_URL}/api/auth/logout`, { method: 'POST' });
   },
+
+  requestPasswordReset: async (email: string) => {
+    const res = await fetch(`${API_URL}/api/auth/request-password-reset`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email }),
+    });
+
+    return handleResponse<{ message: string }>(res);
+  },
 };
