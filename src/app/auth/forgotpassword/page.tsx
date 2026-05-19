@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation';
 import styles from './page.module.css';
 import { authService } from '@/services/authService';
 
-type Step = 'request' | 'reset' | 'done';
+type Step = 'request' | 'sent' | 'reset' | 'done';
 
 // ── Password strength ─────────────────────────────────────────────────────────
 function getPasswordStrength(pw: string): { level: 0 | 1 | 2 | 3; label: string } {
@@ -45,13 +45,73 @@ export default function ForgotPasswordPage() {
 
   const [step, setStep]         = useState<Step>('request');
   const [email, setEmail]       = useState('');
-  const [otp, setOtp]           = useState(['', '', '', '', '', '']);
+  const [accessToken, setAccessToken] = useState('');
+  const [refreshToken, setRefreshToken] = useState('');
+  const [code, setCode]         = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showNew, setShowNew]   = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError]       = useState('');
+
+  // ── Mount Effect: Deteksi Token / Code dari URL dengan Scanner Interval ──────────────────────────────
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const handleUrlCheck = () => {
+      // 1. Cek parameter hash (Implicit Flow / URL hash)
+      const hash = window.location.hash;
+      if (hash) {
+        // Hilangkan '#' di awal, atau jika diawali dengan '#/' (routing hash)
+        const cleanHash = hash.startsWith('#/') ? hash.substring(2) : hash.substring(1);
+        const params = new URLSearchParams(cleanHash);
+        const access = params.get('access_token');
+        const refresh = params.get('refresh_token');
+
+        if (access) {
+          setAccessToken(access);
+          if (refresh) setRefreshToken(refresh);
+          setStep('reset');
+          return true;
+        }
+      }
+
+      // 2. Cek parameter query (PKCE Flow / Code Flow)
+      const searchParams = new URLSearchParams(window.location.search);
+      const queryCode = searchParams.get('code');
+      if (queryCode) {
+        setCode(queryCode);
+        setStep('reset');
+        return true;
+      }
+      return false;
+    };
+
+    // Jalankan pemeriksaan langsung
+    handleUrlCheck();
+
+    // Jalankan scanner interval tiap 100ms selama 3 detik untuk mengantisipasi keterlambatan mount/hydration URL
+    let count = 0;
+    const interval = setInterval(() => {
+      count++;
+      const isFound = handleUrlCheck();
+      if (isFound || count >= 30) {
+        clearInterval(interval);
+      }
+    }, 100);
+
+    // Dengarkan juga event perubahan hash (jika redireksinya terjadi di sisi client setelah mount)
+    const onHashChange = () => {
+      handleUrlCheck();
+    };
+    window.addEventListener('hashchange', onHashChange);
+
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('hashchange', onHashChange);
+    };
+  }, []);
 
   // Request reset email ───────────────────────────────────────────
   const handleRequestReset = async () => {
@@ -62,82 +122,14 @@ export default function ForgotPasswordPage() {
     }
     setIsLoading(true);
     try {
-      // await authService.requestPasswordReset(email);
-      await new Promise(r => setTimeout(r, 1200)); // simulasi network
-      setStep('reset');
+      await authService.requestPasswordReset(email);
+      setStep('sent');
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Gagal mengirim email. Coba lagi.');
     } finally {
       setIsLoading(false);
     }
   };
-
-  // useEffect(() => {
-  // const { data: listener } = supabase.auth.onAuthStateChange(
-  //   (event, session) => {
-  //     if (event === 'PASSWORD_RECOVERY') {
-  //       // langsung lompat ke step reset password
-  //       setStep('reset');
-  //     }
-  //   }
-  // );
-
-//   return () => {
-//     listener.subscription.unsubscribe();
-//   };
-// }, []);
-
-  // // Verify OTP ────────────────────────────────────────────────────
-  // const handleOtpChange = (idx: number, val: string) => {
-  //   if (!/^\d?$/.test(val)) return; // hanya angka
-  //   const next = [...otp];
-  //   next[idx] = val;
-  //   setOtp(next);
-  //   setError('');
-  //   // Auto-focus next input
-  //   if (val && idx < 5) {
-  //     const nextEl = document.getElementById(`otp-${idx + 1}`);
-  //     nextEl?.focus();
-  //   }
-  // };
-
-  // const handleOtpKeyDown = (idx: number, e: React.KeyboardEvent<HTMLInputElement>) => {
-  //   if (e.key === 'Backspace' && !otp[idx] && idx > 0) {
-  //     const prev = document.getElementById(`otp-${idx - 1}`);
-  //     prev?.focus();
-  //   }
-  // };
-
-  // const handleVerifyOtp = async () => {
-  //   setError('');
-  //   const code = otp.join('');
-  //   if (code.length < 6) {
-  //     setError('Masukkan 6 digit kode verifikasi.');
-  //     return;
-  //   }
-  //   setIsLoading(true);
-  //   try {
-  //     // TODO: ganti dengan pemanggilan API nyata
-  //     // await authService.verifyOtp(email, code);
-  //     await new Promise(r => setTimeout(r, 1000));
-  //     setStep('reset');
-  //   } catch (err: unknown) {
-  //     setError(err instanceof Error ? err.message : 'Kode tidak valid atau sudah kadaluarsa.');
-  //   } finally {
-  //     setIsLoading(false);
-  //   }
-  // };
-
-  // const handleResendOtp = async () => {
-  //   setError('');
-  //   setOtp(['', '', '', '', '', '']);
-  //   setIsLoading(true);
-  //   try {
-  //     await new Promise(r => setTimeout(r, 800));
-  //   } finally {
-  //     setIsLoading(false);
-  //   }
-  // };
 
   // ── Step 3: Set new password ──────────────────────────────────────────────
   const handleResetPassword = async () => {
@@ -152,9 +144,12 @@ export default function ForgotPasswordPage() {
     }
     setIsLoading(true);
     try {
-      // TODO: ganti dengan pemanggilan API nyata
-      // await authService.resetPassword(email, otp.join(''), newPassword);
-      await new Promise(r => setTimeout(r, 1200));
+      await authService.resetPassword({
+        accessToken,
+        refreshToken,
+        code,
+        newPassword,
+      });
       setStep('done');
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Gagal mereset password. Coba lagi.');
@@ -248,59 +243,38 @@ export default function ForgotPasswordPage() {
             </>
           )}
 
-          {/* ── STEP: sent (OTP) ── */}
-          {/* {step === 'sent' && (
+          {/* ── STEP: sent ── */}
+          {step === 'sent' && (
             <>
               <button className={styles.backBtn} onClick={() => { setStep('request'); setError(''); }}>
                 <ArrowLeft size={15} /> Ganti Email
               </button>
               <div className={styles.formHeading}>
-                <div className={styles.stepIcon} style={{ background: 'var(--clr-accent-soft)' }}>
-                  <Mail size={28} />
+                <div className={styles.stepIcon} style={{ background: 'var(--clr-accent-soft2, #e0f2fe)' }}>
+                  <Mail size={28} color="var(--clr-accent, #0284c7)" />
                 </div>
                 <h1 className={styles.formTitle}>Cek Email Kamu</h1>
                 <p className={styles.formSubtitle}>
-                  Kami mengirim kode 6 digit ke <strong>{email}</strong>.
-                  Kode berlaku selama 10 menit.
+                  Kami telah mengirimkan tautan reset kata sandi ke email <strong>{email}</strong>.
+                  Silakan periksa kotak masuk atau spam email Anda dan klik tautan tersebut untuk membuat kata sandi baru.
                 </p>
               </div>
               <div className={styles.fields}>
-                <div className={styles.fieldGroup}>
-                  <label className={styles.fieldLabel}>Kode Verifikasi</label>
-                  <div className={styles.otpRow}>
-                    {otp.map((digit, idx) => (
-                      <input
-                        key={idx}
-                        id={`otp-${idx}`}
-                        type="text"
-                        inputMode="numeric"
-                        maxLength={1}
-                        value={digit}
-                        onChange={e => handleOtpChange(idx, e.target.value)}
-                        onKeyDown={e => handleOtpKeyDown(idx, e)}
-                        className={styles.otpInput}
-                      />
-                    ))}
-                  </div>
-                </div>
                 {error && (
                   <div className={styles.errorBox}>
                     <AlertCircle size={15} style={{ flexShrink: 0, marginTop: 1 }} />
                     {error}
                   </div>
                 )}
-                <button className={styles.submitBtn} onClick={handleVerifyOtp} disabled={isLoading}>
-                  {isLoading ? 'Memverifikasi...' : 'Verifikasi Kode →'}
-                </button>
-                <p className={styles.resendRow}>
-                  Tidak menerima kode?{' '}
-                  <button className={styles.toggleBtn} onClick={handleResendOtp} disabled={isLoading}>
-                    Kirim Ulang
+                <p className={styles.resendRow} style={{ textAlign: 'center', marginTop: '1.5rem', color: 'var(--clr-text-light, #64748b)' }}>
+                  Tidak menerima tautan?{' '}
+                  <button className={styles.toggleBtn} onClick={handleRequestReset} disabled={isLoading} style={{ color: 'var(--clr-accent, #0284c7)', fontWeight: 600, border: 'none', background: 'none', cursor: 'pointer', textDecoration: 'underline' }}>
+                    {isLoading ? 'Mengirim ulang...' : 'Kirim Ulang'}
                   </button>
                 </p>
               </div>
             </>
-          )} */}
+          )}
 
           {/* ── STEP: reset (new password) ── */}
           {step === 'reset' && (

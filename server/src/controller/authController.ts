@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { createClient } from '@supabase/supabase-js';
 import { supabase, supabaseAuth } from '../config/supabaseClient';
 import { LoginPayload, RegisterPayload } from '../models/userModel';
 import { sendNotification } from '../lib/NotificationHelper';
@@ -188,6 +189,123 @@ export const requestPasswordReset = async (
   } catch (err) {
     return res.status(500).json({
       error: 'Server error',
+    });
+  }
+};
+
+export const resetPassword = async (req: Request, res: Response) => {
+  try {
+    const { accessToken, refreshToken, code, newPassword } = req.body;
+
+    if (!newPassword) {
+      return res.status(400).json({
+        error: 'Password baru wajib diisi',
+      });
+    }
+
+    if (!accessToken && !code) {
+      return res.status(400).json({
+        error: 'Token akses atau kode verifikasi wajib disertakan',
+      });
+    }
+
+    const supabaseUrl = process.env.SUPABASE_URL!;
+    const supabaseAnonKey = process.env.SUPABASE_ANON_KEY!;
+
+    // Buat client Supabase sementara dengan Anon Key agar tidak merusak session global/shared
+    const tempSupabase = createClient(supabaseUrl, supabaseAnonKey, {
+      auth: {
+        persistSession: false,
+        autoRefreshToken: false,
+        detectSessionInUrl: false,
+      },
+    });
+
+    if (code) {
+      // PKCE Flow / Code Flow
+      const { error: exchangeError } = await tempSupabase.auth.exchangeCodeForSession(code);
+      if (exchangeError) {
+        return res.status(400).json({
+          error: 'Kode reset password tidak valid atau sudah kadaluarsa.',
+        });
+      }
+    } else if (accessToken) {
+      // Implicit Flow / Hash Flow
+      const { error: sessionError } = await tempSupabase.auth.setSession({
+        access_token: accessToken,
+        refresh_token: refreshToken || '',
+      });
+      if (sessionError) {
+        return res.status(400).json({
+          error: 'Sesi reset password tidak valid atau sudah kadaluarsa.',
+        });
+      }
+    }
+
+    // Perbarui kata sandi dengan aman dalam sesi pengguna
+    const { error: updateError } = await tempSupabase.auth.updateUser({
+      password: newPassword,
+    });
+
+    if (updateError) {
+      return res.status(400).json({
+        error: updateError.message,
+      });
+    }
+
+    return res.status(200).json({
+      message: 'Kata sandi berhasil diperbarui.',
+    });
+  } catch (err) {
+    console.error('Error resetPassword:', err);
+    return res.status(500).json({
+      error: 'Terjadi kesalahan pada server saat mereset kata sandi.',
+    });
+  }
+};
+
+export const verifyOtp = async (req: Request, res: Response) => {
+  try {
+    const { email, code } = req.body;
+
+    if (!email || !code) {
+      return res.status(400).json({
+        error: 'Email dan kode OTP wajib diisi.',
+      });
+    }
+
+    const supabaseUrl = process.env.SUPABASE_URL!;
+    const supabaseAnonKey = process.env.SUPABASE_ANON_KEY!;
+
+    const tempSupabase = createClient(supabaseUrl, supabaseAnonKey, {
+      auth: {
+        persistSession: false,
+        autoRefreshToken: false,
+        detectSessionInUrl: false,
+      },
+    });
+
+    const { data, error } = await tempSupabase.auth.verifyOtp({
+      email,
+      token: code,
+      type: 'recovery',
+    });
+
+    if (error || !data.session) {
+      return res.status(400).json({
+        error: error?.message || 'Kode OTP tidak valid atau sudah kadaluarsa.',
+      });
+    }
+
+    return res.status(200).json({
+      message: 'Kode OTP berhasil diverifikasi.',
+      accessToken: data.session.access_token,
+      refreshToken: data.session.refresh_token,
+    });
+  } catch (err) {
+    console.error('Error verifyOtp:', err);
+    return res.status(500).json({
+      error: 'Terjadi kesalahan pada server saat memverifikasi kode OTP.',
     });
   }
 };
