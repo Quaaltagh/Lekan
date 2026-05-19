@@ -95,7 +95,37 @@ async function settleAuction(auctionId: string, sellerId: string) {
     })
     .eq('id', auctionId);
 
-  console.log(`[AuctionExpiry] Auction ${auctionId} settled — pemenang: ${winnerId}, harga: Rp ${finalPrice.toLocaleString('id-ID')}`);
+  // Ambil alamat pemenang & nelayan dari profile
+  const { data: winnerProfile } = await supabase
+    .from('profiles')
+    .select('address')
+    .eq('id', winnerId)
+    .maybeSingle();
+
+  const { data: sellerProfile } = await supabase
+    .from('profiles')
+    .select('address')
+    .eq('id', sellerId)
+    .maybeSingle();
+
+  const deliveryAddress = winnerProfile?.address || '';
+  const pickupAddress = sellerProfile?.address || '';
+
+  // 5. Buat data logistik default untuk pengiriman
+  await supabase.from('logistics').insert({
+    auction_id: auctionId,
+    seller_id: sellerId,
+    buyer_id: winnerId,
+    status: 'pending',
+    delivery_address: deliveryAddress,
+    pickup_address: pickupAddress,
+    destination: deliveryAddress,
+    courier: 'Maritime Express',
+    tracking_number: `LEKAN-TRK-${Math.random().toString(36).substring(2, 11).toUpperCase()}`,
+    estimated_arrival: new Date(Date.now() + 2 * 24 * 3600 * 1000).toISOString(),
+  });
+
+  console.log(`[AuctionExpiry] Auction ${auctionId} settled — pemenang: ${winnerId}, harga: Rp ${finalPrice.toLocaleString('id-ID')} & default logistics created.`);
 }
 
 // ── Main cron job ───────────────────────────────────────────────────────────

@@ -23,6 +23,7 @@ function formatRp(value: number) {
 
 // ─── Auction Item ─────────────────────────────────────────────────────────────
 function AuctionItem({ auction }: { auction: Auction }) {
+  const router = useRouter();
   const status = STATUS_CONFIG[auction.status] ?? { label: auction.status, color: '#94a3b8' };
   const currentPrice = auction.current_bid ?? auction.start_price;
 
@@ -83,7 +84,10 @@ function AuctionItem({ auction }: { auction: Auction }) {
         </div>
 
         <div style={{ display: 'flex', gap: '0.75rem' }}>
-          <button style={{ flex: 1, padding: '0.5rem', borderRadius: '0.5rem', border: '1px solid #e2e8f0', background: '#f8fafc', cursor: 'pointer' }}>
+          <button 
+            onClick={() => router.push(`/fisherman/AuctionDetail/${auction.id}`)}
+            style={{ flex: 1, padding: '0.5rem', borderRadius: '0.5rem', border: '1px solid #e2e8f0', background: '#f8fafc', color: '#1e293b', cursor: 'pointer' }}
+          >
             Detail
           </button>
           {auction.status === 'active' && (
@@ -214,7 +218,7 @@ export default function FishermanDashboard() {
           {/* Sidebar Kanan */}
           <div style={{ width: '20rem' }}>
             <div className={styles.ctaBox}>
-              <h3 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>Siap Melantai di Bursa?</h3>
+              <h3 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '0.5rem', color: 'white' }}>Siap Melantai di Bursa?</h3>
               <p style={{ color: '#bfdbfe', fontSize: '0.875rem', marginBottom: '1.5rem' }}>
                 Unggah hasil tangkapan Anda hari ini dan dapatkan harga terbaik dari pembeli global.
               </p>

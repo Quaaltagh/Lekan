@@ -11,7 +11,7 @@ export interface LogisticsShipment {
   auction_id: string;
   seller_id: string;
   buyer_id: string;
-  status: 'in_transit' | 'out_for_delivery' | 'delivered' | 'pending';
+  status: 'pending' | 'shipped' | 'arrived' | 'delivered';
   destination: string;
   estimated_arrival: string;
   created_at: string;

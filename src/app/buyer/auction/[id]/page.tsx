@@ -153,6 +153,13 @@ export default function AuctionDetailPage() {
     fetchAuctionAndBids(true);
   }, [fetchAuctionAndBids]);
 
+  // ── Redirect ke detail logistik jika user memenangkan lelang yang telah selesai ─
+  useEffect(() => {
+    if (auction && auction.status === 'done' && bids.length > 0 && bids[0].bidder_id === user?.id) {
+      router.push(`/buyer/orderDetail/${id}`);
+    }
+  }, [auction, bids, user?.id, id, router]);
+
   // ── Polling tiap 5 detik ──────────────────────────────────────────────────
   useEffect(() => {
     if (!id) return;

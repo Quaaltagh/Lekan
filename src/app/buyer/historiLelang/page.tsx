@@ -113,7 +113,7 @@ function CalendarPicker({ onSelect, dateRange, onClose }: {
 }
 
 // ─── HistoryCard ──────────────────────────────────────────────────────────────
-function HistoryCard({ name, image, vessel, seller, finalPrice, date, status }: HistoryItem) {
+function HistoryCard({ id, name, image, vessel, seller, finalPrice, date, status }: HistoryItem) {
   const isWon = status === 'Won';
 
   const getStatusText = () => status === 'Won' ? 'Menang' : 'Kalah';
@@ -158,17 +158,21 @@ function HistoryCard({ name, image, vessel, seller, finalPrice, date, status }: 
         </div>
 
         <div className={styles.itemaction}>
-          <button className={`${styles.itembutton} ${isWon ? styles.itembuttonWon : styles.itembuttonLost}`}>
+          <a 
+            href={isWon ? `/buyer/orderDetail/${id}` : `/buyer/auction/${id}`}
+            className={`${styles.itembutton} ${isWon ? styles.itembuttonWon : styles.itembuttonLost}`}
+            style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+          >
             Lihat Detail
             {isWon && <ArrowRight className={styles.itemicon} />}
-          </button>
+          </a>
         </div>
       </div>
     </div>
   );
 }
 
-function HistoryRow({ name, image, vessel, seller, finalPrice, date, status }: HistoryItem) {
+function HistoryRow({ id, name, image, vessel, seller, finalPrice, date, status }: HistoryItem) {
 
   const getStatusBadge = () => {
     switch (status) {
@@ -223,9 +227,13 @@ function HistoryRow({ name, image, vessel, seller, finalPrice, date, status }: H
       </div>
 
       <div className={styles.itemactions}>
-        <button className={styles.itembutton}>
+        <a 
+          href={status === 'Won' ? `/buyer/orderDetail/${id}` : `/buyer/auction/${id}`}
+          className={styles.itembutton}
+          style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
+        >
           Lihat Detail
-        </button>
+        </a>
       </div>
     </div>
   );

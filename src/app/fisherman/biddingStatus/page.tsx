@@ -36,6 +36,7 @@ export default function BiddingStatusPage() {
   const [data, setData] = useState<BiddingStatusResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const fetchStatus = useCallback(async () => {
     if (!user?.id || !token) return;
@@ -54,6 +55,15 @@ export default function BiddingStatusPage() {
   useEffect(() => {
     fetchStatus();
   }, [fetchStatus]);
+
+  // Filter lelang berdasarkan pencarian (nama ikan/lelang)
+  const filteredActive = data?.active.filter((auction) => 
+    auction.name.toLowerCase().includes(searchQuery.toLowerCase())
+  ) || [];
+
+  const filteredFinished = data?.finished.filter((auction) => 
+    auction.name.toLowerCase().includes(searchQuery.toLowerCase())
+  ) || [];
 
   // If user is not ready but it's initially loading
   if (!user && !loading) {
@@ -82,6 +92,8 @@ export default function BiddingStatusPage() {
                   type="text" 
                   placeholder="Cari lelang..." 
                   className={styles.searchInput}
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
                 />
               </div>
               <button className={styles.filterBtn}>
@@ -114,11 +126,11 @@ export default function BiddingStatusPage() {
                 </div>
               </div>
 
-              {data.active.length === 0 ? (
+              {filteredActive.length === 0 ? (
                 <div className={styles.emptyState}>Tidak ada lelang aktif saat ini.</div>
               ) : (
                 <div className={styles.activeAuctionsGrid}>
-                  {data.active.map((auction) => (
+                  {filteredActive.map((auction) => (
                     <div key={auction.id} className={styles.auctionCard}>
                       <img 
                         src={auction.image_url || "/fish-placeholder.jpg"} 
@@ -165,7 +177,7 @@ export default function BiddingStatusPage() {
                 <h2 className={styles.sectionTitle}>Lelang Selesai</h2>
               </div>
 
-              {data.finished.length === 0 ? (
+              {filteredFinished.length === 0 ? (
                 <div className={styles.emptyState}>Belum ada lelang selesai.</div>
               ) : (
                 <div className={styles.finishedContainer}>
@@ -180,7 +192,7 @@ export default function BiddingStatusPage() {
                       </tr>
                     </thead>
                     <tbody>
-                      {data.finished.map((auction) => (
+                      {filteredFinished.map((auction) => (
                         <tr key={auction.id}>
                           <td>
                             <div className={styles.fishDetailCell}>

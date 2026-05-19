@@ -1,0 +1,544 @@
+.all {
+  min-height: 100vh;
+  background-color: var(--clr-background);
+  color: var(--clr-foreground);
+  font-family: var(--font-primary);
+}
+
+.mainContainer {
+  padding: var(--space-lg);
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.backLink {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  align-self: flex-start;
+  background: none;
+  border: none;
+  color: var(--clr-text-muted);
+  font-weight: 500;
+  font-size: var(--fs-sm);
+  cursor: pointer;
+  padding: 0;
+  margin-bottom: var(--space-sm);
+  transition: color 0.2s ease;
+}
+
+.backLink:hover {
+  color: var(--clr-primary);
+}
+
+.pageTitle {
+  font-size: var(--fs-xl);
+  font-weight: 800;
+  color: var(--clr-foreground);
+}
+
+.pageSubtitle {
+  font-size: var(--fs-base);
+  color: var(--clr-text-muted);
+}
+
+.contentGrid {
+  display: grid;
+  grid-template-columns: 1.6fr 1.1fr;
+  gap: var(--space-lg);
+  align-items: start;
+}
+
+/* Responsive Grid */
+@media (max-width: 968px) {
+  .contentGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Card Styles */
+.card {
+  background-color: #ffffff;
+  border: 1px solid var(--clr-border-light);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  margin-bottom: var(--space-md);
+  transition: box-shadow 0.3s ease;
+}
+
+.card:hover {
+  box-shadow: var(--shadow-md);
+}
+
+.cardHeaderWithAction {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-xs);
+}
+
+.cardTitle {
+  font-size: var(--fs-md);
+  font-weight: 700;
+  color: var(--clr-foreground);
+}
+
+/* Left Column Specifics */
+.cardHeaderRow {
+  display: flex;
+  gap: var(--space-md);
+  align-items: center;
+}
+
+.imageWrapper {
+  width: 90px;
+  height: 90px;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  border: 1px solid var(--clr-border-light);
+  background-color: var(--clr-background-alt);
+}
+
+.fishImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.fishMeta {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.badgeWon {
+  align-self: flex-start;
+  background-color: var(--clr-success-light);
+  color: var(--clr-success);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  padding: 0.2rem 0.6rem;
+  border-radius: var(--radius-sm);
+}
+
+.fishName {
+  font-size: var(--fs-lg);
+  font-weight: 700;
+  color: var(--clr-foreground);
+}
+
+.tagGrid {
+  display: flex;
+  gap: var(--space-xs);
+}
+
+.tag {
+  background-color: var(--clr-background-alt);
+  color: var(--clr-foreground-light);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--clr-border-light);
+}
+
+.description {
+  font-size: var(--fs-sm);
+  line-height: 1.6;
+  color: var(--clr-text-muted);
+}
+
+/* Timeline Styles */
+.timeline {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  padding-left: var(--space-sm);
+}
+
+.timelineItem {
+  display: flex;
+  gap: var(--space-md);
+  padding-bottom: var(--space-lg);
+  position: relative;
+}
+
+.timelineItem:last-child {
+  padding-bottom: 0;
+}
+
+.timelineIconWrapper {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: var(--clr-background-alt);
+  color: var(--clr-text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 2;
+  border: 2px solid var(--clr-border-light);
+  flex-shrink: 0;
+  transition: all 0.3s ease;
+}
+
+.timelineLine {
+  position: absolute;
+  top: 40px;
+  bottom: 0;
+  left: 50%;
+  width: 2px;
+  background-color: var(--clr-border-light);
+  transform: translateX(-50%);
+  z-index: 1;
+}
+
+.timelineContent {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+}
+
+.timelineLabel {
+  font-size: var(--fs-base);
+  font-weight: 600;
+  color: var(--clr-foreground-light);
+}
+
+.timelineDesc {
+  font-size: var(--fs-xs);
+  color: var(--clr-text-muted);
+}
+
+/* Active Timeline Styling */
+.activeTimeline .timelineIconWrapper {
+  background-color: var(--clr-primary-lightest);
+  color: var(--clr-primary);
+  border-color: var(--clr-primary);
+  box-shadow: 0 0 0 4px var(--clr-primary-lightest);
+}
+
+.activeTimeline .timelineLabel {
+  color: var(--clr-primary-dark);
+  font-weight: 700;
+}
+
+.activeTimeline .timelineLine {
+  background-color: var(--clr-primary-light);
+}
+
+/* Right Column Specifics */
+.infoRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.infoLabel {
+  font-size: var(--fs-xs);
+  color: var(--clr-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+}
+
+.priceValue {
+  font-size: var(--fs-lg);
+  font-weight: 800;
+  color: var(--clr-primary-dark);
+}
+
+.divider {
+  height: 1px;
+  background-color: var(--clr-border-light);
+  margin: var(--space-xs) 0;
+}
+
+.sellerInfoRow {
+  display: flex;
+  gap: var(--space-sm);
+  align-items: center;
+}
+
+.avatarCircle {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background-color: var(--clr-primary-lightest);
+  color: var(--clr-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sellerName {
+  font-size: var(--fs-base);
+  font-weight: 700;
+  color: var(--clr-foreground);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.verifiedIcon {
+  color: var(--clr-primary);
+}
+
+.sellerVessel {
+  font-size: var(--fs-xs);
+  color: var(--clr-text-muted);
+}
+
+/* Route & Location Styles */
+.routeContainer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.routeItem {
+  display: flex;
+  gap: var(--space-sm);
+  align-items: flex-start;
+}
+
+.pickupIcon {
+  color: var(--clr-primary);
+  margin-top: 2px;
+}
+
+.deliveryIcon {
+  color: var(--clr-success);
+  margin-top: 2px;
+}
+
+.routeLabel {
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  color: var(--clr-text-muted);
+}
+
+.routeAddress {
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--clr-foreground);
+  line-height: 1.4;
+}
+
+.metaInfoGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-sm);
+}
+
+.metaValue {
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--clr-foreground);
+  margin-top: 2px;
+}
+
+/* Address Edit Form */
+.editAddressBtn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: none;
+  border: 1px solid var(--clr-primary);
+  color: var(--clr-primary);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.editAddressBtn:hover {
+  background-color: var(--clr-primary-lightest);
+}
+
+.addressEditBox {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.addressTextArea {
+  width: 100%;
+  padding: var(--space-sm);
+  font-size: var(--fs-sm);
+  border: 1px solid var(--clr-border-light);
+  border-radius: var(--radius-md);
+  font-family: inherit;
+  resize: vertical;
+  background-color: var(--clr-background);
+  color: var(--clr-foreground);
+  outline: none;
+}
+
+.addressTextArea:focus {
+  border-color: var(--clr-primary);
+  box-shadow: 0 0 0 2px var(--clr-primary-lightest);
+}
+
+.editActionsGrid {
+  display: flex;
+  gap: var(--space-sm);
+}
+
+.saveBtn,
+.cancelBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 6px 16px;
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s ease;
+}
+
+.saveBtn {
+  background-color: var(--clr-primary);
+  color: white;
+}
+
+.saveBtn:hover:not(:disabled) {
+  background-color: var(--clr-primary-dark);
+}
+
+.cancelBtn {
+  background-color: var(--clr-background-alt);
+  border: 1px solid var(--clr-border-light);
+  color: var(--clr-foreground-light);
+}
+
+.cancelBtn:hover:not(:disabled) {
+  background-color: var(--clr-border-light);
+}
+
+.saveBtn:disabled,
+.cancelBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Action Controls & Confirmation Box */
+.controlHint {
+  font-size: var(--fs-xs);
+  color: var(--clr-text-muted);
+  line-height: 1.5;
+  margin-bottom: var(--space-sm);
+}
+
+.primaryActionBtn {
+  width: 100%;
+  padding: 0.8rem;
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  border-radius: var(--radius-md);
+  border: none;
+  cursor: pointer;
+  background-color: var(--clr-primary);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-xs);
+  transition: all 0.2s ease;
+}
+
+.primaryActionBtn:hover:not(:disabled) {
+  background-color: var(--clr-primary-dark);
+  box-shadow: var(--shadow-sm);
+}
+
+.primaryActionBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.statusBoxInfo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  background-color: var(--clr-primary-lightest);
+  color: var(--clr-primary-dark);
+  border: 1px solid var(--clr-primary-light);
+  border-radius: var(--radius-md);
+  padding: var(--space-sm);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.statusBoxSuccess {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  background-color: var(--clr-success-light);
+  color: var(--clr-success-dark);
+  border: 1px solid var(--clr-success-light);
+  border-radius: var(--radius-md);
+  padding: var(--space-sm);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.loadingState,
+.errorState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem;
+  text-align: center;
+  gap: var(--space-md);
+  color: var(--clr-text-muted);
+}
+
+.errorText {
+  color: var(--clr-danger);
+  font-weight: 600;
+}
+
+.backBtn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  background-color: var(--clr-background-alt);
+  border: 1px solid var(--clr-border-light);
+  padding: 0.6rem 1.2rem;
+  border-radius: var(--radius-md);
+  color: var(--clr-foreground);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.backBtn:hover {
+  background-color: var(--clr-border-light);
+}
