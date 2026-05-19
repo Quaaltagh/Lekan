@@ -211,7 +211,7 @@ function HistoryRow({ name, image, vessel, seller, finalPrice, date, status }: H
 
       {/* Price */}
       <div className={styles.itempriceWrapper}>
-        <span className={styles.itemcurrency}>Rp</span>
+        <span className={`${styles.itemcurrency} ${status === 'Lost' ? styles.itempriceLost : ''}`}>Rp</span>
         <span className={`${styles.itemprice} ${status === 'Lost' ? styles.itempriceLost : ''}`}>
           {finalPrice}
         </span>
