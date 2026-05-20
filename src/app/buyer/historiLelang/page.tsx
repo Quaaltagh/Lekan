@@ -18,6 +18,7 @@ import {
   isBefore,
   startOfDay, endOfDay,
 } from 'date-fns';
+import { id } from 'date-fns/locale';
 
 // ─── Fallback image ───────────────────────────────────────────────────────────
 const FALLBACK_IMG = 'https://darilaut.id/wp-content/uploads/2021/09/Tuna-3.jpg';
@@ -62,7 +63,7 @@ function CalendarPicker({ onSelect, dateRange, onClose }: {
   return (
     <div className={styles.calendarcontainer}>
       <div className={styles.calendarheader}>
-        <h4 className={styles.calendartitle}>{format(currentMonth, 'MMMM yyyy')}</h4>
+        <h4 className={styles.calendartitle}>{format(currentMonth, 'MMMM yyyy', { locale: id })}</h4>
         <div className={styles.calendarnav}>
           <button onClick={() => setCurrentMonth(subMonths(currentMonth, 1))} className={styles.calendarnavButton}>
             <ChevronLeft className={styles.calendarnavIcon} />
@@ -74,7 +75,7 @@ function CalendarPicker({ onSelect, dateRange, onClose }: {
       </div>
 
       <div className={styles.calendardaysHeader}>
-        {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((d, i) => (
+        {['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'].map((d, i) => (
           <div key={i} className={styles.calendardayLabel}>{d}</div>
         ))}
       </div>
@@ -110,10 +111,10 @@ function CalendarPicker({ onSelect, dateRange, onClose }: {
       <div className={styles.calendarfooter}>
         <button onClick={() => { onSelect({ start: null, end: null }); setSelectingStep('START'); }}
           className={styles.calendarclearButton}>
-          Clear
+          Reset
         </button>
         <button onClick={onClose} className={styles.calendardoneButton}>
-          {dateRange.start && !dateRange.end ? 'Select End' : 'Done'}
+          {dateRange.start && !dateRange.end ? 'Pilih Rentang' : 'Selesai'}
         </button>
       </div>
     </div>
@@ -186,7 +187,7 @@ function HistoryRow({ id, name, image, vessel, seller, finalPrice, date, status 
       case 'Won':
         return (
           <div className={`${styles.itembadge} ${styles.itembadgeWon}`}>
-            <div className={styles.itemdot}></div>
+            {/* <div className={styles.itemdot}></div> */}
             Menang
           </div>
         );
@@ -209,9 +210,9 @@ function HistoryRow({ id, name, image, vessel, seller, finalPrice, date, status 
         <div>
           <h4 className={styles.itemname}>{name}</h4>
           <p className={styles.itemmeta}>
-            <span>KM {vessel}</span>
+            <span>Pelabuhan {vessel}</span>
             <span className={styles.itemseparator}>|</span>
-            <span>SELLER: {seller}</span>
+            <span>Penjual: {seller}</span>
           </p>
         </div>
       </div>
@@ -280,8 +281,8 @@ export default function HistoriLelang() {
 
   const getLabel = () => {
     if (!dateRange.start) return 'Rentang Tanggal';
-    if (dateRange.end) return `${format(dateRange.start, 'dd MMM')} - ${format(dateRange.end, 'dd MMM yyyy')}`;
-    return format(dateRange.start, 'dd MMM yyyy');
+    if (dateRange.end) return `${format(dateRange.start, 'dd MMM', {locale: id})} - ${format(dateRange.end, 'dd MMM yyyy', {locale:id})}`;
+    return format(dateRange.start, 'dd MMM yyyy', {locale: id});
   };
 
   return (
@@ -354,7 +355,7 @@ export default function HistoriLelang() {
             <div className={styles.cardheaderText}>Spesies Ikan</div>
             <div className={styles.cardheaderText}>Tanggal Transaksi</div>
             <div className={styles.cardheaderText}>Harga Akhir</div>
-            <div className={styles.cardheaderText}>Status Pasar</div>
+            <div className={styles.cardheaderText}>Status</div>
           </div>
 
           <div>

@@ -17,14 +17,12 @@
 
 .mainContainer {
   width: 80rem;
-  /* max-width: 1100px; */
   display: flex;
   flex-direction: column;
   margin-left: auto; 
   margin-right: auto;
-  padding: 50px 128px 32px 128px;
+  padding: 32px 64px;
   gap: 2rem; 
-  align-items: center;
 }
 
 .notiHeader {

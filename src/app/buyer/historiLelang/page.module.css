@@ -1,12 +1,13 @@
 .all {
   min-height: 100vh;
-  background-color: rgb(252, 252, 252);
+  background-color: white;
   color: #111827;
-  font-family: sans-serif;
+  width: 100%;
+   
 }
 
 .container {
-  max-width: 80rem;
+  width: 80rem;
   display: flex;
   flex-direction: column;
   margin-left: auto; 
@@ -15,21 +16,20 @@
   gap: 2rem; 
 }
 
-
 .titlecontainer {
-  margin-bottom: 3rem;
+  margin-bottom: var(--space-sm);
 }
 
 .title {
-  font-size: 3rem;
-  font-weight: 900;
-  color: #172554;
-  letter-spacing: -0.02em; 
+ font-size: var(--fs-tittle);
+  font-weight: var(--fw-title);
+  margin: 0;
+  color: var(--clr-black);
 }
 
 .titledescription {
-  color: #6b7280;
-  font-weight: 500; 
+  color: var(--clr-text-muted);
+  font-size: var(--fs-sm);
   max-width: 36rem; 
 }
 
@@ -59,15 +59,15 @@
   transform: translateY(-50%);
   height: 1rem;
   width: 1rem;
-  color: #515151;
+  color: var(--clr-text-muted)
 }
 
 .searchinput {
   
   height: 100%;
-  background: #ffffff;
+  background: var(--clr-white);
   border: 1px solid #e5e7eb;
-  border-radius: 1.5rem;
+  border-radius: var(--rad);
   padding: 0.875rem 1rem 0.875rem 3rem; 
   font-size: 12px;
   font-weight: 500;
@@ -86,7 +86,7 @@
 }
 
 .searchinput:focus {
-  box-shadow: 0 0 0 1px #1e3a8a;
+  box-shadow: 0 0 0 1px var(--clr-primary);
 }
 
 .controls {
@@ -97,11 +97,11 @@
 
 .filterButton {
   padding: 0.65rem 0.85rem;
-  background:#E0E3E5;
-  border-radius: 1.5rem;
+  background:#eaedf1;
+  border-radius: var(--rad);
   font-size: 12px;
   font-weight: 500;
-  color: #151515;
+  color: var(--clr-foreground);
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -129,9 +129,9 @@
   right: 0;
   margin-top: 0.5rem;
   width: 10rem;
-  background: #ffffff;
+  background: var(--clr-white);
   border: 1px solid #f3f4f6;
-  border-radius: 0.75rem;
+  border-radius: var(--rad);
   box-shadow: 0 20px 40px rgba(0,0,0,0.1);
   z-index: 20;
   padding: 0.5rem 0;
@@ -159,7 +159,7 @@
 
 .dropdownItemActive {
   background: #eff6ff;
-  color: #1e3a8a;
+  color: var(--clr-primary);
 }
 
 /* Icons */
@@ -188,9 +188,9 @@
   right: 0;
   margin-top: 0.5rem;
   width: 18rem; 
-  background: #ffffff;
+  background: var(--clr-white);
   border: 1px solid #f3f4f6;
-  border-radius: 1.5rem;
+  border-radius: var(--rad);
   box-shadow: 0 25px 50px rgba(0,0,0,0.15);
   z-index: 20;
   padding: 1.5rem;
@@ -209,7 +209,7 @@
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  color: #1e3a8a;
+  color: var(--clr-primary);
 }
 
 .calendarnav {
@@ -219,7 +219,7 @@
 
 .calendarnavButton {
   padding: 0.25rem;
-  border-radius: 0.5rem;
+  border-radius: var(--rad);
   background: transparent;
   border: none;
   cursor: pointer;
@@ -258,7 +258,7 @@
 
 .calendarday {
   aspect-ratio: 1 / 1;
-  border-radius: 0.75rem;
+  border-radius: var(--rad);
   font-size: 10px;
   font-weight: 700;
   display: flex;
@@ -291,9 +291,9 @@
 
 .calendardayStart,
 .calendardayEnd {
-  background: #1e3a8a;
-  color: #ffffff;
-  border-radius: 0.75rem;
+  background: var(--clr-primary);
+  color: var(--clr-white);
+  border-radius: var(--rad);
   z-index: 10;
 }
 
@@ -319,7 +319,7 @@
   flex: 1;
   padding: 0.75rem;
   background: #f3f4f6;
-  border-radius: 0.75rem;
+  border-radius: var(--rad);
   font-size: 9px;
   font-weight: 900;
   text-transform: uppercase;
@@ -336,13 +336,13 @@
 .calendardoneButton {
   flex: 1;
   padding: 0.75rem;
-  background: #1e3a8a;
-  border-radius: 0.75rem;
+  background: var(--clr-primary);
+  border-radius: var(--rad);
   font-size: 9px;
   font-weight: 900;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  color: #ffffff;
+  color: var(--clr-white);
   border: none;
   cursor: pointer;
 }
@@ -354,13 +354,13 @@
 .emptyState {
   padding: 5rem 0;
   text-align: center;
-  background: #ffffff;
+  background: var(--clr-white);
 }
 
 .emptytitle {
   font-size: 20px;
   font-weight: 900;
-  color: #1e3a8a;
+  color: var(--clr-primary);
   text-transform: uppercase;
   margin-bottom: 0.25rem;
 }
@@ -375,7 +375,7 @@
 
 .cardcontainer {
   background-color: white;
-  border-radius: 1.5rem;
+  border-radius: var(--rad);
   border: 1px solid #f3f4f6;
   box-shadow: 0 1px 2px rgba(0,0,0,0.05);
   min-height: 400px;
@@ -385,20 +385,19 @@
 
 .cardheader {
   display: grid;
-  grid-template-columns:35% 18% 15% 14% auto;
+  grid-template-columns:35% 18% 18% 14% auto;
   padding: 1.5rem 2rem;
-  border-radius: 1.5rem 1.5rem 0 0 ;
-  background-color: rgb(238, 238, 238);
+  border-radius: var(--rad) var(--rad) 0 0 ;
+  background-color: #eaedf1;
   border-bottom: 1px solid #f3f4f6;
   gap: 1rem;
 }
 
 .cardheaderText {
   font-size: 11px;
-  font-weight: 800;
-  color: #5a5a5a;
+  font-weight: var(--fw-title);
+  color: var(--clr-text-muted);
   text-transform: uppercase;
-  letter-spacing: 0.1em;
   justify-self: start;
 }
 
@@ -426,8 +425,8 @@
 .itemimageWrapper {
   height: 3rem;
   width: 3rem;
-  background-color: #111827;
-  border-radius: 0.75rem;
+  background-color: var(--clr-black);
+  border-radius: var(--rad);
   flex-shrink: 0;
   overflow: hidden;
   
@@ -443,7 +442,7 @@
 .itemname {
   font-size: 20px;
   font-weight: 700;
-  color: #000000;
+  color: var(--clr-foreground);
   margin-bottom: 0.25rem;
 }
 
@@ -453,13 +452,14 @@
   gap: 0.5rem;
   font-size: 10px;
   font-weight: 500;
-  color: #878e99;
+  color: var(--clr-text-muted);
   text-transform: capitalize;
 }
 
 .itemtext {
   font-size: 15px;
-  color: #000000;
+  color: var(--clr-foreground);
+  font-weight: var(--fw-h4);
 }
 
 .itempriceWrapper {
@@ -470,14 +470,14 @@
 
 .itemcurrency {
    font-size: 15px;
-  font-weight: 780;
-  color: #1e3a8a;
+  font-weight: var(--fw-h4);
+  color: var(--clr-primary);
 }
 
 .itemprice {
    font-size: 15px;
-  font-weight: 780;
-  color: #1e3a8a;
+  font-weight: var(--fw-h4);
+  color: var(--clr-primary);
 }
 
 .itempriceLost {
@@ -496,8 +496,8 @@
   align-items: center;
   gap: 0.375rem;
   padding: 0.25rem 0.75rem;
-  font-size: 10px;
-  font-weight: 900;
+  font-size: var(--fs-live);
+  font-weight: var(--fw-title);
   text-transform: uppercase;
   letter-spacing: 0.1em;
   border-radius: 9999px;
@@ -524,12 +524,12 @@
 .itembutton {
   padding: 0.5rem 1rem;
   border: 1px solid #d2d5dc;
-  border-radius: 0.75rem;
+  border-radius: var(--rad);
   font-size: 9px;
   font-weight: 900;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  color: #1e3a8a;
+  color: var(--clr-primary);
   background: transparent;
   transition: all 0.2s;
   cursor: pointer;

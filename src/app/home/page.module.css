@@ -7,7 +7,7 @@
 }
 
 .container {
-  max-width: 80rem;
+  width: 80rem;
   display: flex;
   flex-direction: column;
   margin-left: auto; 
@@ -31,8 +31,8 @@
 .card {
   display: grid;
   grid-template-columns: repeat(1, 1fr); /* grid-cols-1 */
-  gap: 32px;
-  margin-bottom: 48px; /* mb-12 */
+  gap: 24px;
+  margin-bottom: 48px;
 }
 
 /* md:grid-cols-2 */
