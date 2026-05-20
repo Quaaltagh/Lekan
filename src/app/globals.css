@@ -11,7 +11,7 @@
   --clr-text-muted: #64748b;     /* Muted/Secondary Text */
   --clr-white: #ffffff;        /* White Card Background */
   --clr-border: #e2e8f0;         /* Soft Border Color */
-  --clr-black: #0f172a;
+  --clr-black: #1a1a1a;
   --clr-live: #f97316;
 
   /* Typography */
@@ -23,7 +23,7 @@
   --fs-lg: 1.5rem;  
   --fs-tittle: 2rem;
 
-  --fw-title: 800;
+  --fw-title: 700;
   --fw-h4: 600;
 
   /* Spacing */

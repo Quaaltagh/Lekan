@@ -1,27 +1,30 @@
 .all {
+  display: flex;
   min-height: 100vh;
-  background-color: white;
-  color: #111827;
-  font-family: sans-serif;
+  background-color:var(--clr-white);
+  /* color: #111827; */
+  display: flex;
+  flex-direction: column;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow: auto;
+  width: 100%;
 }
 
 .mainContainer {
+  width: 80rem;
+  /* max-width: 1100px; */
   display: flex;
   flex-direction: column;
   margin-left: auto; 
   margin-right: auto;
-  padding: 32px 256px;
+  padding: 50px 128px 32px 128px;
   gap: 2rem; 
   align-items: center;
-}
-
-.header{
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    width: 100%;
-    height: fit-content;
-    align-items: center;
 }
 
 .notiHeader {
@@ -32,16 +35,26 @@
   justify-content: space-between;
 }
 
+.header{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 100%;
+  height: fit-content;
+  align-items: center;
+}
+
 .notiTitle {
-  font-size: 36px;
-  font-weight: 900;
-  color: #172554;
+  font-size: var(--fs-tittle);
+  font-weight: var(--fw-title);
+  margin: 0;
+  color: var(--clr-black);
 }
 
 .notiDescription {
-  color: #6b7280;
-  font-size: 12px;
-  font-weight: 500;
+  color: var(--clr-text-muted);
+  font-size: var(--fs-sm);
+  /* font-weight: 500; */
 }
 
 .transactionSection {
@@ -50,7 +63,7 @@
 }
 
 .viewAll {
-  color: #1e3a8a;
+  color: var(--clr-primary);
   text-decoration: none;
   font-size: 14px;
   font-weight: 600;
@@ -63,22 +76,21 @@
 }
 
 .transactionItem {
-  background: white;
+  background: var(--clr-white);
   border: 1px solid #f1f5f9;
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   padding: 16px 20px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  transition: all 0.2s ease;
-  cursor: pointer;
+  transition: all 0.2s ease;  
 }
 
-.transactionItem:hover {
+/* .transactionItem:hover {
   border-color: #e2e8f0;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   transform: scale(1.005);
-}
+} */
 
 .transactionDescription {
   display: flex;
@@ -89,7 +101,7 @@
   width: 44px;
   height: 44px;
   background: #f8fafc;
-  border-radius: 12px;
+  border-radius: var(--rad);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -104,13 +116,13 @@
 .txTitle {
   font-weight: 600;
   font-size: 15px;
-  color: #0f172a;
+  color: var(--clr-foreground);
   margin: 0;
 }
 
 .txDesc {
   font-size: 13px;
-  color: #64748b;
+  color: var(--clr-text-muted);
   margin-top: 2px;
 }
 
@@ -133,4 +145,13 @@
   text-transform: uppercase;
   margin-top: 4px;
   font-weight: 500;
+}
+
+@media (max-width: 900px) {
+  .cardGrid {
+    grid-template-columns: 1fr;
+  }
+  .mainContent {
+    padding: 80px 24px 40px 24px;
+  }
 }
