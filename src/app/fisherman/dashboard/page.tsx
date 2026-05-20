@@ -1,6 +1,6 @@
 'use client';
 import React, { useEffect } from 'react';
-import { Activity, Wallet, Ellipsis, Fish } from 'lucide-react';
+import { Activity, Wallet, Ellipsis, Fish, Link } from 'lucide-react';
 import SideFisherman from '../../components/sideFisherman';
 import NavbarFisherman from '../../components/NavbarFisherman';
 import styles from './page.module.css';
@@ -191,7 +191,7 @@ export default function FishermanDashboard() {
                 <h2 className={styles.auctionHeaderTitle}>Daftar Lelang Terkini</h2>
                 <p className={styles.auctionHeaderSubtitle}>Monitor hasil tangkapan Anda secara real-time.</p>
               </div>
-              <a href="#" className={styles.viewAllLink}>Lihat Semua →</a>
+              <a href="/fisherman/enchantedAuctionHistory" className={styles.viewAllLink}>Lihat Semua →</a>
             </div>
 
             {error && (
