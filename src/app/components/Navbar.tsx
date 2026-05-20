@@ -43,7 +43,7 @@ function getInitials(name?: string, email?: string): string {
   return '?';
 }
 
-// ─── Avatar component — foto jika ada, fallback ke inisial ───────────────────
+// ─── Avatar component ─────────────────────────────────────────────────────────
 function UserAvatar({ avatarUrl, name, email }: {
   avatarUrl: string | null;
   name?: string;
@@ -62,7 +62,6 @@ function UserAvatar({ avatarUrl, name, email }: {
     );
   }
 
-  // Fallback: inisial
   return (
     <div className={styles.avatarFallback}>
       {getInitials(name, email)}
@@ -150,35 +149,25 @@ export default function Navbar() {
   // ── Avatar state ──────────────────────────────────────────────────────────
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
 
-  // Fetch avatar_url dari /api/profile/:userId saat user login
-  // Jika profileService sudah expose avatar_url di AuthContext, bisa langsung pakai user.avatar_url
   useEffect(() => {
     if (!user?.id || !token) {
       setAvatarUrl(null);
       return;
     }
 
-    // Cek apakah AuthContext sudah menyimpan avatar_url
-    // Kalau ya, pakai langsung tanpa fetch tambahan
     if ((user as any).avatar_url) {
       setAvatarUrl((user as any).avatar_url);
       return;
     }
 
-    // Fallback: fetch dari /api/profile/:userId
     fetch(`${API_URL}/api/profile/${user.id}`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then(res => res.ok ? res.json() : null)
-      .then(data => {
-        if (data?.avatar_url) setAvatarUrl(data.avatar_url);
-      })
-      .catch(() => {
-        // Gagal fetch avatar — tampilkan inisial saja
-      });
+      .then(data => { if (data?.avatar_url) setAvatarUrl(data.avatar_url); })
+      .catch(() => {});
   }, [user?.id, token]);
 
-  // Reset avatar saat logout
   useEffect(() => {
     if (!user) setAvatarUrl(null);
   }, [user]);
@@ -291,18 +280,24 @@ export default function Navbar() {
 
       {/* Kanan - Actions */}
       <div className={styles.navRight}>
-        <Link href="/notification">
-          <Bell
-            className={`${styles.icon} ${isNotification ? styles.iconActive : styles.iconInactive}`}
-            size={20}
-          />
-        </Link>
-        <Link href={isWallet ? '/' : '/buyer/Dompet'}>
-          <Wallet
-            className={`${styles.icon} ${isWallet ? styles.iconActive : styles.iconInactive}`}
-            size={20}
-          />
-        </Link>
+
+        {/* ✅ Bell & Wallet hanya tampil kalau user sudah login */}
+        {user && (
+          <>
+            <Link href="/notification">
+              <Bell
+                className={`${styles.icon} ${isNotification ? styles.iconActive : styles.iconInactive}`}
+                size={20}
+              />
+            </Link>
+            <Link href={isWallet ? '/buyer' : '/buyer/Dompet'}>
+              <Wallet
+                className={`${styles.icon} ${isWallet ? styles.iconActive : styles.iconInactive}`}
+                size={20}
+              />
+            </Link>
+          </>
+        )}
 
         {user ? (
           <div
@@ -311,7 +306,6 @@ export default function Navbar() {
             onMouseLeave={() => setDropdownOpen(false)}
           >
             <button className={styles.profileButton}>
-              {/* Avatar: foto dari profile atau fallback inisial */}
               <div className={styles.avatar}>
                 <UserAvatar
                   avatarUrl={avatarUrl}
@@ -337,7 +331,6 @@ export default function Navbar() {
             {dropdownOpen && (
               <div className={styles.dropdown}>
                 <div className={styles.dropdownHeader}>
-                  {/* Avatar kecil di dropdown header */}
                   <div className={styles.dropdownAvatar}>
                     <UserAvatar
                       avatarUrl={avatarUrl}
@@ -369,6 +362,7 @@ export default function Navbar() {
             )}
           </div>
         ) : (
+          // Tombol Masuk & Daftar — hanya tampil kalau belum login
           <div className={styles.divauth}>
             <Link href="/auth?mode=login" className={styles.auth}>Masuk</Link>
             {' | '}
