@@ -11,12 +11,12 @@ import { useAuth } from "@/context/AuthContext";
 // Utility to format date nicely (e.g., "Oct 24, 2023")
 const formatDate = (dateString: string) => {
   const d = new Date(dateString);
-  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  return d.toLocaleDateString('id-ID', { month: 'short', day: 'numeric', year: 'numeric' });
 };
 
-// Utility to format time for arrival (e.g., "Today, 14:00")
+// Utility to format time for arrival (e.g., "Hari Ini, 14:00")
 const formatEstArrival = (dateString: string) => {
-  if (!dateString) return "N/A";
+  if (!dateString) return "Tidak tersedia";
   const d = new Date(dateString);
   const today = new Date();
   
@@ -24,10 +24,10 @@ const formatEstArrival = (dateString: string) => {
     d.getMonth() === today.getMonth() &&
     d.getFullYear() === today.getFullYear();
 
-  const timePart = d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
+  const timePart = d.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', hour12: false });
   
   if (isToday) {
-    return `Today, ${timePart}`;
+    return `Hari Ini, ${timePart}`;
   }
   return `${formatDate(dateString)}, ${timePart}`;
 };
@@ -46,7 +46,7 @@ export default function LogisticsPage() {
       setData(result);
       setError(null);
     } catch (err: any) {
-      setError(err.message || "Failed to load logistics data");
+      setError(err.message || "Gagal memuat data logistik");
     } finally {
       setLoading(false);
     }
@@ -58,40 +58,49 @@ export default function LogisticsPage() {
 
   // Define our static partners
   const STATIC_PARTNERS = [
-    { id: 'boa', initials: 'BOa', name: 'Blue Ocean Freight', desc: 'Premium Cold Chain' },
-    { id: 'me', initials: 'ME', name: 'Maritime Express', desc: 'Standard Shipping' },
-    { id: 'jni', initials: 'JNI', name: 'Jalur Negara Ikan', desc: 'Domestic Partner' }
+    { id: 'boa', initials: 'BOa', name: 'Blue Ocean Freight', desc: 'Rantai Dingin Premium' },
+    { id: 'me', initials: 'ME', name: 'Maritime Express', desc: 'Pengiriman Standar' },
+    { id: 'jni', initials: 'JNI', name: 'Jalur Negara Ikan', desc: 'Mitra Domestik' }
   ];
 
   if (!user && !loading) {
-    return <div className={styles.errorState}>Please login to view this page.</div>;
+    return <div className={styles.errorState}>Silakan masuk untuk melihat halaman ini.</div>;
   }
 
   const renderStatusBadge = (status: LogisticsShipment['status']) => {
     switch (status) {
-      case 'in_transit':
+      case 'pending':
         return (
-          <div className={`${styles.badge} ${styles.badgeInTransit}`}>
+          <div className={`${styles.badge} ${styles.badgePending}`}>
             <div className={styles.badgeDot}></div>
-            In Transit
+            Menunggu Pengiriman
           </div>
         );
-      case 'out_for_delivery':
+      case 'shipped':
         return (
-          <div className={`${styles.badge} ${styles.badgeOutForDelivery}`}>
+          <div className={`${styles.badge} ${styles.badgeShipped}`}>
             <div className={styles.badgeDot}></div>
-            Out for Delivery
+            Dalam Perjalanan (OTW)
+          </div>
+        );
+      case 'arrived':
+        return (
+          <div className={`${styles.badge} ${styles.badgeArrived}`}>
+            <div className={styles.badgeDot}></div>
+            Tiba di Pelabuhan
           </div>
         );
       case 'delivered':
         return (
           <div className={`${styles.badge} ${styles.badgeDelivered}`}>
-            Delivered
+            <div className={styles.badgeDot}></div>
+            Selesai / Terkirim
           </div>
         );
       default:
         return (
-          <div className={`${styles.badge} ${styles.badgeDelivered}`}>
+          <div className={`${styles.badge} ${styles.badgePending}`}>
+            <div className={styles.badgeDot}></div>
             {status}
           </div>
         );
@@ -108,9 +117,9 @@ export default function LogisticsPage() {
           {/* Header */}
           <div className={styles.headerContainer}>
             <div>
-              <h1 className={styles.pageTitle}>Logistics Control</h1>
+              <h1 className={styles.pageTitle}>Kontrol Logistik</h1>
               <p className={styles.pageSubtitle}>
-                Manage shipments, track active deliveries, and review historical logistics data.
+                Kelola pengiriman, lacak pengiriman aktif, dan tinjau riwayat logistik.
               </p>
             </div>
           </div>
@@ -118,7 +127,7 @@ export default function LogisticsPage() {
           {loading && (
             <div className={styles.loadingState}>
               <Loader2 size={32} className="animate-spin" style={{ margin: "0 auto 16px" }} />
-              Loading logistics data...
+              Memuat data logistik...
             </div>
           )}
 
@@ -138,30 +147,30 @@ export default function LogisticsPage() {
                 <div className={styles.sectionBox}>
                   <div className={styles.sectionTitleWrap}>
                     <Truck size={20} color="#0f172a" />
-                    <h2 className={styles.sectionTitle}>Active Shipments</h2>
+                    <h2 className={styles.sectionTitle}>Pengiriman Aktif</h2>
                   </div>
 
                   {data.active.length === 0 ? (
-                    <div className={styles.emptyState}>No active shipments at the moment.</div>
+                    <div className={styles.emptyState}>Tidak ada pengiriman aktif saat ini.</div>
                   ) : (
                     data.active.map((shipment) => (
                       <div key={shipment.id} className={styles.shipmentCard}>
                         <div className={styles.shipmentHeader}>
                           <div>
                             <div className={styles.fishMeta}>
-                              {shipment.auctions?.name || 'Unknown Item'} • {shipment.auctions?.weight_kg || 0}KG
+                              {shipment.auctions?.name || 'Item Tidak Diketahui'} • {shipment.auctions?.weight_kg || 0}KG
                             </div>
-                            <h3 className={styles.destination}>{shipment.destination || 'Unknown Hub'}</h3>
+                            <h3 className={styles.destination}>{shipment.destination || 'Lokasi Tidak Diketahui'}</h3>
                           </div>
                           {renderStatusBadge(shipment.status)}
                         </div>
                         
                         <div className={styles.shipmentFooter}>
                           <div className={styles.estArrival}>
-                            Est. Arrival: {formatEstArrival(shipment.estimated_arrival)}
+                            Estimasi Sampai: {formatEstArrival(shipment.estimated_arrival)}
                           </div>
-                          <a href="#" className={styles.trackLink}>
-                            Track <ArrowRight size={14} />
+                          <a href={`/fisherman/AuctionDetail/${shipment.auction_id}`} className={styles.trackLink}>
+                            Lacak <ArrowRight size={14} />
                           </a>
                         </div>
                       </div>
@@ -172,19 +181,20 @@ export default function LogisticsPage() {
                 {/* Shipping History Box */}
                 <div className={styles.sectionBox}>
                   <div className={styles.sectionTitleWrap}>
-                    <h2 className={styles.sectionTitle}>Shipping History</h2>
+                    <h2 className={styles.sectionTitle}>Riwayat Pengiriman</h2>
                   </div>
 
                   {data.history.length === 0 ? (
-                    <div className={styles.emptyState}>No historical data available.</div>
+                    <div className={styles.emptyState}>Tidak ada data histori.</div>
                   ) : (
                     <table className={styles.historyTable}>
                       <thead>
                         <tr>
-                          <th>DATE</th>
-                          <th>DESTINATION</th>
-                          <th>CARGO</th>
+                          <th>TANGGAL</th>
+                          <th>TUJUAN</th>
+                          <th>KARGO</th>
                           <th>STATUS</th>
+                          <th>AKSI</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -192,8 +202,13 @@ export default function LogisticsPage() {
                           <tr key={shipment.id}>
                             <td>{formatDate(shipment.created_at)}</td>
                             <td className={styles.historyDest}>{shipment.destination || 'Unknown'}</td>
-                            <td>{shipment.auctions?.weight_kg || 0}kg {shipment.auctions?.name || 'Item'}</td>
+                            <td>{shipment.auctions?.weight_kg || 0}kg {shipment.auctions?.name || 'Barang'}</td>
                             <td>{renderStatusBadge(shipment.status)}</td>
+                            <td>
+                              <a href={`/fisherman/AuctionDetail/${shipment.auction_id}`} className={styles.trackLink}>
+                                Detail
+                              </a>
+                            </td>
                           </tr>
                         ))}
                       </tbody>
@@ -208,7 +223,7 @@ export default function LogisticsPage() {
                 <div className={styles.partnersBox}>
                   <div className={styles.sectionTitleWrap}>
                     <Handshake size={20} color="#0f172a" />
-                    <h2 className={styles.sectionTitle}>Logistics Partners</h2>
+                    <h2 className={styles.sectionTitle}>Mitra Logistik</h2>
                   </div>
 
                   {STATIC_PARTNERS.map(partner => (

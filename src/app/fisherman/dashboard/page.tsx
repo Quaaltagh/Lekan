@@ -1,6 +1,6 @@
 'use client';
 import React, { useEffect } from 'react';
-import { Activity, Wallet, Ellipsis, Fish } from 'lucide-react';
+import { Activity, Wallet, Ellipsis, Fish, Link } from 'lucide-react';
 import SideFisherman from '../../components/sideFisherman';
 import NavbarFisherman from '../../components/NavbarFisherman';
 import styles from './page.module.css';
@@ -23,6 +23,7 @@ function formatRp(value: number) {
 
 // ─── Auction Item ─────────────────────────────────────────────────────────────
 function AuctionItem({ auction }: { auction: Auction }) {
+  const router = useRouter();
   const status = STATUS_CONFIG[auction.status] ?? { label: auction.status, color: '#94a3b8' };
   const currentPrice = auction.current_bid ?? auction.start_price;
 
@@ -56,13 +57,13 @@ function AuctionItem({ auction }: { auction: Auction }) {
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1rem', marginBottom: '1rem' }}>
           <div>
-            <p style={{ fontSize: '0.75rem', color: '#94a3b8' }}>CURRENT BID</p>
+            <p style={{ fontSize: '0.75rem', color: '#94a3b8' }}>Bid Saat Ini</p>
             <p style={{ fontWeight: 'bold', color: '#1e40af' }}>
               {currentPrice.toLocaleString('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 })}
             </p>
           </div>
           <div>
-            <p style={{ fontSize: '0.75rem', color: '#94a3b8' }}>WEIGHT</p>
+            <p style={{ fontSize: '0.75rem', color: '#94a3b8' }}>Berat</p>
             <p style={{ fontWeight: 'bold' }}>{auction.weight_kg} kg</p>
           </div>
           <div>
@@ -83,12 +84,15 @@ function AuctionItem({ auction }: { auction: Auction }) {
         </div>
 
         <div style={{ display: 'flex', gap: '0.75rem' }}>
-          <button style={{ flex: 1, padding: '0.5rem', borderRadius: '0.5rem', border: '1px solid #e2e8f0', background: '#f8fafc', cursor: 'pointer' }}>
-            Details
+          <button 
+            onClick={() => router.push(`/fisherman/AuctionDetail/${auction.id}`)}
+            style={{ flex: 1, padding: '0.5rem', borderRadius: '0.5rem', border: '1px solid #e2e8f0', background: '#f8fafc', color: '#1e293b', cursor: 'pointer' }}
+          >
+            Detail
           </button>
           {auction.status === 'active' && (
             <button style={{ flex: 1, padding: '0.5rem', borderRadius: '0.5rem', background: '#1e40af', color: 'white', border: 'none', cursor: 'pointer' }}>
-              Boost
+              Tingkatkan
             </button>
           )}
         </div>
@@ -147,12 +151,12 @@ export default function FishermanDashboard() {
                   <div style={{ backgroundColor: '#eff6ff', color: '#2563eb', padding: '0.75rem', borderRadius: '0.75rem' }}>
                     <Activity size={20} />
                   </div>
-                  {activeCount > 0 && <span className={styles.badgeLive}>LIVE</span>}
+                  {activeCount > 0 && <span className={styles.badgeLive}>SEDANG</span>}
                 </div>
-                <p style={{ fontSize: '0.875rem', color: '#64748b' }}>Active Auctions</p>
+                <p style={{ fontSize: '0.875rem', color: '#64748b' }}>Lelang Aktif</p>
                 <h3 style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>
                   {loading ? '—' : activeCount}{' '}
-                  <span style={{ fontSize: '0.875rem', color: '#64748bbc', fontWeight: 'normal' }}>Lots</span>
+                  <span style={{ fontSize: '0.875rem', color: '#64748bbc', fontWeight: 'normal' }}>Lot</span>
                 </h3>
               </div>
 
@@ -162,7 +166,7 @@ export default function FishermanDashboard() {
                     <Wallet size={20} />
                   </div>
                 </div>
-                <p style={{ fontSize: '0.875rem', color: '#64748b' }}>Total Earnings</p>
+                <p style={{ fontSize: '0.875rem', color: '#64748b' }}>Total Pendapatan</p>
                 <h3 style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>
                   {loading ? '—' : formatRp(totalEarnings)}
                 </h3>
@@ -187,7 +191,7 @@ export default function FishermanDashboard() {
                 <h2 className={styles.auctionHeaderTitle}>Daftar Lelang Terkini</h2>
                 <p className={styles.auctionHeaderSubtitle}>Monitor hasil tangkapan Anda secara real-time.</p>
               </div>
-              <a href="#" className={styles.viewAllLink}>Lihat Semua →</a>
+              <a href="/fisherman/enchantedAuctionHistory" className={styles.viewAllLink}>Lihat Semua →</a>
             </div>
 
             {error && (
@@ -212,9 +216,9 @@ export default function FishermanDashboard() {
           </div>
 
           {/* Sidebar Kanan */}
-          <div style={{ width: '20rem' }}>
+          {/* <div style={{ width: '20rem' }}>
             <div className={styles.ctaBox}>
-              <h3 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>Siap Melantai di Bursa?</h3>
+              <h3 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '0.5rem', color: 'white' }}>Siap Melantai di Bursa?</h3>
               <p style={{ color: '#bfdbfe', fontSize: '0.875rem', marginBottom: '1.5rem' }}>
                 Unggah hasil tangkapan Anda hari ini dan dapatkan harga terbaik dari pembeli global.
               </p>
@@ -222,29 +226,8 @@ export default function FishermanDashboard() {
               onClick={() => router.push('/fisherman/uploadAuction/')}>
                 + Unggah Lelang Baru
               </button>
-            </div>
-
-            <div style={{ marginTop: '1.5rem' }}>
-              <p className={styles.marketTrendTitle}>Market Trend</p>
-              <div className={styles.marketTrendCard}>
-                {[
-                  { name: 'Cakalang',     change: '+12.4%', positive: true },
-                  { name: 'Udang Vaname', change: '-2.1%',  positive: false },
-                  { name: 'Kerapu',       change: '+8.5%',  positive: true },
-                ].map(item => (
-                  <div key={item.name} className={styles.marketTrendItem}>
-                    <div className={styles.trendInfo}>
-                      <span className={styles.indicatorDot} style={{ backgroundColor: item.positive ? '#3b82f6' : '#ef4444' }} />
-                      {item.name}
-                    </div>
-                    <span className={item.positive ? styles.trendPositive : styles.trendNegative}>
-                      {item.change}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
+            </div> */}
+          {/* </div> */}
         </div>
       </main>
     </div>

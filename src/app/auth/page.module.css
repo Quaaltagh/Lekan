@@ -1,0 +1,411 @@
+/* ── Layout ── */
+.pageWrapper {
+  display: flex;
+  height: 100vh;
+  background: #ffffff;
+  overflow: hidden;
+}
+
+/* ── Kiri - Hero ── */
+.hero {
+  display: none;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 48px;
+  background: linear-gradient(160deg, #1e293b 0%, #1e3a8a 100%);
+  color: white;
+  overflow: hidden;
+  position: relative;
+}
+
+@media (min-width: 768px) {
+  .hero {
+    display: flex;
+    width: 50%;
+  }
+}
+
+.heroDecor {
+  position: absolute;
+  width: 320px;
+  height: 320px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.04);
+  top: -80px;
+  right: -80px;
+}
+
+.heroDecor2 {
+  position: absolute;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.04);
+  bottom: 60px;
+  left: -60px;
+}
+
+.heroTop {
+  position: relative;
+  z-index: 1;
+}
+
+.heroLogo {
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  margin-bottom: 12px;
+  color: #ffffff;
+}
+
+.heroTagline {
+  font-size: 1rem;
+  color: #94a3b8;
+  line-height: 1.6;
+}
+
+.heroBottom {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.heroFeature {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.heroFeatureIcon {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  padding: 8px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.heroFeatureTitle {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #f1f5f9;
+  margin-bottom: 2px;
+}
+
+.heroFeatureDesc {
+  font-size: 0.8rem;
+  color: #64748b;
+  line-height: 1.5;
+}
+
+/* ── Kanan - Form ── */
+.formSide {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 24px;
+  overflow-y: auto;
+}
+
+@media (min-width: 768px) {
+  .formSide {
+    width: 50%;
+  }
+}
+
+.formCard {
+  width: 100%;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* ── Heading ── */
+.formHeading {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.formTitle {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+}
+
+.formSubtitle {
+  font-size: 0.875rem;
+  color: #64748b;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* ── Role Toggle ── */
+.roleToggle {
+  display: flex;
+  background: #f1f5f9;
+  border-radius: 10px;
+  padding: 4px;
+  gap: 4px;
+}
+
+.roleBtn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 9px 12px;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: transparent;
+  color: #64748b;
+}
+
+.roleBtnActive {
+  background: #ffffff;
+  color: #1e3a8a;
+  font-weight: 600;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+}
+
+/* ── Fields ── */
+.fields {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.fieldGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.fieldLabel {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #374151;
+  letter-spacing: 0.02em;
+}
+
+.fieldLabelRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.forgotLink {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #1e3a8a;
+  text-decoration: none;
+  transition: color 0.15s;
+}
+
+.forgotLink:hover {
+  color: #1e40af;
+  text-decoration: underline;
+}
+
+.inputWrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.inputIcon {
+  position: absolute;
+  left: 12px;
+  color: #9ca3af;
+  display: flex;
+  align-items: center;
+  pointer-events: none;
+}
+
+.input {
+  width: 100%;
+  padding: 10px 12px 10px 38px;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 8px;
+  background: #f9fafb;
+  font-size: 0.875rem;
+  color: #111827;
+  transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.input::placeholder {
+  color: #9ca3af;
+}
+
+.input:focus {
+  border-color: #1e3a8a;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.08);
+}
+
+.inputRight {
+  position: absolute;
+  right: 12px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #9ca3af;
+  display: flex;
+  align-items: center;
+  padding: 0;
+  transition: color 0.15s;
+}
+
+.inputRight:hover {
+  color: #374151;
+}
+
+/* ── Error ── */
+.errorBox {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  background: #fef2f2;
+  border: 1.5px solid #fecaca;
+  color: #dc2626;
+  font-size: 0.8rem;
+  padding: 10px 12px;
+  border-radius: 8px;
+  line-height: 1.5;
+}
+
+/* ── Submit ── */
+.submitBtn {
+  width: 100%;
+  padding: 11px;
+  background: #1e3a8a;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, opacity 0.2s;
+  letter-spacing: 0.01em;
+}
+
+.submitBtn:hover:not(:disabled) {
+  background: #1e40af;
+}
+
+.submitBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ── Divider ── */
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.dividerLine {
+  flex: 1;
+  height: 1px;
+  background: #e5e7eb;
+}
+
+.dividerText {
+  font-size: 0.7rem;
+  color: #9ca3af;
+  letter-spacing: 0.08em;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+/* ── Social ── */
+.socialGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.socialBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 9px;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 8px;
+  background: #ffffff;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #374151;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.socialBtn:hover {
+  background: #f8fafc;
+  border-color: #d1d5db;
+}
+
+/* ── Toggle mode ── */
+.toggleMode {
+  text-align: center;
+  font-size: 0.85rem;
+  color: #6b7280;
+  margin: 0;
+}
+
+.toggleBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #1e3a8a;
+  padding: 0;
+  margin-left: 4px;
+  transition: color 0.15s;
+}
+
+.toggleBtn:hover {
+  color: #1e40af;
+  text-decoration: underline;
+}
+
+/* ── Password strength indicator (register) ── */
+.strengthBar {
+  display: flex;
+  gap: 4px;
+  margin-top: 6px;
+}
+
+.strengthSegment {
+  flex: 1;
+  height: 3px;
+  border-radius: 999px;
+  background: #e5e7eb;
+  transition: background 0.3s;
+}
+
+.strengthWeak   { background: #ef4444; }
+.strengthFair   { background: #f59e0b; }
+.strengthStrong { background: #22c55e; }
+
+.strengthLabel {
+  font-size: 0.72rem;
+  color: #6b7280;
+  margin-top: 4px;
+}

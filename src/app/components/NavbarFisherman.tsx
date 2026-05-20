@@ -40,7 +40,7 @@ export default function NavbarFisherman() {
       <div className={styles.navRight}>
 
         {/* ── Bell ── */}
-        <a href="#"><Bell className={styles.icon} size={20} /></a>
+        <a href="/notification"><Bell className={styles.icon} size={20} /></a>
 
         {/* ── Wallet Dropdown ── */}
         <div className={styles.dropdownWrapper} ref={walletRef}>
@@ -95,12 +95,12 @@ export default function NavbarFisherman() {
                 <p className={styles.dropdownEmail}>{user?.email}</p>
               </div>
               <hr className={styles.divider} />
-              <button className={styles.dropdownItem}>
+              {/* <button className={styles.dropdownItem} onClick={() => { setProfileOpen(false); router.push('/fisherman/settingsFisherman'); }}>
                 <User size={14} /> Profil Saya
-              </button>
-              <button className={styles.dropdownItem}>
+              </button> */}
+              {/* <button className={styles.dropdownItem} onClick={() => { setProfileOpen(false); router.push('/fisherman/settingsFisherman'); }}>
                 <Settings size={14} /> Pengaturan
-              </button>
+              </button> */}
               <hr className={styles.divider} />
               <button className={`${styles.dropdownItem} ${styles.dropdownLogout}`} onClick={handleLogout}>
                 <LogOut size={14} /> Keluar

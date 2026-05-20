@@ -10,10 +10,10 @@ import { useRouter } from 'next/navigation';
 import { auctionService } from '@/services/auctionService';
 
 const DURATION_OPTIONS = [
-  { label: '2 Hours',  value: '2'  },
-  { label: '6 Hours',  value: '6'  },
-  { label: '12 Hours', value: '12' },
-  { label: '1 Day',    value: '24' },
+  { label: '2 Jam',   value: '2'  },
+  { label: '6 Jam',   value: '6'  },
+  { label: '12 Jam',  value: '12' },
+  { label: '1 Hari',  value: '24' },
 ];
 
 export default function UploadAuction() {
@@ -117,7 +117,7 @@ export default function UploadAuction() {
 
         <div className={styles.content}>
           <div className={styles.header}>
-            <h1 className={styles.title}>Unggah Auction</h1>
+            <h1 className={styles.title}>Unggah Lelang</h1>
             <p className={styles.description}>
               Daftarkan hasil tangkapan segar Anda ke pasar global. Pastikan semua detail akurat untuk menarik penawar bernilai tinggi.
             </p>
@@ -132,7 +132,7 @@ export default function UploadAuction() {
                 <label className={styles.label}>Nama Ikan</label>
                 <input
                   type="text"
-                  placeholder="e.g. Yellowfin Tuna, Red Snapper"
+                  placeholder="contoh: Tuna Sirip Kuning, Kakap Merah"
                   className={styles.input}
                   value={fishName}
                   onChange={e => setFishName(e.target.value)}
@@ -145,17 +145,17 @@ export default function UploadAuction() {
                   <label className={styles.label}>Spesies <span style={{ color: '#94a3b8', fontWeight: 'normal' }}>(opsional)</span></label>
                   <input
                     type="text"
-                    placeholder="e.g. Thunnus albacares"
+                    placeholder="contoh: Thunnus albacares"
                     className={styles.input}
                     value={species}
                     onChange={e => setSpecies(e.target.value)}
                   />
                 </div>
                 <div className={styles.field}>
-                  <label className={styles.label}>Grade <span style={{ color: '#94a3b8', fontWeight: 'normal' }}>(opsional)</span></label>
+                  <label className={styles.label}>Kelas <span style={{ color: '#94a3b8', fontWeight: 'normal' }}>(opsional)</span></label>
                   <input
                     type="text"
-                    placeholder="e.g. A+, Premium, Export"
+                    placeholder="contoh: A+, Premium, Export"
                     className={styles.input}
                     value={grade}
                     onChange={e => setGrade(e.target.value)}
@@ -204,12 +204,12 @@ export default function UploadAuction() {
                         </button>
                       </motion.div>
                     ) : (
-                      <motion.div key="placeholder" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="z-10">
+                      <motion.div key="placeholder" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="z-10 flex flex-col items-center">
                         <div className={styles.iconWrapper}>
                           <Camera className={styles.icon} />
                         </div>
-                        <h4 className={styles.dropTitle}>Click or drag to upload</h4>
-                        <p className={styles.dropDesc}>SVG, PNG, JPG (max 10MB)</p>
+                        <h4 className={styles.dropTitle}>Klik atau seret untuk unggah</h4>
+                        <p className={styles.dropDesc}>SVG, PNG, JPG (maks 10MB)</p>
                       </motion.div>
                     )}
                   </AnimatePresence>
@@ -219,7 +219,7 @@ export default function UploadAuction() {
               {/* Weight & Price */}
               <div className={styles.grid}>
                 <div className={styles.field}>
-                  <label className={styles.label}>Weight / Quantity</label>
+                  <label className={styles.label}>Berat / Jumlah</label>
                   <div className={styles.relative}>
                     <input
                       type="number"
@@ -234,7 +234,7 @@ export default function UploadAuction() {
                 </div>
 
                 <div className={styles.field}>
-                  <label className={styles.label}>Starting Price</label>
+                <label className={styles.label}>Harga Awal</label>
                   <div className={styles.relative}>
                     <span className={styles.rp}>Rp</span>
                     <input
@@ -254,7 +254,7 @@ export default function UploadAuction() {
 
               {/* Duration */}
               <div className={styles.field}>
-                <label className={styles.label}>Auction Duration</label>
+                <label className={styles.label}>Durasi Lelang</label>
                 <select
                   className={styles.select}
                   value={duration}
@@ -299,13 +299,12 @@ export default function UploadAuction() {
 
             {/* ── Live Preview ── */}
             <div className={styles.previewcontainer}>
-              <h4 className={styles.sectionTitle}>Market Preview</h4>
-
+              <h4 className={styles.sectionTitle}>Pratinjau Pasar</h4>
               <div className={styles.card}>
                 <div className={styles.imageWrapper}>
                   <div className={styles.badges}>
-                    <span className={styles.liveBadge}>● Live Preview</span>
-                    {grade && <span className={styles.gradeBadge}>Grade {grade}</span>}
+                    <span className={styles.liveBadge}>● Pratinjau Langsung</span>
+                    {grade && <span className={styles.gradeBadge}>Kelas {grade}</span>}
                   </div>
                   <img
                     src={imagePreview || 'https://darilaut.id/wp-content/uploads/2021/09/Tuna-3.jpg'}
@@ -332,7 +331,7 @@ export default function UploadAuction() {
                   </div>
 
                   <div className={styles.weightBox}>
-                    <span className={styles.desclabel}>Weight</span>
+                    <span className={styles.desclabel}>Berat</span>
                     <div className={styles.weight}>
                       {weightNumber > 0 ? `${weightNumber} KG` : '— KG'}
                     </div>
@@ -341,11 +340,11 @@ export default function UploadAuction() {
 
                 <div className={styles.descbox}>
                   <div className={styles.descBox}>
-                    <span className={styles.desclabel}>Starting Price</span>
+                    <span className={styles.desclabel}>Harga Awal</span>
                     <span className={styles.price}>{formatPreviewPrice(priceNumber)}</span>
                   </div>
                   <div className={styles.descBox} style={{ alignItems: 'end' }}>
-                    <span className={styles.desclabel}>Time Limit</span>
+                    <span className={styles.desclabel}>Batas Waktu</span>
                     <span className={styles.price}>{endsAtPreview()}</span>
                   </div>
                 </div>
@@ -357,9 +356,9 @@ export default function UploadAuction() {
                   <Ship className={styles.shipIcon} />
                 </div>
                 <Info className={styles.infoIcon} />
-                <h3 className={styles.protiptitle}>Pro Tip</h3>
+                <h3 className={styles.protiptitle}>Tips</h3>
                 <p className={styles.protipdescription}>
-                  Auctions with clear, bright photos from multiple angles tend to close 35% higher than average. Morning light works best for highlighting the freshness of the scales.
+                  Lelang dengan foto yang jelas dan terang dari berbagai sudut cenderung ditutup 35% lebih tinggi dari rata-rata. Cahaya pagi terbaik untuk menonjolkan kesegaran sisik.
                 </p>
               </div>
             </div>

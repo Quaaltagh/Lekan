@@ -10,6 +10,8 @@ import { startAuctionExpiryJob } from './jobs/auctionExpiry';
 import depositRoutes from './routes/depositRoutes';
 import historyRoutes from './routes/historyRoutes';
 import statusLelangRoutes from './routes/statusLelangRoutes';
+import profileRoutes from './routes/profileRoutes';
+import notificationRoutes from './routes/notificationRoutes';
 
 dotenv.config();
 
@@ -24,6 +26,13 @@ app.use(cors({
 app.use(express.json({ limit: '15mb' }));
 app.use(express.urlencoded({ extended: true, limit: '15mb' }));
 
+// ✅ HARUS di sini — sebelum semua routes agar berlaku untuk setiap request
+app.use((_req, res, next) => {
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');
+  res.setHeader('Pragma', 'no-cache');
+  next();
+});
+
 app.use("/api/auth", authRoutes);
 app.use("/api/auctions", auctionRoutes);
 app.use("/api/bids", bidRoutes);
@@ -32,6 +41,8 @@ app.use("/api/logistics", logisticsRoutes);
 app.use('/api/deposit', depositRoutes);
 app.use('/api/history', historyRoutes);
 app.use('/api/status-lelang', statusLelangRoutes);
+app.use('/api/profile', profileRoutes);
+app.use('/api/notifications', notificationRoutes);
 
 // Health check
 app.get('/api/health', (_req, res) => {

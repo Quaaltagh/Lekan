@@ -1,8 +1,12 @@
 import { Request, Response } from 'express';
-import { supabase } from '../config/supabaseClient';
+import { createClient } from '@supabase/supabase-js';
+import { supabase, supabaseAuth } from '../config/supabaseClient';
 import { LoginPayload, RegisterPayload } from '../models/userModel';
+import { sendNotification } from '../lib/NotificationHelper';
 
 // ─── LOGIN ────────────────────────────────────────────────────────────────────
+// Pakai supabaseAuth (anon key) untuk signInWithPassword
+// sehingga session tidak merusak shared supabase client (service role)
 export const login = async (req: Request, res: Response): Promise<void> => {
   const { email, password, role }: LoginPayload = req.body;
 
@@ -11,7 +15,8 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     return;
   }
 
-  const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+  // ✅ Pakai supabaseAuth — bukan supabase (service role)
+  const { data: authData, error: authError } = await supabaseAuth.auth.signInWithPassword({
     email,
     password,
   });
@@ -21,6 +26,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     return;
   }
 
+  // ✅ Query DB tetap pakai supabase (service role) — tidak terpengaruh session
   const { data: profile, error: profileError } = await supabase
     .from('profiles')
     .select('*')
@@ -63,19 +69,15 @@ export const register = async (req: Request, res: Response): Promise<void> => {
     return;
   }
 
-  // Daftar via Supabase Auth
-  const { data: authData, error: authError } = await supabase.auth.signUp({
+  // Pakai admin API (service role) agar bisa langsung confirm email
+  const { data: authData, error: authError } = await supabase.auth.admin.createUser({
     email,
     password,
+    email_confirm: true, // bypass email verification
   });
 
-  if (authError) {
-    res.status(400).json({ error: authError.message });
-    return;
-  }
-
-  if (!authData.user) {
-    res.status(400).json({ error: 'Registrasi gagal, coba lagi.' });
+  if (authError || !authData.user) {
+    res.status(400).json({ error: authError?.message || 'Registrasi gagal, coba lagi.' });
     return;
   }
 
@@ -89,19 +91,26 @@ export const register = async (req: Request, res: Response): Promise<void> => {
 
   if (profileError) {
     console.error('Profile insert error:', profileError);
-
-    // Rollback: hapus user dari auth.users supaya bisa register ulang
     await supabase.auth.admin.deleteUser(authData.user.id);
-
-    res.status(500).json({
-      error: `Gagal menyimpan profil: ${profileError.message}`,
-    });
+    res.status(500).json({ error: `Gagal menyimpan profil: ${profileError.message}` });
     return;
   }
 
+  // Auto-create wallet
+  const { error: walletError } = await supabase
+    .from('wallets')
+    .insert({ user_id: authData.user.id, balance: 0, pending: 0 });
+
+  if (walletError) {
+    console.error('[register] Wallet creation failed (non-critical):', walletError.message);
+  }
+
+  // Login otomatis setelah register untuk dapat token
+  const { data: loginData } = await supabaseAuth.auth.signInWithPassword({ email, password });
+
   res.status(201).json({
     message: 'Registrasi berhasil.',
-    token: authData.session?.access_token,
+    token: loginData?.session?.access_token ?? null,
     user: {
       id: authData.user.id,
       email,
@@ -112,15 +121,17 @@ export const register = async (req: Request, res: Response): Promise<void> => {
 };
 
 // ─── LOGOUT ───────────────────────────────────────────────────────────────────
+// Logout cukup di sisi frontend (hapus token dari localStorage)
+// Backend tidak perlu signOut() karena JWT stateless
+// Memanggil supabase.auth.signOut() pada shared service-role client
+// akan merusak semua query berikutnya → response [] sampai restart
 export const logout = async (_req: Request, res: Response): Promise<void> => {
-  await supabase.auth.signOut();
+  // ✅ Tidak memanggil supabase.auth.signOut() sama sekali
+  // Token invalidation ditangani di frontend (hapus dari localStorage)
   res.status(200).json({ message: 'Logout berhasil.' });
 };
 
-// ─── GET profil user berdasarkan ID (untuk halaman detail lelang) ─────────────
-// FIX: tambah logging error asli agar bisa debug penyebab "Profil tidak ditemukan."
-// Penyebab umum: RLS blocking (pastikan supabaseClient pakai SERVICE_ROLE_KEY),
-// atau user ada di auth.users tapi row-nya tidak ada di tabel profiles.
+// ─── GET profil user berdasarkan ID ───────────────────────────────────────────
 export const getProfileById = async (req: Request, res: Response): Promise<void> => {
   const { userId } = req.params;
 
@@ -131,16 +142,11 @@ export const getProfileById = async (req: Request, res: Response): Promise<void>
     .single();
 
   if (error) {
-    // Log error asli ke console server — berguna untuk debug RLS vs not found
     console.error('[getProfileById] error code:', error.code, '| message:', error.message);
-
-    // PGRST116 = row tidak ditemukan (.single() tidak dapat baris)
     if (error.code === 'PGRST116') {
       res.status(404).json({ error: 'Profil tidak ditemukan.' });
       return;
     }
-
-    // Error lain: kemungkinan RLS block, koneksi DB, dsb
     res.status(500).json({ error: 'Gagal mengambil profil: ' + error.message });
     return;
   }
@@ -151,4 +157,155 @@ export const getProfileById = async (req: Request, res: Response): Promise<void>
   }
 
   res.status(200).json(data);
+};
+
+
+export const requestPasswordReset = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({
+        error: 'Email wajib diisi',
+      });
+    }
+
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: 'http://localhost:3000/auth/forgotpassword',
+    });
+
+    if (error) {
+      return res.status(400).json({
+        error: error.message,
+      });
+    }
+
+    return res.status(200).json({
+      message: 'Link reset password telah dikirim.',
+    });
+  } catch (err) {
+    return res.status(500).json({
+      error: 'Server error',
+    });
+  }
+};
+
+export const resetPassword = async (req: Request, res: Response) => {
+  try {
+    const { accessToken, refreshToken, code, newPassword } = req.body;
+
+    if (!newPassword) {
+      return res.status(400).json({
+        error: 'Password baru wajib diisi',
+      });
+    }
+
+    if (!accessToken && !code) {
+      return res.status(400).json({
+        error: 'Token akses atau kode verifikasi wajib disertakan',
+      });
+    }
+
+    const supabaseUrl = process.env.SUPABASE_URL!;
+    const supabaseAnonKey = process.env.SUPABASE_ANON_KEY!;
+
+    // Buat client Supabase sementara dengan Anon Key agar tidak merusak session global/shared
+    const tempSupabase = createClient(supabaseUrl, supabaseAnonKey, {
+      auth: {
+        persistSession: false,
+        autoRefreshToken: false,
+        detectSessionInUrl: false,
+      },
+    });
+
+    if (code) {
+      // PKCE Flow / Code Flow
+      const { error: exchangeError } = await tempSupabase.auth.exchangeCodeForSession(code);
+      if (exchangeError) {
+        return res.status(400).json({
+          error: 'Kode reset password tidak valid atau sudah kadaluarsa.',
+        });
+      }
+    } else if (accessToken) {
+      // Implicit Flow / Hash Flow
+      const { error: sessionError } = await tempSupabase.auth.setSession({
+        access_token: accessToken,
+        refresh_token: refreshToken || '',
+      });
+      if (sessionError) {
+        return res.status(400).json({
+          error: 'Sesi reset password tidak valid atau sudah kadaluarsa.',
+        });
+      }
+    }
+
+    // Perbarui kata sandi dengan aman dalam sesi pengguna
+    const { error: updateError } = await tempSupabase.auth.updateUser({
+      password: newPassword,
+    });
+
+    if (updateError) {
+      return res.status(400).json({
+        error: updateError.message,
+      });
+    }
+
+    return res.status(200).json({
+      message: 'Kata sandi berhasil diperbarui.',
+    });
+  } catch (err) {
+    console.error('Error resetPassword:', err);
+    return res.status(500).json({
+      error: 'Terjadi kesalahan pada server saat mereset kata sandi.',
+    });
+  }
+};
+
+export const verifyOtp = async (req: Request, res: Response) => {
+  try {
+    const { email, code } = req.body;
+
+    if (!email || !code) {
+      return res.status(400).json({
+        error: 'Email dan kode OTP wajib diisi.',
+      });
+    }
+
+    const supabaseUrl = process.env.SUPABASE_URL!;
+    const supabaseAnonKey = process.env.SUPABASE_ANON_KEY!;
+
+    const tempSupabase = createClient(supabaseUrl, supabaseAnonKey, {
+      auth: {
+        persistSession: false,
+        autoRefreshToken: false,
+        detectSessionInUrl: false,
+      },
+    });
+
+    const { data, error } = await tempSupabase.auth.verifyOtp({
+      email,
+      token: code,
+      type: 'recovery',
+    });
+
+    if (error || !data.session) {
+      return res.status(400).json({
+        error: error?.message || 'Kode OTP tidak valid atau sudah kadaluarsa.',
+      });
+    }
+
+    return res.status(200).json({
+      message: 'Kode OTP berhasil diverifikasi.',
+      accessToken: data.session.access_token,
+      refreshToken: data.session.refresh_token,
+    });
+  } catch (err) {
+    console.error('Error verifyOtp:', err);
+    return res.status(500).json({
+      error: 'Terjadi kesalahan pada server saat memverifikasi kode OTP.',
+    });
+  }
 };

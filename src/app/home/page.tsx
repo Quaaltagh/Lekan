@@ -60,7 +60,9 @@ export default function BrowseAuctions() {
         <Navbar />
         <div className={styles.container}>
 
-          <div className={styles.banner} />
+          <div className={styles.banner}>
+            <img src="/images/banner.png" alt="" className={styles.bannerimg} />
+            </div>
 
           {/* Filter — semua apply sekaligus saat klik Apply */}
           <Filter

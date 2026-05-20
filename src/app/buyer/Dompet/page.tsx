@@ -32,12 +32,19 @@ const WalletDashboard: React.FC = () => {
   const [loading,      setLoading]      = useState(true);
   const [error,        setError]        = useState('');
 
+  // ── FIX: tunggu AuthContext selesai hydrate sebelum redirect ──────────────
+  const [authReady, setAuthReady] = useState(false);
+
   useEffect(() => {
+    setAuthReady(true);
+  }, []);
+
+  useEffect(() => {
+    if (!authReady) return;
     if (!user || !token) { router.push('/'); return; }
 
     async function fetchAll() {
       try {
-        // Wallet + transaksi terakhir sekaligus (1 request)
         const { wallet: w, transactions: recentTx } = await walletService.getWallet(user!.id, token!);
         setWallet(w);
         setTransactions(recentTx);
@@ -46,10 +53,8 @@ const WalletDashboard: React.FC = () => {
           .reduce((s, tx) => s + tx.amount, 0);
         setTotalSpent(spent);
 
-        // Active bids
         const b = await walletService.getActiveBidsCount(user!.id, token!);
         setActiveBids(b.count);
-
       } catch (err) {
         setError('Gagal memuat data dompet.');
         console.error(err);
@@ -59,7 +64,21 @@ const WalletDashboard: React.FC = () => {
     }
 
     fetchAll();
-  }, [user, token, router]);
+  }, [authReady, user, token, router]);
+
+  // Tampilkan loading ringan saat auth belum siap
+  if (!authReady) {
+    return (
+      <div className={styles.container}>
+        <Navbar />
+        <main className={styles.mainContent}>
+          <div style={{ padding: '4rem', textAlign: 'center', color: '#94a3b8' }}>
+            Memuat...
+          </div>
+        </main>
+      </div>
+    );
+  }
 
   if (!user) return null;
 
@@ -70,7 +89,7 @@ const WalletDashboard: React.FC = () => {
 
         <header className={styles.header}>
           <h1 className={styles.title}>Dompet</h1>
-          <p className={styles.subtitle}>Manage your funds and view recent financial activity.</p>
+          <p className={styles.subtitle}>Kelola dana Anda dan lihat aktivitas keuangan terbaru.</p>
         </header>
 
         {error && (
@@ -84,7 +103,7 @@ const WalletDashboard: React.FC = () => {
           <div className={styles.balanceCard}>
             <div className={styles.balanceHeader}>
               <div className={styles.balance}>
-                <span className={styles.label}>AVAILABLE BALANCE</span>
+                <span className={styles.label}>SALDO TERSEDIA</span>
                 {loading
                   ? <Loader2 size={20} color="#fff" style={{ marginTop: '0.5rem' }} />
                   : <h2 className={styles.amount}>{formatRupiah(wallet?.balance ?? 0)}</h2>
@@ -94,7 +113,7 @@ const WalletDashboard: React.FC = () => {
             </div>
             <div className={styles.buttonGroup}>
               <button className={styles.btnDeposit} onClick={() => router.push('/buyer/Deposit')}>
-                + Deposit Funds
+                + Setor Dana
               </button>
               <button className={styles.btnTransfer}>Transfer</button>
             </div>
@@ -102,21 +121,21 @@ const WalletDashboard: React.FC = () => {
 
           <div className={styles.spendingCard}>
             <div className={styles.spendingHeader}>
-              <span className={styles.label}>TOTAL SPENT</span>
+              <span className={styles.label}>TOTAL PENGELUARAN</span>
               <span className={styles.bagIcon}><Handbag size={24} color='#000000' /></span>
             </div>
             {loading
               ? <div style={{ height: '2rem', background: '#e2e8f0', borderRadius: '4px', width: '50%', margin: '0.5rem 0' }} />
               : <h2 className={styles.spentAmount}>{formatRupiah(totalSpent)}</h2>
             }
-            <p className={styles.periodText}>This billing period</p>
+            <p className={styles.periodText}>Periode tagihan ini</p>
             <div className={styles.spendingFooter}>
               <div>
-                <span className={styles.subLabel}>Active Bids</span>
+                <span className={styles.subLabel}>Penawaran Aktif</span>
                 <p className={styles.footerValue}>{loading ? '—' : `${activeBids} Lots`}</p>
               </div>
               <div style={{ textAlign: 'right' }}>
-                <span className={styles.subLabel}>Pending</span>
+                <span className={styles.subLabel}>Tertunda</span>
                 <p className={`${styles.footerValue} ${styles.blueText}`}>
                   {loading ? '—' : formatRupiah(wallet?.pending ?? 0)}
                 </p>
@@ -128,8 +147,8 @@ const WalletDashboard: React.FC = () => {
         {/* Transactions */}
         <section className={styles.transactionSection}>
           <div className={styles.sectionHeader}>
-            <h3>Recent Transactions</h3>
-            <a href="/buyer/transactionHistory" className={styles.viewAll}>View All →</a>
+            <h3>Transaksi Terbaru</h3>
+            <a href="/buyer/transactionHistory" className={styles.viewAll}>Lihat Semua →</a>
           </div>
 
           <div className={styles.transactionList}>

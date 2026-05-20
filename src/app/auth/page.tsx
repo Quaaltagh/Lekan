@@ -1,43 +1,62 @@
 'use client';
-import React, { useState } from 'react';
-import { User, Mail, Lock, Eye, EyeOff, Ship, ShoppingCart } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import React, { useState, useEffect } from 'react';
+import { User, Mail, Lock, Eye, EyeOff, Ship, ShoppingCart, AlertCircle } from 'lucide-react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { UserRole } from '@/services/authService';
-import { useSearchParams } from 'next/navigation';
-import { useEffect } from 'react';
+import styles from './page.module.css';
+import Link from 'next/link';
 
 type Mode = 'login' | 'register';
 
-export default function LoginPage() {
-  const router = useRouter();
+// ── Password strength ─────────────────────────────────────────────────────────
+function getPasswordStrength(pw: string): { level: 0 | 1 | 2 | 3; label: string } {
+  if (pw.length === 0) return { level: 0, label: '' };
+  if (pw.length < 6)   return { level: 1, label: 'Terlalu pendek' };
+  if (pw.length < 10 && !/[^a-zA-Z0-9]/.test(pw)) return { level: 2, label: 'Cukup' };
+  return { level: 3, label: 'Kuat' };
+}
+
+// ── PasswordStrengthBar ───────────────────────────────────────────────────────
+function PasswordStrengthBar({ password }: { password: string }) {
+  const { level, label } = getPasswordStrength(password);
+  if (!password) return null;
+
+  const segmentClass = (idx: number) => {
+    if (level === 0 || idx >= level) return styles.strengthSegment;
+    if (level === 1) return `${styles.strengthSegment} ${styles.strengthWeak}`;
+    if (level === 2) return `${styles.strengthSegment} ${styles.strengthFair}`;
+    return `${styles.strengthSegment} ${styles.strengthStrong}`;
+  };
+
+  return (
+    <>
+      <div className={styles.strengthBar}>
+        {[0, 1, 2].map(i => <div key={i} className={segmentClass(i)} />)}
+      </div>
+      <p className={styles.strengthLabel}>{label}</p>
+    </>
+  );
+}
+
+// ── Main Page ─────────────────────────────────────────────────────────────────
+export default function AuthPage() {
+  const router       = useRouter();
+  const searchParams = useSearchParams();
   const { login, register } = useAuth();
 
-  const [role, setRole] = useState<UserRole>('nelayan');
-//   const [mode, setMode] = useState<Mode>('login');
-    const searchParams = useSearchParams();
-
-    const [mode, setMode] = useState<Mode>('login');
-
-    useEffect(() => {
-    const modeParam = searchParams.get('mode');
-
-    if (modeParam === 'register') {
-        setMode('register');
-    } else {
-        setMode('login');
-    }
-    }, [searchParams]);
-    
+  const [mode, setMode]               = useState<Mode>('login');
+  const [role, setRole]               = useState<UserRole>('nelayan');
   const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [isLoading, setIsLoading]     = useState(false);
+  const [error, setError]             = useState('');
 
-  const [form, setForm] = useState({
-    full_name: '',
-    email: '',
-    password: '',
-  });
+  const [form, setForm] = useState({ full_name: '', email: '', password: '' });
+
+  // Sync mode dari query param
+  useEffect(() => {
+    setMode(searchParams.get('mode') === 'register' ? 'register' : 'login');
+  }, [searchParams]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -46,6 +65,21 @@ export default function LoginPage() {
 
   const handleSubmit = async () => {
     setError('');
+
+    // Validasi minimal
+    if (!form.email || !form.password) {
+      setError('Email dan password wajib diisi.');
+      return;
+    }
+    if (mode === 'register' && role === 'nelayan' && !form.full_name.trim()) {
+      setError('Nama lengkap wajib diisi untuk nelayan.');
+      return;
+    }
+    if (form.password.length < 6) {
+      setError('Password minimal 6 karakter.');
+      return;
+    }
+
     setIsLoading(true);
     try {
       if (mode === 'login') {
@@ -53,7 +87,6 @@ export default function LoginPage() {
       } else {
         await register(form.email, form.password, role, form.full_name || undefined);
       }
-      // Redirect berdasarkan role
       router.push(role === 'pembeli' ? '/' : '/fisherman/dashboard');
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Terjadi kesalahan.');
@@ -62,43 +95,66 @@ export default function LoginPage() {
     }
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') handleSubmit();
+  };
+
+  const switchMode = (next: Mode) => {
+    setMode(next);
+    setError('');
+    setForm({ full_name: '', email: '', password: '' });
+  };
+
+  const showNameField = mode === 'register' && role === 'nelayan';
+
   return (
-    <div className="flex h-screen bg-white">
-      {/* Kiri - Hero */}
-      <div className="hidden md:flex md:w-1/2 bg-slate-900 relative flex-col justify-between p-12 text-white overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-slate-800 to-blue-900 opacity-90 z-0"></div>
-        <div className="z-10 relative">
-          <h1 className="text-4xl font-bold mb-2">LEKAN</h1>
-          <p className="text-slate-300 text-lg">
-            Connecting oceans of opportunity through a<br /> premium, digital-first seafood marketplace.
+    <div className={styles.pageWrapper}>
+
+      {/* ── Kiri Hero ── */}
+      <div className={styles.hero}>
+        <div className={styles.heroDecor} />
+        <div className={styles.heroDecor2} />
+
+        <div className={styles.heroTop}>
+          <p className={styles.heroLogo}>LEKAN</p>
+          <p className={styles.heroTagline}>
+            Connecting oceans of opportunity through a<br />
+            premium, digital-first seafood marketplace.
           </p>
         </div>
-        <div className="z-10 relative space-y-6">
-          <div className="flex items-start space-x-4">
-            <div className="bg-white/10 p-2 rounded-full"><Ship size={20} /></div>
+
+        <div className={styles.heroBottom}>
+          <div className={styles.heroFeature}>
+            <div className={styles.heroFeatureIcon}>
+              <Ship size={18} color="white" />
+            </div>
             <div>
-              <h3 className="font-semibold">Trusted Network</h3>
-              <p className="text-sm text-slate-400">Verified merchants and secure transactions.</p>
+              <p className={styles.heroFeatureTitle}>Trusted Network</p>
+              <p className={styles.heroFeatureDesc}>Verified merchants and secure transactions.</p>
             </div>
           </div>
-          <div className="flex items-start space-x-4">
-            <div className="bg-white/10 p-2 rounded-full"><Lock size={20} /></div>
+          <div className={styles.heroFeature}>
+            <div className={styles.heroFeatureIcon}>
+              <Lock size={18} color="white" />
+            </div>
             <div>
-              <h3 className="font-semibold">Fintech-Ready</h3>
-              <p className="text-sm text-slate-400">Instant wallet settlements and transparent bidding.</p>
+              <p className={styles.heroFeatureTitle}>Fintech-Ready</p>
+              <p className={styles.heroFeatureDesc}>Instant wallet settlements and transparent bidding.</p>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Kanan - Form */}
-      <div className="w-full md:w-1/2 flex items-center justify-center p-8">
-        <div className="max-w-md w-full space-y-6">
-          <div>
-            <h2 className="text-3xl font-bold text-gray-900">
+      {/* ── Kanan Form ── */}
+      <div className={styles.formSide}>
+        <div className={styles.formCard}>
+
+          {/* Heading */}
+          <div className={styles.formHeading}>
+            <h1 className={styles.formTitle}>
               {mode === 'login' ? 'Selamat Datang' : 'Buat Akun Baru'}
-            </h2>
-            <p className="text-gray-500 mt-2 text-sm">
+            </h1>
+            <p className={styles.formSubtitle}>
               {mode === 'login'
                 ? 'Silakan masuk untuk melanjutkan akses ke pelelangan.'
                 : 'Daftar sekarang dan mulai berdagang di LEKAN.'}
@@ -106,145 +162,149 @@ export default function LoginPage() {
           </div>
 
           {/* Role Toggle */}
-          <div className="flex bg-slate-100 p-1 rounded-lg">
+          <div className={styles.roleToggle}>
             <button
+              className={`${styles.roleBtn} ${role === 'nelayan' ? styles.roleBtnActive : ''}`}
               onClick={() => { setRole('nelayan'); setError(''); }}
-              className={`flex-1 py-2 text-sm font-medium rounded-md flex items-center justify-center gap-2 transition-all ${role === 'nelayan' ? 'bg-white shadow-sm text-blue-900' : 'text-slate-500'}`}
             >
-              <Ship size={16} /> Nelayan
+              <Ship size={15} /> Nelayan
             </button>
             <button
+              className={`${styles.roleBtn} ${role === 'pembeli' ? styles.roleBtnActive : ''}`}
               onClick={() => { setRole('pembeli'); setError(''); }}
-              className={`flex-1 py-2 text-sm font-medium rounded-md flex items-center justify-center gap-2 transition-all ${role === 'pembeli' ? 'bg-white shadow-sm text-blue-900' : 'text-slate-500'}`}
             >
-              <ShoppingCart size={16} /> Pembeli
+              <ShoppingCart size={15} /> Pembeli
             </button>
           </div>
 
-          <div className="space-y-4">
-            {/* Nama Lengkap — tampil saat register sebagai nelayan */}
-            {mode === 'register' && role === 'nelayan' && (
-              <div>
-                <label className="text-sm font-medium text-gray-700">Nama Lengkap</label>
-                <div className="mt-1 relative rounded-md shadow-sm">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <User className="text-gray-400" size={18} />
-                  </div>
+          {/* Fields */}
+          <div className={styles.fields} onKeyDown={handleKeyDown}>
+
+            {/* Nama Lengkap — hanya nelayan register */}
+            {showNameField && (
+              <div className={styles.fieldGroup}>
+                <label className={styles.fieldLabel}>Nama Lengkap</label>
+                <div className={styles.inputWrap}>
+                  <span className={styles.inputIcon}><User size={16} /></span>
                   <input
                     type="text"
                     name="full_name"
                     value={form.full_name}
                     onChange={handleChange}
-                    className="w-full pl-10 px-3 py-2 border border-gray-200 rounded-lg bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="John Doe"
+                    className={styles.input}
+                    placeholder="Nama lengkap kamu"
+                    autoComplete="name"
                   />
                 </div>
               </div>
             )}
 
             {/* Email */}
-            <div>
-              <label className="text-sm font-medium text-gray-700">Alamat Email</label>
-              <div className="mt-1 relative rounded-md shadow-sm">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Mail className="text-gray-400" size={18} />
-                </div>
+            <div className={styles.fieldGroup}>
+              <label className={styles.fieldLabel}>Alamat Email</label>
+              <div className={styles.inputWrap}>
+                <span className={styles.inputIcon}><Mail size={16} /></span>
                 <input
                   type="email"
                   name="email"
                   value={form.email}
                   onChange={handleChange}
-                  className="w-full pl-10 px-3 py-2 border border-gray-200 rounded-lg bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className={styles.input}
                   placeholder="email@example.com"
+                  autoComplete="email"
                 />
               </div>
             </div>
 
             {/* Password */}
-            <div>
-              <div className="flex justify-between items-center">
-                <label className="text-sm font-medium text-gray-700">Kata Sandi</label>
+            <div className={styles.fieldGroup}>
+              <div className={styles.fieldLabelRow}>
+                <label className={styles.fieldLabel}>Kata Sandi</label>
                 {mode === 'login' && (
-                  <a href="#" className="text-xs font-medium text-blue-600 hover:text-blue-500">Lupa Sandi?</a>
+                  <a href="/auth/forgotpassword" className={styles.forgotLink}>Lupa Sandi?</a>
                 )}
               </div>
-              <div className="mt-1 relative rounded-md shadow-sm">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Lock className="text-gray-400" size={18} />
-                </div>
+              <div className={styles.inputWrap}>
+                <span className={styles.inputIcon}><Lock size={16} /></span>
                 <input
                   type={showPassword ? 'text' : 'password'}
                   name="password"
                   value={form.password}
                   onChange={handleChange}
-                  className="w-full pl-10 pr-10 py-2 border border-gray-200 rounded-lg bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className={styles.input}
                   placeholder="••••••••"
+                  autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
                 />
-                <div
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer"
+                <button
+                  type="button"
+                  className={styles.inputRight}
                   onClick={() => setShowPassword(!showPassword)}
+                  tabIndex={-1}
                 >
-                  {showPassword ? <EyeOff className="text-gray-400" size={18} /> : <Eye className="text-gray-400" size={18} />}
-                </div>
+                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                </button>
               </div>
+
+              {/* Password strength — hanya saat register */}
+              {mode === 'register' && (
+                <PasswordStrengthBar password={form.password} />
+              )}
             </div>
 
-            {/* Error message */}
+            {/* Error */}
             {error && (
-              <div className="bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-2 rounded-lg">
+              <div className={styles.errorBox}>
+                <AlertCircle size={15} style={{ flexShrink: 0, marginTop: 1 }} />
                 {error}
               </div>
             )}
 
-            {/* Submit Button */}
+            {/* Submit */}
             <button
-              type="button"
+              className={styles.submitBtn}
               onClick={handleSubmit}
               disabled={isLoading}
-              className="w-full flex justify-center py-3 mt-2 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-800 hover:bg-blue-900 disabled:opacity-60 disabled:cursor-not-allowed transition-all"
             >
               {isLoading
                 ? 'Memproses...'
                 : mode === 'login'
-                  ? 'Masuk Ke Dashboard →'
+                  ? 'Masuk ke Dashboard →'
                   : 'Daftar Sekarang →'}
             </button>
           </div>
 
           {/* Divider */}
-          <div className="relative my-2">
-            <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-gray-200"></div></div>
-            <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-white text-gray-400 text-xs tracking-wider">ATAU LANJUT DENGAN</span>
-            </div>
+          <div className={styles.divider}>
+            <div className={styles.dividerLine} />
+            <span className={styles.dividerText}>ATAU LANJUT DENGAN</span>
+            <div className={styles.dividerLine} />
           </div>
 
-          {/* Social Login */}
-          <div className="grid grid-cols-2 gap-4">
-            <button className="flex items-center justify-center py-2 px-4 border border-gray-300 rounded-lg shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
-              Google
-            </button>
-            <button className="flex items-center justify-center py-2 px-4 border border-gray-300 rounded-lg shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
-              Facebook
-            </button>
+          {/* Social */}
+          <div className={styles.socialGrid}>
+            <button className={styles.socialBtn}>Google</button>
+            <button className={styles.socialBtn}>Facebook</button>
           </div>
 
-          {/* Toggle login/register */}
-          <p className="text-center text-sm text-gray-600">
+          {/* Toggle mode */}
+          <p className={styles.toggleMode}>
             {mode === 'login' ? (
-              <>Belum punya akun?{' '}
-                <button onClick={() => { setMode('register'); setError(''); }} className="font-semibold text-blue-800 hover:underline">
+              <>Belum punya akun?
+                {/* <button className={styles.toggleBtn} onClick={() => switchMode('register')}>
                   Daftar Sekarang
-                </button>
+                </button> */}
+                <Link href="/auth?mode=register" className={styles.toggleBtn}>Daftar Sekarang</Link>
               </>
             ) : (
-              <>Sudah punya akun?{' '}
-                <button onClick={() => { setMode('login'); setError(''); }} className="font-semibold text-blue-800 hover:underline">
+              <>Sudah punya akun?
+                {/* <button className={styles.toggleBtn} onClick={() => switchMode('login')}>
                   Masuk
-                </button>
+                </button> */}
+                <Link href="/auth?mode=login" className={styles.toggleBtn}>Masuk</Link>
               </>
             )}
           </p>
+
         </div>
       </div>
     </div>

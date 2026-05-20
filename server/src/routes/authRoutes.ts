@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { login, register, logout, getProfileById } from '../controller/authController';
+import { login, register, logout, getProfileById, requestPasswordReset, resetPassword, verifyOtp } from '../controller/authController';
 
 const router = Router();
 
@@ -14,5 +14,14 @@ router.post('/logout', logout);
 
 // GET /api/auth/profile/:userId
 router.get('/profile/:userId', getProfileById);
+
+// POST /api/auth/request-password-reset
+router.post('/request-password-reset', requestPasswordReset);
+
+// POST /api/auth/verify-otp
+router.post('/verify-otp', verifyOtp);
+
+// POST /api/auth/reset-password
+router.post('/reset-password', resetPassword);
 
 export default router;

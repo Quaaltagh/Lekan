@@ -153,15 +153,15 @@ export default function StatusLelang() {
         <div className={styles.titlecontainer}>
           <h1 className={styles.title}>Status Lelang</h1>
           <p className={styles.titledescription}>
-            Monitor your active bids and watched auctions in real-time.
-            Ensure your capital is deployed effectively.
+            Pantau penawaran aktif dan lelang yang Anda ikuti secara real-time.
+            Pastikan modal Anda digunakan secara efektif.
           </p>
         </div>
 
         <div className={styles.contentcontainer}>
           <div className={styles.contentheader}>
-            <h2 className={styles.contenttitle}>Active Bids</h2>
-            <span className={styles.badge}>{activeBids.length} Active</span>
+            <h2 className={styles.contenttitle}>Penawaran Aktif</h2>
+            <span className={styles.badge}>{activeBids.length} Aktif</span>
           </div>
 
           {loading ? (

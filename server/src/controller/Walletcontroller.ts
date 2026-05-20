@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { supabase } from '../config/supabaseClient';
 import { WithdrawPayload, DepositPayload, CreditWalletPayload, AddPendingPayload, ReleasePendingPayload } from '../models/Walletmodel';
+import { sendNotification } from '../lib/NotificationHelper';
 
 // ─── Helper ───────────────────────────────────────────────────────────────────
 async function getOrCreateWallet(userId: string) {
@@ -81,6 +82,15 @@ export const deposit = async (req: Request, res: Response): Promise<void> => {
       .from('transactions')
       .insert({ user_id: userId, type: 'deposit', amount, description: description || 'Deposit saldo', auction_id: null, status: 'completed' })
       .select().single();
+
+    // ── NOTIF: deposit berhasil ─────────────────────────────────────────────
+    await sendNotification(
+      userId,
+      'pembayaran',
+      'Deposit Berhasil',
+      `Dana sebesar Rp ${amount.toLocaleString('id-ID')} berhasil ditambahkan ke dompet kamu.`
+    );
+
     if (txError) { res.status(500).json({ error: txError.message }); return; }
     res.status(201).json({ message: 'Deposit berhasil.', transaction: tx, new_balance: wallet.balance + amount });
   } catch (err: any) {
@@ -96,17 +106,50 @@ export const withdraw = async (req: Request, res: Response): Promise<void> => {
   try {
     const wallet = await getOrCreateWallet(userId);
     if (wallet.balance < amount) { res.status(400).json({ error: 'Saldo tidak mencukupi.' }); return; }
+    
+    // Deduct immediately to prevent double withdrawal
     const { error: updateError } = await supabase
       .from('wallets')
       .update({ balance: wallet.balance - amount, updated_at: new Date().toISOString() })
       .eq('user_id', userId);
     if (updateError) { res.status(500).json({ error: updateError.message }); return; }
+    
+    // Create transaction with status 'pending'
     const { data: tx, error: txError } = await supabase
       .from('transactions')
-      .insert({ user_id: userId, type: 'withdrawal', amount, description: description || 'Penarikan dana', auction_id: null, status: 'completed' })
+      .insert({ user_id: userId, type: 'withdrawal', amount, description: description || 'Penarikan dana', auction_id: null, status: 'pending' })
       .select().single();
     if (txError) { res.status(500).json({ error: txError.message }); return; }
-    res.status(200).json({ message: 'Penarikan berhasil.', transaction: tx });
+    
+    res.status(200).json({ message: 'Permintaan penarikan berhasil diajukan.', transaction: tx });
+
+    // ── NOTIF: permintaan penarikan diproses ─────────────────────────────────
+    await sendNotification(
+      userId,
+      'pembayaran',
+      'Permintaan Penarikan Dana Diproses',
+      `Permintaan penarikan dana sebesar Rp ${amount.toLocaleString('id-ID')} sedang diproses.`
+    );
+
+    // Simulasi penyelesaian penarikan setelah 5 detik
+    setTimeout(async () => {
+      try {
+        await supabase
+          .from('transactions')
+          .update({ status: 'completed' })
+          .eq('id', tx.id);
+
+        await sendNotification(
+          userId,
+          'pembayaran',
+          'Penarikan Dana Berhasil',
+          `Dana sebesar Rp ${amount.toLocaleString('id-ID')} berhasil ditransfer ke rekening Anda.`
+        );
+      } catch (simError) {
+        console.error('Error during withdraw simulation confirmation:', simError);
+      }
+    }, 5000);
+
   } catch (err: any) {
     res.status(500).json({ error: err.message });
   }
@@ -172,6 +215,12 @@ export const releasePending = async (req: Request, res: Response): Promise<void>
     if (transaction_id) {
       await supabase.from('transactions').update({ status: 'completed' }).eq('id', transaction_id);
     }
+    await sendNotification(
+      userId,
+      'transaksi',
+      'Dana Escrow Dicairkan',
+      `Dana sebesar Rp ${amount.toLocaleString('id-ID')} berhasil dicairkan.`
+    );
     res.status(200).json({ message: 'Pending berhasil dicairkan.' });
   } catch (err: any) {
     res.status(500).json({ error: err.message });

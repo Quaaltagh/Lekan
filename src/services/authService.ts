@@ -54,4 +54,34 @@ export const authService = {
   logout: async () => {
     await fetch(`${API_URL}/api/auth/logout`, { method: 'POST' });
   },
+
+  requestPasswordReset: async (email: string) => {
+    const res = await fetch(`${API_URL}/api/auth/request-password-reset`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email }),
+    });
+
+    return handleResponse<{ message: string }>(res);
+  },
+
+  verifyOtp: async (email: string, code: string) => {
+    const res = await fetch(`${API_URL}/api/auth/verify-otp`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, code }),
+    });
+
+    return handleResponse<{ message: string; accessToken: string; refreshToken: string }>(res);
+  },
+
+  resetPassword: async (payload: { accessToken?: string; refreshToken?: string; code?: string; newPassword: string }) => {
+    const res = await fetch(`${API_URL}/api/auth/reset-password`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+
+    return handleResponse<{ message: string }>(res);
+  },
 };

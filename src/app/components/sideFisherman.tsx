@@ -11,8 +11,8 @@ export default function SideFisherman() {
     { href: "/fisherman/dashboard", icon: LayoutDashboard, label: "Dashboard" },
     { href: "/fisherman/uploadAuction", icon: Upload, label: "Unggah Lelang" },
     { href: "/fisherman/biddingStatus", icon: Activity, label: "Status Lelang" },
-    { href: "/fisherman/", icon: History, label: "Histori Lelang" },
-    { href: "#", icon: Settings, label: "Pengaturan" },
+    { href: "/fisherman/enchantedAuctionHistory", icon: History, label: "Histori Lelang" },
+    { href: "/fisherman/settingsFisherman", icon: Settings, label: "Pengaturan" },
     { href: "/fisherman/logistics", icon: Truck, label: "Logistic" },
   ];
 
@@ -22,16 +22,9 @@ export default function SideFisherman() {
         <div>
           <div className={styles.sidebarHeader}>
             <div className={styles.logo}>
-              <a href="#">
+              <Link href="/fisherman/dashboard/">
                 <img src="/images/Lekan logo with tulisan.png" alt="LEKAN" className={styles.logoimages} />
-              </a>
-            </div>
-            <div className={styles.profileSection}>
-              <div className={styles.avatar}>CS</div>
-              <div>
-                <p className={styles.profilename}>Captain Sam</p>
-                <p className={styles.profiledesc}> Verified Merchant</p>
-              </div>
+              </Link>
             </div>
           </div>
 
