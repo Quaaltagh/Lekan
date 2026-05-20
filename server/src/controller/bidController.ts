@@ -161,6 +161,13 @@ export const submitBid = async (req: Request, res: Response): Promise<void> => {
         auction_id: auctionId,
         status: 'completed',
       });
+
+      await sendNotification(
+        prevTopBid.bidder_id,
+        'lelang',
+        `Tawaran Kamu Dikalahkan: ${auction.name}`,
+        `Tawaran kamu sebesar Rp ${prevTopBid.amount.toLocaleString('id-ID')} telah dikalahkan. Tawaran tertinggi saat ini adalah Rp ${amount.toLocaleString('id-ID')}. Ajukan tawaran baru untuk tetap bersaing!`
+      );
     }
   }
 

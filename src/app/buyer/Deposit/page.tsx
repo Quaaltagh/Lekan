@@ -51,7 +51,7 @@ const DepositPage: React.FC = () => {
   const handleDeposit = async () => {
     if (!user || !token) return;
     if (amount < 10_000) { setErrMsg('Minimum deposit Rp 10.000.'); return; }
-
+    
     setErrMsg('');
     setStatus('loading');
 
@@ -140,11 +140,17 @@ const DepositPage: React.FC = () => {
               <label>Jumlah Custom</label>
               <div className={styles.inputField}>
                 <span>Rp</span>
-                <input
+                 <input
                   type="text"
                   placeholder="Masukkan jumlah..."
                   value={custom}
-                  onChange={e => { setCustom(e.target.value); setPreset(null); }}
+                  inputMode="numeric"
+                  onChange={e => {
+                    const raw = e.target.value.replace(/\D/g, '');
+                    if (Number(raw) > 50_000_000) return;
+                    setCustom(raw);
+                    setPreset(null);
+                  }}
                 />
               </div>
             </div>

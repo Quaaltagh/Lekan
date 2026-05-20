@@ -454,7 +454,7 @@
   position: absolute;
   right: 0;
   margin-top: 0.5rem;
-  width: 18rem; 
+  width: 26rem; 
   background: var(--clr-card-bg);
   border: var(--border-width) solid var(--clr-border);
   border-radius: var(--radius-lg);
@@ -505,7 +505,7 @@
 .calendardaysHeader {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 0.25rem;
+  gap: 2px;
   margin-bottom: 0.5rem;
 }
 
@@ -520,7 +520,7 @@
 .calendargrid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 0.25rem;
+  /* gap: 2px; */
 }
 
 .calendarday {
@@ -535,7 +535,8 @@
   transition: all 0.2s;
   border: none;
   background: transparent;
-  cursor: pointer;
+  cursor: pointer;  
+  min-width: 0;
 }
 
 .calendardayCurrent {

@@ -39,7 +39,13 @@ export interface TransactionsResponse {
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 export function formatRupiah(amount: number): string {
-  if (amount >= 1_000_000) return `Rp ${(amount / 1_000_000).toFixed(1)}M`;
+  const MAX = 1_000_000_000_000;
+
+  if (amount > MAX) return 'Rp 1000M+';
+  if (amount >= 1_000_000_000)
+    return `Rp ${(amount / 1_000_000_000).toFixed(amount % 1_000_000_000 === 0 ? 0 : 1)}M`;
+  if (amount >= 1_000_000)
+    return `Rp ${(amount / 1_000_000).toFixed(amount % 1_000_000 === 0 ? 0 : 1)}jt`;
   return `Rp ${amount.toLocaleString('id-ID')}`;
 }
 
