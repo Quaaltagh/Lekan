@@ -19,7 +19,7 @@
 .banner{
     height: 25rem;
     width: 100%;
-    background-color: #1e3a8a;
+    background-color: var(--clr-primary);
 }
 
 .bannerimg{

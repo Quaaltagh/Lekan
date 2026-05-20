@@ -118,8 +118,7 @@ export default function AuthPage() {
         <div className={styles.heroTop}>
           <p className={styles.heroLogo}>LEKAN</p>
           <p className={styles.heroTagline}>
-            Connecting oceans of opportunity through a<br />
-            premium, digital-first seafood marketplace.
+            Menghubungkan lautan peluang melalui <br />pasar makanan laut premium yang mengutamakan digital.
           </p>
         </div>
 
@@ -129,8 +128,8 @@ export default function AuthPage() {
               <Ship size={18} color="white" />
             </div>
             <div>
-              <p className={styles.heroFeatureTitle}>Trusted Network</p>
-              <p className={styles.heroFeatureDesc}>Verified merchants and secure transactions.</p>
+              <p className={styles.heroFeatureTitle}>Terpecaya</p>
+              <p className={styles.heroFeatureDesc}>Pedagang terverifikasi dan transaksi aman.</p>
             </div>
           </div>
           <div className={styles.heroFeature}>
@@ -138,8 +137,8 @@ export default function AuthPage() {
               <Lock size={18} color="white" />
             </div>
             <div>
-              <p className={styles.heroFeatureTitle}>Fintech-Ready</p>
-              <p className={styles.heroFeatureDesc}>Instant wallet settlements and transparent bidding.</p>
+              <p className={styles.heroFeatureTitle}>Transaksi Dengan Mudah</p>
+              <p className={styles.heroFeatureDesc}>Penyelesaian transaksi dompet digital secara instan dan penawaran yang transparan.</p>
             </div>
           </div>
         </div>
@@ -283,7 +282,7 @@ export default function AuthPage() {
           {/* Social */}
           <div className={styles.socialGrid}>
             <button className={styles.socialBtn}>Google</button>
-            <button className={styles.socialBtn}>Facebook</button>
+            {/* <button className={styles.socialBtn}>Facebook</button> */}
           </div>
 
           {/* Toggle mode */}
