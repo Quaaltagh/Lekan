@@ -51,6 +51,7 @@ export default function Filters({ onApply }: FiltersProps) {
         <div className={styles.colQuarter}>
           <label className={styles.label}>Jenis Ikan</label>
           <div className={styles.selectWrapper}>
+            
             <select
               className={styles.select}
               value={species}
@@ -58,7 +59,7 @@ export default function Filters({ onApply }: FiltersProps) {
             >
               <option value="all">Semua Jenis</option>
               {speciesList.length === 0 ? (
-                <option disabled>Memuat...</option>
+                <option disabled>Tidak ada Data</option>
               ) : (
                 speciesList.map(s => (
                   <option key={s} value={s}>{s}</option>
@@ -66,6 +67,7 @@ export default function Filters({ onApply }: FiltersProps) {
               )}
             </select>
             <ChevronDown className={styles.chevron} />
+            
           </div>
         </div>
 

@@ -2,7 +2,7 @@
 .pageWrapper {
   display: flex;
   min-height: 100vh;
-  background: #f5f6fa;
+  background: var(--clr-white);
 }
 
 /* ── Kiri - Hero ── */
@@ -10,9 +10,9 @@
   display: none;
   flex-direction: column;
   justify-content: space-between;
-  padding: 48px;
-  background: linear-gradient(160deg, #1e293b 0%, #1e3a8a 100%);
-  color: white;
+  padding: var(--space-xl);
+  background: linear-gradient(160deg, #1e293b 0%, var(--clr-primary) 100%);
+  color: var(--clr-white);
   overflow: hidden;
   position: relative;
 }
@@ -51,14 +51,14 @@
 
 .heroLogo {
   font-size: 2rem;
-  font-weight: 800;
+  font-weight: var(--fw-title);
   letter-spacing: 0.05em;
-  margin-bottom: 12px;
-  color: #ffffff;
+  margin-bottom: var(--space-xs);
+  color: var(--clr-white);
 }
 
 .heroTagline {
-  font-size: 1rem;
+  font-size: var(--fs-base);
   color: #94a3b8;
   line-height: 1.6;
 }
@@ -68,13 +68,13 @@
   z-index: 1;
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: var(--space-lg);
 }
 
 .heroFeature {
   display: flex;
   align-items: flex-start;
-  gap: 14px;
+  gap: var(--space-md);
 }
 
 .heroFeatureIcon {
@@ -88,19 +88,19 @@
 }
 
 .heroFeatureTitle {
-  font-size: 0.9rem;
+  font-size: var(--fs-sm);
   font-weight: 600;
-  color: #f1f5f9;
+  color: var(--clr-white);
   margin-bottom: 2px;
 }
 
 .heroFeatureDesc {
-  font-size: 0.8rem;
-  color: #64748b;
+  font-size: var(--fs-xs);
+  color: #94a3b8;
   line-height: 1.5;
 }
 
-/* ── Form Side (kanan) ───────────────────────────────────────────────────── */
+/* ── Form Side (kanan)  */
 .formSide {
   width: 100%;
   display: flex;
@@ -119,10 +119,10 @@
 .formCard {
   width: 100%;
   max-width: 420px;
-  background: #fff;
-  border-radius: 20px;
+  background: var(--clr-white);
+  border-radius: var(--radius-lg);
   padding: 2.4rem 2.2rem;
-  box-shadow: 0 4px 32px rgba(0,0,0,0.08);
+  box-shadow:var(--shadow-md);
 }
 
 /* ── Back button ─────────────────────────────────────────────────────────── */
@@ -130,7 +130,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  font-size: 0.82rem;
+  font-size: var(--fs-xs);
   color: #6b7280;
   background: none;
   border: none;
@@ -139,7 +139,7 @@
   margin-bottom: 1.6rem;
   transition: color 0.2s;
 }
-.backBtn:hover { color: #1e3a8a}
+.backBtn:hover { color: var(--clr-primary)}
 
 /* ── Heading ─────────────────────────────────────────────────────────────── */
 .formHeading {
@@ -149,20 +149,15 @@
 
 .stepIcon {
   width: 62px; height: 62px;
-  border-radius: 18px;
+  border-radius: var(--rad);
   background: #e0f0fb;
   display: flex;
   align-items: center;
   justify-content: center;
   margin: 0 auto 1.1rem;
-  color: #1a6fa8;
+  color: var(--clr-primary);
 }
 
-/* CSS variables for icon variants */
-:root {
-  --clr-accent-soft: #e0f0fb;
-  --clr-accent-soft2: #e8f5e9;
-}
 
 .formTitle {
   font-size: 1.45rem;
@@ -217,7 +212,7 @@
   width: 100%;
   padding: 0.7rem 2.6rem 0.7rem 2.6rem;
   border: 1.5px solid #e5e7eb;
-  border-radius: 10px;
+  border-radius: var(--rad);
   font-size: 0.9rem;
   color: #111827;
   background: #f9fafb;
@@ -226,7 +221,7 @@
   box-sizing: border-box;
 }
 .input:focus {
-  border-color: #1e3a8a;
+  border-color: var(--clr-primary);
   box-shadow: 0 0 0 3px rgba(26,111,168,0.1);
   background: #fff;
 }
@@ -259,7 +254,7 @@
   width: 48px;
   height: 54px;
   border: 1.5px solid #e5e7eb;
-  border-radius: 10px;
+  border-radius: var(--rad);
   font-size: 1.35rem;
   font-weight: 700;
   text-align: center;
@@ -284,7 +279,7 @@
 .strengthSegment {
   flex: 1;
   height: 4px;
-  border-radius: 4px;
+  border-radius: var(--rad);
   background: #e5e7eb;
   transition: background 0.3s;
 }
@@ -312,7 +307,7 @@
   padding: 0.65rem 0.85rem;
   background: #fef2f2;
   border: 1px solid #fecaca;
-  border-radius: 8px;
+  border-radius: var(--rad);
   font-size: 0.82rem;
   color: #b91c1c;
   line-height: 1.5;
@@ -322,16 +317,16 @@
 .submitBtn {
   width: 100%;
   padding: 0.78rem;
-  background: #1e3a8a;
+  background: var(--clr-primary);
   color: #fff;
   border: none;
-  border-radius: 10px;
+  border-radius: var(--rad);
   font-size: 0.92rem;
   font-weight: 700;
   cursor: pointer;
   margin-top: 0.2rem;
 }
-.submitBtn:hover:not(:disabled) { opacity: 0.92; transform: translateY(-1px); }
+.submitBtn:hover:not(:disabled) { background: var(--clr-primary-hover); }
 .submitBtn:disabled { opacity: 0.6; cursor: not-allowed; }
 
 /* ── Resend row ──────────────────────────────────────────────────────────── */

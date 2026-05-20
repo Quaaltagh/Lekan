@@ -1,5 +1,5 @@
 'use client'
-import { Clock } from 'lucide-react';
+import { Clock, MapPin } from 'lucide-react';
 import Link from 'next/link';
 import styles from './AuctionCard.module.css';
 
@@ -30,7 +30,9 @@ export default function AuctionCard({
     <div className={styles.card}>
       <div className={styles.header}>
         <div>
-          <span className={styles.liveBadge}>
+          <span className={styles.liveBadge} style={{
+        opacity: timeLeft === 'Berakhir' ? 0 : 1,
+      }}>
             <span className={styles.dot}></span>
             Live Now
           </span>
@@ -46,6 +48,11 @@ export default function AuctionCard({
 
       <div className={styles.content}>
         <h3 className={styles.title}>{name}</h3>
+
+        <div className={styles.location}>
+          <MapPin className={styles.icon} />
+          <div className={styles.loc}>Pelabuhan Makassar</div>
+        </div>
 
         <div className={styles.metaRow}>
           <div className={styles.metaBoxBlue}>
@@ -66,14 +73,16 @@ export default function AuctionCard({
           )}
         </div>
 
+        
+
         <div className={styles.priceRow}>
           <div>
-            <small>Harga Dasar</small>
-            <div>Rp {startingPrice}</div>
+            <p className={styles.priceLabel}>Harga Dasar</p>
+            <div className={styles.price}>Rp {startingPrice}</div>
           </div>
           <div>
-            <small>Bid Tertinggi</small>
-            <div>Rp {highestBid}</div>
+            <p className={styles.priceLabel}>Bid Tertinggi</p>
+            <div className={styles.price}>Rp {highestBid}</div>
           </div>
         </div>
 
