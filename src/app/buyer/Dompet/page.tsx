@@ -32,12 +32,19 @@ const WalletDashboard: React.FC = () => {
   const [loading,      setLoading]      = useState(true);
   const [error,        setError]        = useState('');
 
+  // ── FIX: tunggu AuthContext selesai hydrate sebelum redirect ──────────────
+  const [authReady, setAuthReady] = useState(false);
+
   useEffect(() => {
+    setAuthReady(true);
+  }, []);
+
+  useEffect(() => {
+    if (!authReady) return;
     if (!user || !token) { router.push('/'); return; }
 
     async function fetchAll() {
       try {
-        // Wallet + transaksi terakhir sekaligus (1 request)
         const { wallet: w, transactions: recentTx } = await walletService.getWallet(user!.id, token!);
         setWallet(w);
         setTransactions(recentTx);
@@ -46,10 +53,8 @@ const WalletDashboard: React.FC = () => {
           .reduce((s, tx) => s + tx.amount, 0);
         setTotalSpent(spent);
 
-        // Active bids
         const b = await walletService.getActiveBidsCount(user!.id, token!);
         setActiveBids(b.count);
-
       } catch (err) {
         setError('Gagal memuat data dompet.');
         console.error(err);
@@ -59,7 +64,21 @@ const WalletDashboard: React.FC = () => {
     }
 
     fetchAll();
-  }, [user, token, router]);
+  }, [authReady, user, token, router]);
+
+  // Tampilkan loading ringan saat auth belum siap
+  if (!authReady) {
+    return (
+      <div className={styles.container}>
+        <Navbar />
+        <main className={styles.mainContent}>
+          <div style={{ padding: '4rem', textAlign: 'center', color: '#94a3b8' }}>
+            Memuat...
+          </div>
+        </main>
+      </div>
+    );
+  }
 
   if (!user) return null;
 

@@ -95,12 +95,12 @@ export default function NavbarFisherman() {
                 <p className={styles.dropdownEmail}>{user?.email}</p>
               </div>
               <hr className={styles.divider} />
-              <button className={styles.dropdownItem} onClick={() => { setProfileOpen(false); router.push('/fisherman/settingsFisherman'); }}>
+              {/* <button className={styles.dropdownItem} onClick={() => { setProfileOpen(false); router.push('/fisherman/settingsFisherman'); }}>
                 <User size={14} /> Profil Saya
-              </button>
-              <button className={styles.dropdownItem} onClick={() => { setProfileOpen(false); router.push('/fisherman/settingsFisherman'); }}>
+              </button> */}
+              {/* <button className={styles.dropdownItem} onClick={() => { setProfileOpen(false); router.push('/fisherman/settingsFisherman'); }}>
                 <Settings size={14} /> Pengaturan
-              </button>
+              </button> */}
               <hr className={styles.divider} />
               <button className={`${styles.dropdownItem} ${styles.dropdownLogout}`} onClick={handleLogout}>
                 <LogOut size={14} /> Keluar
