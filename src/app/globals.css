@@ -5,6 +5,7 @@
   /* Colors */
   --clr-primary: #1e3a8a;        /* Sky Blue Accent */
   --clr-primary-hover: #1e40af;  /* Hover state */
+  --clr-primary-light:#164cc2;
   --clr-bg: #f8fafc;             /* Body Background */
   --clr-foreground: #0f172a;     /* Main Text Color */
   --clr-text-muted: #64748b;     /* Muted/Secondary Text */
@@ -20,7 +21,7 @@
   --fs-base: 1rem;   
   --fs-md: 1.25rem;  
   --fs-lg: 1.5rem;  
-  --fs-tittle: 1.75rem;
+  --fs-tittle: 2rem;
 
   --fw-title: 800;
   --fw-h4: 600;
