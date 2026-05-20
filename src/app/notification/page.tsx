@@ -39,6 +39,12 @@ function NotificationCard({ type, title, description, created_at, is_read }: Not
     return `${days} hari lalu`;
   };
 
+  const getTime = (iso: string) => {
+    const diff = Date.now() - new Date(iso).getTime();
+    const hours = Math.floor(diff / 3600000);
+    return hours
+  };
+
   return (
     <div className={`${styles.card} ${!is_read ? styles.cardNew : styles.cardOld}`}>
       <div className={styles.cardContent}>
@@ -51,7 +57,7 @@ function NotificationCard({ type, title, description, created_at, is_read }: Not
             <h4 className={`${styles.title} ${!is_read ? styles.titleNew : styles.titleOld}`}>
               {title}
             </h4>
-            {!is_read && (
+            {!is_read && getTime(created_at) <= 1 && (
               <div className={styles.newBadge}>
                 <span className={styles.newDot}></span>
                 <span className={styles.newText}>Baru</span>
@@ -166,7 +172,7 @@ export default function Notifications({ onBack }: { onBack: () => void }) {
             ) : (
               <AnimatePresence mode="popLayout">
                 {filteredNotifications.length > 0 ? (
-                  filteredNotifications.map(notif => (
+                  filteredNotifications.slice(0, 10).map(notif => (
                     <NotificationCard key={notif.id} {...notif} />
                   ))
                 ) : (
