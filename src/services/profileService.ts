@@ -11,6 +11,7 @@ export interface UserProfile {
   bank_account?: string;
   bank_name?: string;
   verified?: boolean;
+  address?:string;
   role: string;
   preferences: {
     auctionAlerts: boolean;
@@ -39,6 +40,9 @@ export async function updateProfile(
     full_name?:    string;
     vessel_name?:  string;
     bio?:          string;
+    phone?:          string;
+    email?:          string;
+    address?: string;
     bank_name?:    string;   // ← tambahan untuk fisherman
     bank_account?: string;   // ← tambahan untuk fisherman
   }
