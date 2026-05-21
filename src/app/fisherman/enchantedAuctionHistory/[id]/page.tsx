@@ -13,6 +13,81 @@ import styles from './page.module.css';
  
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
  
+// ======================
+// DUMMY DATA PREVIEW
+// HAPUS NANTI SAAT BACKEND SUDAH JADI
+// ======================
+
+const DUMMY_AUCTION: AuctionDetailData = {
+  id: 'AUC12345678',
+  name: 'Tuna Sirip Biru Premium',
+  weight_kg: 120,
+  grade: 'A',
+  image_url: '',
+  description: 'Dummy data preview untuk testing UI.',
+  status: 'completed',
+
+  start_price: 15000000,
+  final_price: 24500000,
+
+  created_at: new Date().toISOString(),
+  ends_at: new Date().toISOString(),
+
+  winner: {
+    id: 'USR001',
+    name: 'PT Laut Nusantara',
+    verified: true,
+  },
+
+  seller: {
+    id: 'SLR001',
+    name: 'Pak Hasan',
+    vessel_name: 'Samudra Jaya',
+    verified: true,
+  },
+
+  bids: [
+    {
+      id: 'BID001',
+      bidder_id: 'USR001',
+      bidder_name: 'PT Laut Nusantara',
+      amount: 24500000,
+      created_at: new Date().toISOString(),
+    },
+    {
+      id: 'BID002',
+      bidder_id: 'USR002',
+      bidder_name: 'CV Mina Segar',
+      amount: 22000000,
+      created_at: new Date().toISOString(),
+    },
+    {
+      id: 'BID003',
+      bidder_id: 'USR003',
+      bidder_name: 'Seafood Makmur',
+      amount: 20000000,
+      created_at: new Date().toISOString(),
+    },
+  ],
+
+  logistics: {
+    id: 'LOG001',
+    status: 'shipped',
+    pickup_address: 'Pelabuhan Muara Baru, Jakarta',
+    delivery_address: 'Pelabuhan Tanjung Perak, Surabaya',
+    courier: 'JNE Cargo Laut',
+    tracking_number: 'JNELAUT123456',
+    estimated_arrival: new Date().toISOString(),
+  },
+
+  escrow: {
+    amount: 24500000,
+    is_released: false,
+  },
+};
+// ------------------------------------------------------------------------------------------
+
+
 interface BidHistory {
   id: string;
   bidder_id: string;
@@ -91,25 +166,44 @@ export default function AuctionHistoryDetailPage() {
   const [error, setError] = useState<string | null>(null);
  
   const fetchAuctionDetails = useCallback(async () => {
-    if (!id || !token) return;
     setLoading(true);
+
     try {
+
+      // ==========================
+      // BACKEND FETCH DI-COMMENT DULU
+      // ==========================
+
+      /*
+      if (!id || !token) return;
+
       const res = await fetch(`${API_URL}/api/auctions/history/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
+
       if (!res.ok) {
         const errData = await res.json();
         throw new Error(errData.error || 'Gagal memuat detail riwayat lelang.');
       }
+
       const data: AuctionDetailData = await res.json();
       setAuction(data);
+      */
+
+      // ==========================
+      // DUMMY DATA
+      // ==========================
+
+      setAuction(DUMMY_AUCTION);
+
       setError(null);
+
     } catch (err: any) {
       setError(err.message || 'Terjadi kesalahan.');
     } finally {
       setLoading(false);
     }
-  }, [id, token]);
+  }, []);
  
   useEffect(() => {
     if (isLoading) return;
