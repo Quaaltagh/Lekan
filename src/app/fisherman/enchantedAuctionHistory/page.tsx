@@ -6,6 +6,7 @@ import SideFisherman from '../../components/sideFisherman';
 import NavbarFisherman from '../../components/NavbarFisherman';
 import { Fish, Search, ChevronLeft, ChevronRight, ChevronDown, CalendarIcon } from 'lucide-react';
 import { useSellerAuctions } from '@/hooks/useSellerAuctions';
+import Link from 'next/link';
 
 
 import {
@@ -174,9 +175,9 @@ function TransactionItem({ item }: any) {
       </td> */}
 
       <td>
-        <button className={styles.detailBtn}>
+        <Link href={`/fisherman/enchantedAuctionHistory/${item.id}`} className={styles.button}>
           Lihat Detail
-        </button>
+        </Link>
       </td>
     </tr>
   );
