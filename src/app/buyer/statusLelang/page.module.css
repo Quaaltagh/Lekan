@@ -2,12 +2,12 @@
   min-height: 100vh;
   background-color: white;
   color: #111827;
-  font-family: sans-serif;
+  width: 100%;
    
 }
 
 .container {
-  max-width: 80rem;
+  width: 80rem;
   display: flex;
   flex-direction: column;
   margin-left: auto; 
@@ -18,19 +18,19 @@
 
 
 .titlecontainer {
-  margin-bottom: 3rem;
+  margin-bottom: var(--space-sm);
 }
 
 .title {
-  font-size: 3rem;
-  font-weight: 900;
-  color: #172554;
-  letter-spacing: -0.02em; 
+ font-size: var(--fs-tittle);
+  font-weight: var(--fw-title);
+  margin: 0;
+  color: var(--clr-black);
 }
 
 .titledescription {
-  color: #6b7280;
-  font-weight: 500; 
+  color: var(--clr-text-muted);
+  font-size: var(--fs-sm);
   max-width: 36rem; 
 }
 
@@ -49,7 +49,7 @@
 .contenttitle {
   font-size: 1.5rem;
   font-weight: 700;
-  color: #1e3a8a;
+  color: var(--clr-primary);
   letter-spacing: -0.025em;
 }
 
@@ -65,31 +65,31 @@
 
 .grid {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;; 
-  gap: 2rem;
+  grid-template-columns: repeat(1, 1fr); 
+  gap: 120px;
 }
 
 
 @media (min-width: 768px) {
   .grid {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
 
 @media (min-width: 1024px) {
   .grid {
-    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-columns: repeat(3, 0.3fr);
   }
 }
 
 
 .card {
-  background-color: #ffffff;
-  border-radius: 2rem;
-  border: 1px solid #f3f4f6;
-  box-shadow: 0 20px 40px rgba(229, 231, 235, 0.5); 
+  background: white;
+  border-radius: var(--radius-lg);
   overflow: hidden;
+  border: 1px solid #f3f4f6;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.08);
   display: flex;
   flex-direction: column;
 }
@@ -118,10 +118,10 @@
   gap: 0.375rem; 
   padding: 0.25rem 0.75rem; 
   border-radius: 9999px; 
-  background-color: #f97316; 
+  background-color: var(--clr-live); 
   font-size: 9px; 
   font-weight: 900; 
-  color: #ffffff;
+  color: var(--clr-white);
   text-transform: uppercase;
   letter-spacing: 0.1em; 
   backdrop-filter: blur(8px); 
@@ -132,7 +132,7 @@
   height: 0.375rem; 
   width: 0.375rem;
   border-radius: 9999px;
-  background-color: #ffffff;
+  background-color: var(--clr-white);
   animation: pulse 1.5s infinite;
 }
 
@@ -163,12 +163,12 @@
   font-weight: 900;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  color: #ffffff;
+  color: var(--clr-white);
 }
 
 
 .winning {
-  background-color: #1e3a8a; }
+  background-color: var(--clr-primary); }
 
 .losing {
   background-color: #dc2626; 
@@ -186,29 +186,26 @@
 }
 
 
-
 .cardcontainer {
-  padding: 1.5rem; 
+  padding: var(--space-md); 
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
 .name{
-    margin-bottom: 1rem;
-    width: 100%;
-    display: flex;
-    align-items: start;
-    flex-direction: column;
+  margin-bottom: 1rem;
+  width: 100%;
+  display: flex;
+  align-items: start;
+  flex-direction: column;
 }
 
 /* Header */
 .cardtitle {
-  font-size: 1.125rem;
-  font-weight: 700;
-  color: #000000;
-  letter-spacing: -0.025em;
-  line-height: 1.25;
+  font-size: var(--fs-md);
+  font-weight: bold;
+  color: var(--clr-black);
 }
 
 .cardmeta {
@@ -225,13 +222,13 @@
 }
 
 .contentcard {
-  padding: 1rem;
-  border-radius: 0.75rem; 
+  padding: var(--space-sm);
+  border-radius: var(--rad); 
   border: 1px solid;
   display: flex;
   flex-direction: row;
   justify-content: space-around;
-  width: 90%;
+  width: 100%;
 }
 
 .cardNeutral {
@@ -287,7 +284,7 @@
 }
 
 .valueYourWin {
-  color: #1e3a8a; 
+  color: var(--clr-primary); 
 }
 
 .valueYourLose {
@@ -345,7 +342,7 @@
 .button {
   width: 100%;
   padding: 0.75rem 0; 
-  border-radius: 0.75rem;
+  border-radius: var(--rad);
   font-size: 14px;
   font-weight: 500;
   letter-spacing: 0.05rem;
@@ -354,12 +351,12 @@
 }
 
 .buttonWin {
-  background-color: #1e3a8a; 
-  color: #ffffff;
+  background-color: var(--clr-primary); 
+  color: var(--clr-white);
 }
 
 .buttonWin:hover {
-  background-color: #172554; 
+  background-color: var(--clr-primary-hover); 
 }
 
 .buttonLose {

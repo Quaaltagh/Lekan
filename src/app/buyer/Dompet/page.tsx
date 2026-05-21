@@ -176,7 +176,7 @@ const WalletDashboard: React.FC = () => {
                     <p className={`${styles.txAmount} ${isIncome(tx) ? styles.positive : styles.negative}`}>
                       {isIncome(tx) ? '+' : '-'}{formatRupiah(tx.amount)}
                     </p>
-                    <p className={styles.txDate}>{tx.status.toUpperCase()}</p>
+                    {/* <p className={styles.txDate}>{tx.status.toUpperCase()}</p> */}
                   </div>
                 </div>
               ))

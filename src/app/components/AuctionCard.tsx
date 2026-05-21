@@ -34,7 +34,7 @@ export default function AuctionCard({
         opacity: timeLeft === 'Berakhir' ? 0 : 1,
       }}>
             <span className={styles.dot}></span>
-            Live Now
+            Sedang Berlangsung
           </span>
         </div>
 
@@ -49,10 +49,12 @@ export default function AuctionCard({
       <div className={styles.content}>
         <h3 className={styles.title}>{name}</h3>
 
+        {origin && (
         <div className={styles.location}>
           <MapPin className={styles.icon} />
-          <div className={styles.loc}>Pelabuhan Makassar</div>
+          <div className={styles.loc}>{origin}</div>
         </div>
+         )}
 
         <div className={styles.metaRow}>
           <div className={styles.metaBoxBlue}>
@@ -65,12 +67,12 @@ export default function AuctionCard({
             <div className={styles.value}>{grade}</div>
           </div>
 
-          {origin && (
+          {/* {origin && (
             <div className={styles.metaBoxGray}>
               <div className={styles.label}>Pelabuhan</div>
               <div className={styles.value}>{origin}</div>
             </div>
-          )}
+          )} */}
         </div>
 
         

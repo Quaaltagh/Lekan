@@ -91,6 +91,7 @@ export default function TransactionHistory() {
 
   return (
     <div className={styles.all}>
+      <div className={styles.container}>
       <Navbar />
       <main className={styles.mainContainer}>
 
@@ -210,6 +211,7 @@ export default function TransactionHistory() {
         </section>
 
       </main>
+    </div>
     </div>
   );
 }

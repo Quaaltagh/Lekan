@@ -48,6 +48,44 @@ function formatCountdown(endsAt: string): string {
   return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
 }
 
+// ─── Avatar component ─────────────────────────────────────────────────────────
+interface BidderProfile {
+  full_name?: string;
+  email?: string;
+  avatar_url?: string;
+}
+function getInitials(name?: string, email?: string): string {
+  if (name) return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+  if (email) return email[0].toUpperCase();
+  return '?';
+}
+
+function UserAvatar({ avatarUrl, name, email }: {
+  avatarUrl: string | null;
+  name?: string;
+  email?: string;
+}) {
+  const [imgError, setImgError] = useState(false);
+
+  if (avatarUrl && !imgError) {
+    return (
+      <img
+        src={avatarUrl}
+        alt={name || 'Avatar'}
+        className={styles.avatarImg}
+        onError={() => setImgError(true)}
+      />
+    );
+  }
+
+  return (
+    <div className={styles.avatarFallback}>
+      {getInitials(name, email)}
+    </div>
+  );
+}
+
+
 // ─── Page ─────────────────────────────────────────────────────────────────────
 export default function AuctionDetailPage() {
   const { id }          = useParams<{ id: string }>();
@@ -84,6 +122,52 @@ export default function AuctionDetailPage() {
     auction?.grade ? `GRADE ${auction.grade}` : 'SASHIMI GRADE',
     'VERIFIED SELLER',
   ];
+
+   // ── Avatar ────────────────────────────────────────────────────────
+  const [bidderProfiles, setBidderProfiles] = useState<Record<string, BidderProfile>>({});
+  useEffect(() => {
+  if (!bids.length) return;
+
+  const fetchProfiles = async () => {
+    try {
+      const profiles: Record<string, BidderProfile> = {};
+
+      await Promise.all(
+        bids.map(async bid => {
+          if (profiles[bid.bidder_id]) return;
+
+          const res = await fetch(
+            `${API_URL}/api/profile/${bid.bidder_id}`,
+            {
+              headers: token
+                ? { Authorization: `Bearer ${token}` }
+                : {},
+            }
+          );
+
+          if (res.ok) {
+            const data = await res.json();
+            console.log(data);
+            profiles[bid.bidder_id] = {
+              full_name: data.full_name,
+              email: data.email,
+              avatar_url: data.avatar_url,
+            };
+          }
+        })
+      );
+
+      setBidderProfiles(prev => ({
+        ...prev,
+        ...profiles,
+      }));
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  fetchProfiles();
+}, [bids, token]);
 
   // ── Fetch wallet ────────────────────────────────────────────────────────
   const fetchWallet = useCallback(async () => {
@@ -154,11 +238,11 @@ export default function AuctionDetailPage() {
   }, [fetchAuctionAndBids]);
 
   // ── Redirect ke detail logistik jika user memenangkan lelang yang telah selesai ─
-  useEffect(() => {
-    if (auction && auction.status === 'done' && bids.length > 0 && bids[0].bidder_id === user?.id) {
-      router.push(`/buyer/orderDetail/${id}`);
-    }
-  }, [auction, bids, user?.id, id, router]);
+  // useEffect(() => {
+  //   if (auction && auction.status === 'done' && bids.length > 0 && bids[0].bidder_id === user?.id) {
+  //     router.push(`/buyer/orderDetail/${id}`);
+  //   }
+  // }, [auction, bids, user?.id, id, router]);
 
   // ── Polling tiap 5 detik ──────────────────────────────────────────────────
   useEffect(() => {
@@ -262,6 +346,8 @@ export default function AuctionDetailPage() {
     </div>
   );
 
+   
+
   // ── Render ────────────────────────────────────────────────────────────────
   return (
     <div className={styles.all}>
@@ -278,7 +364,7 @@ export default function AuctionDetailPage() {
 
             {/* Image */}
             <div className={styles.imageContainer}>
-              <div className={styles.badgeWrapper}>
+              <div className={auction.status === 'active' ? styles.badgeWrapper : styles.badgeWrapperEnd}>
                 <span className={styles.liveBadge}>
                   <span className={styles.dot}></span>
                   {auction.status === 'active' ? 'Sedang Berlangsung' : 'Selesai'}
@@ -349,12 +435,18 @@ export default function AuctionDetailPage() {
                   bids.map((bid, idx) => (
                     <div key={bid.id} className={`${styles.row} ${idx === 0 ? styles.rowHighest : styles.rowHover}`}>
                       <div className={styles.bidderInfo}>
+                        
                         <div className={styles.avatar}>
-                          {bid.bidder_id.slice(0, 2).toUpperCase()}
+                          <UserAvatar
+                          avatarUrl={bidderProfiles[bid.bidder_id]?.avatar_url || null}
+                          name={bidderProfiles[bid.bidder_id]?.full_name}
+                          email={bidderProfiles[bid.bidder_id]?.email}
+                          />
                         </div>
+                     
                         <div className={styles.bidderNameWrapper}>
                           <span className={styles.bidderName}>
-                            {bid.bidder_id === user?.id ? 'Anda' : `Penawar ${bid.bidder_id.slice(0, 6)}...`}
+                            {bid.bidder_id === user?.id ? 'Anda' : bidderProfiles[bid.bidder_id]?.full_name || bidderProfiles[bid.bidder_id]?.email?.split('@')[0]|| `Penawar ${bid.bidder_id.slice(0, 6)}...`}
                           </span>
                           {idx === 0 && <span className={styles.highestBadge}>Tertinggi</span>}
                         </div>
@@ -363,7 +455,7 @@ export default function AuctionDetailPage() {
                         {new Date(bid.created_at).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
                       </div>
                       <div className={styles.amountWrapper}>
-                        <span className={styles.currency}>Rp</span>
+                        <span className={idx === 0 ? styles.currencyHighest : styles.currencyNormal}>Rp</span>
                         <span className={idx === 0 ? styles.amountHighest : styles.amountNormal}>
                           {bid.amount.toLocaleString('id-ID')}
                         </span>
@@ -383,7 +475,7 @@ export default function AuctionDetailPage() {
               <div>
                 <span className={styles.rightlabel}>Bid Tertinggi Saat Ini</span>
                 <div className={styles.priceRow}>
-                  <span className={styles.currency}>Rp</span>
+                  <span className={styles.bidcurrency}>Rp</span>
                   <span className={styles.price}>{currentBid.toLocaleString('id-ID')}</span>
                 </div>
               </div>
@@ -392,10 +484,14 @@ export default function AuctionDetailPage() {
               <div className={styles.timerCard}>
                 <div>
                   <span className={styles.timerLabel}>Sisa Waktu</span>
-                  <span className={styles.timerValue}>{countdown}</span>
+                  <span className={
+                      auction.status === 'active'
+                        ? styles.timerValue
+                        : styles.timerValueEnd
+                    }>{countdown}</span>
                 </div>
-                <div className={styles.iconWrapper}>
-                  <Clock className={styles.icon} />
+                <div className={styles.timericonWrapper}>
+                  <Clock className={styles.timericon} />
                 </div>
               </div>
 
@@ -447,7 +543,7 @@ export default function AuctionDetailPage() {
 
                       {/* Input kenaikan */}
                       <div className={styles.inputWrapper}>
-                        <span className={styles.inputcurrency}>+Rp</span>
+                        <span className={styles.inputcurrency}>+Rp </span>
                         <input
                           type="text"
                           value={bidIncrement}
@@ -455,25 +551,42 @@ export default function AuctionDetailPage() {
                             const raw = e.target.value.replace(/\./g, '').replace(/\D/g, '');
                             setBidIncrement(raw ? Number(raw).toLocaleString('id-ID') : '');
                           }}
-                          className={styles.input}
-                          placeholder="50.000"
+                          className={styles.winput}
+                          // placeholder="50.000"
                         />
                       </div>
                       <p className={styles.hint}>Min. kenaikan Rp 50.000</p>
 
                       {/* Breakdown harga */}
-                      <div style={{ marginTop: '10px', padding: '10px 12px', background: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                          <span style={{ fontSize: '0.75rem', color: '#64748b' }}>Harga saat ini</span>
-                          <span style={{ fontSize: '0.8rem', color: '#64748b' }}>Rp {currentBid.toLocaleString('id-ID')}</span>
+                      <div className={styles.bidBreakdown}>
+                        <div className={styles.bidBreakdownRow}>
+                          <span className={styles.bidBreakdownLabel}>
+                            Harga saat ini
+                          </span>
+
+                          <span className={styles.bidBreakdownValue}>
+                            Rp {currentBid.toLocaleString('id-ID')}
+                          </span>
                         </div>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '4px' }}>
-                          <span style={{ fontSize: '0.75rem', color: '#64748b' }}>Kenaikan Anda</span>
-                          <span style={{ fontSize: '0.8rem', color: '#16a34a' }}>+Rp {incrementNumeric.toLocaleString('id-ID')}</span>
+
+                        <div className={`${styles.bidBreakdownRow} ${styles.bidBreakdownSpacing}`}>
+                          <span className={styles.bidBreakdownLabel}>
+                            Kenaikan Anda
+                          </span>
+
+                          <span className={styles.bidBreakdownIncrease}>
+                            +Rp {incrementNumeric.toLocaleString('id-ID')}
+                          </span>
                         </div>
-                        <div style={{ borderTop: '1px solid #e2e8f0', marginTop: '8px', paddingTop: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                          <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#0f172a' }}>Total Bid Anda</span>
-                          <span style={{ fontSize: '1rem', fontWeight: 700, color: '#1e3a8a' }}>Rp {totalBidAmount.toLocaleString('id-ID')}</span>
+
+                        <div className={styles.bidBreakdownTotal}>
+                          <span className={styles.bidBreakdownTotalLabel}>
+                            Total Bid Anda
+                          </span>
+
+                          <span className={styles.bidBreakdownTotalValue}>
+                            Rp {totalBidAmount.toLocaleString('id-ID')}
+                          </span>
                         </div>
                       </div>
                     </div>
@@ -561,20 +674,20 @@ export default function AuctionDetailPage() {
                   </p>
                 </div>
               </div>
-              <button className={styles.chatButton}>
+              {/* <button className={styles.chatButton}>
                 <MessageSquare className={styles.chatIcon} />
-              </button>
+              </button> */}
             </div>
 
             {/* Trust Badges */}
             <div className={styles.icongrid}>
               <div className={styles.iconcard}>
                 <ShieldCheck className={styles.icon} />
-                <span className={styles.text}>Pembayaran Tertahan di Escrow</span>
+                <span className={styles.text}>Pembayaran Aman</span>
               </div>
               <div className={styles.iconcard}>
                 <Truck className={styles.icon} />
-                <span className={styles.text}>Rantai Dingin Terjamin</span>
+                <span className={styles.text}>Distribusi Bersuhu Terkontrol</span>
               </div>
             </div>
           </div>
