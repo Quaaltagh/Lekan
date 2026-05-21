@@ -2,19 +2,16 @@
   min-height: 100vh;
   background-color: white;
   color: #111827;
-  font-family: sans-serif;
-  width: 100%;
 }
 
 .mainContainer {
-  max-width: 80rem;
+  width: 80rem;
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   margin-left: auto; 
   margin-right: auto;
   padding: 32px 64px;
   gap: 2rem; 
-  align-items: center;
 }
 
 .container {
@@ -30,14 +27,14 @@
 }
 
 .mainContent {
-    padding: 2rem;
+    /* padding: 2rem; */
     /* background-color: #f7f7f7; */
-    border-radius: 2.5rem;
+    border-radius: var(--rad);
 }
 
 .imageContainer {
   position: relative;
-  border-radius: 2.5rem;
+  border-radius: var(--radius-lg);
   background-color: #e4e4e4; /* gray-50 */
   border: 1px solid #f3f4f6;
   overflow: hidden;
@@ -58,25 +55,29 @@
   z-index: 10;
 }
 
+.badgeWrapperEnd {
+  opacity: 0;
+}
+
 .liveBadge {
-  position: absolute;
-  background: #f97316;
+  width: 8.5rem;
+ position: absolute;
+  background: var(--clr-live);
   color: white;
-  font-size: 10px;
-  font-weight: 700;
+  font-size: var(--fs-live);
+  font-weight: var(--fw-h4);
   padding: 4px 10px;
   border-radius: 999px;
   display: flex;
   align-items: center;
   gap: 6px;
-  width: 5rem;
 }
 
 .dot {
   height: 6px;
   width: 6px;
   border-radius: 50%;
-  background-color: white;
+  background-color: var(--clr-white);
   animation: pulse 1.5s infinite;
 }
 
@@ -89,7 +90,6 @@
   width: 100%;
   height: 100%;
   object-fit: fill;
-  filter: drop-shadow(0 35px 60px rgba(0,0,0,0.1));
 }
 
 .headerContainer {
@@ -106,43 +106,41 @@
 }
 
 .title {
-  font-size: 36px;
-  font-weight: 900;
-  color: #0b1021;
+  font-size: var(--fs-lg);
+  font-weight: var(--fw-title);
+  color: var(--clr-foreground);
 }
 
 .subtitle {
-  color: #9ca3af;
-  font-weight: 600;
-  font-size: 11px;
+  color: var(--clr-text-muted);
+  /* font-weight: var(--fw-h4); */
+  font-size: var(--fs-xs);
 }
 
 .weightBox {
   background-color: rgba(239, 246, 255, 0.5);
   border: 1px solid #ccdbef;
-  border-radius: 1.5rem;
-  padding: .5rem;
+  border-radius: var(--rad);
+  padding: .6rem;
   text-align: center;
-  min-width: 120px;
 }
 
 .weightLabel {
   display: block;
-  font-size: 8px;
-  font-weight: 900;
-  color: #60a5fa;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--clr-primary-light);
   text-transform: uppercase;
 }
 
 .weightValue {
-  font-size: 1.5rem; /* 2xl */
-  font-weight: 900;
-  color: #1e3a8a; /* blue-900 */
-  letter-spacing: -0.02em;
+  font-size: var(--fs-md);
+  font-weight: 700;
+  color: var(--clr-primary-light);
 }
 
 .unit {
-  font-size: 0.75rem;
+  font-size: var(--fs-xs);
   text-transform: uppercase;
 }
 
@@ -150,16 +148,16 @@
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
-  margin-bottom: 2rem;
+  margin-bottom: var(--space-md);
 }
 
 .tag {
   padding: 0.25rem 0.75rem;
   background-color: rgba(219, 234, 254, 0.5); /* blue-100/50 */
-  font-size: 9px;
-  font-weight: 900;
-  color: #60a5fa;
-  border-radius: 0.5rem;
+  font-size: var(--fs-live);
+  font-weight: 700;
+  color: var(--clr-primary-light);
+  border-radius: var(--rad);
   text-transform: uppercase;
   letter-spacing: 0.1em;
   border: 1px solid #dbeafe; 
@@ -167,10 +165,9 @@
 
 
 .descriptionText {
-  color: #6b7280;
-  font-weight: 500;
+  color: var(--clr-text-muted);
   text-align: justify;
-  margin-bottom: 2.5rem;
+  margin-bottom: var(--space-lg);
 }
 
 /* bid */
@@ -184,15 +181,15 @@
 }
 
 .bidtitle {
-  font-size: 24px;
-  font-weight: 900;
-  color: #172554;
+  font-size: var(--fs-base);
+  font-weight: 700;
+  color: var(--clr-foreground);
 }
 
 .bidtotalBids {
-  font-size: 12px;
+  font-size: var(--fs-xs);
   font-weight: 700;
-  color: #9ca3af;
+  color: var(--clr-text-muted);
 }
 
 .bidtable {
@@ -205,9 +202,9 @@
   display: flex;
   justify-content: space-between;
   padding: 1rem 1rem;
-  font-size: 9px;
+  font-size: var(--fs-live);
   font-weight: 900;
-  color: #4e4e4e;
+  color: var(--clr-text-muted);
   text-transform: uppercase;
   letter-spacing: 0.1em;
   margin-bottom: 0.5rem;
@@ -218,7 +215,7 @@
   grid-template-columns: repeat(3, 1fr);
   align-items: center;
   padding: 1.25rem 1rem;
-  border-radius: 1rem;
+  border-radius: var(--rad);
   transition: all 0.2s ease;
 }
 
@@ -231,6 +228,10 @@
   border: 1px solid #dbeafe;
 }
 
+.rowHighest:hover{
+  background-color: rgba(219, 234, 254, 0.652);
+}
+
 .bidderInfo {
   display: flex;
   align-items: center;
@@ -238,47 +239,70 @@
 }
 
 .avatar {
-  height: 2rem;
-  width: 2rem;
-  border-radius: 0.5rem;
+ width: 34px;
+  height: 34px;
+  border-radius: 50%;
   background-color: #dbeafe;
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
   font-size: 10px;
   font-weight: 900;
-  color: #1e3a8a;
+  color: var(--clr-primary);
   border: 1px solid #bfdbfe;
   text-transform: uppercase;
+}
+.avatarImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.avatarFallback {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #1e3a8a;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  border-radius: 50%;
+  user-select: none;
 }
 
 .bidderNameWrapper {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  width: 100;
 }
 
 .bidderName {
-  font-size: 12px;
+  font-size: var(--fs-xs);
   font-weight: 900;
-  color: #172554;
+  color: var(--clr-primary);
+  width: 100%;
 }
 
 .highestBadge {
-  padding: 0.125rem 0.375rem;
-  background-color: #1e3a8a;
-  font-size: 8px;
-  font-weight: 900;
+  padding: 0.2rem 0.5rem;
+  background-color: var(--clr-primary);
+  font-size: var(--fs-live);
+  font-weight: 700;
   color: white;
-  border-radius: 0.5rem;
+  border-radius: var(--rad);
   text-transform: uppercase;
 }
 
 .time {
   text-align: center;
-  font-size: 11px;
+  font-size: var(--fs-xs);
   font-weight: 700;
-  color: #9ca3af;
+  color: #374151;
   font-family: monospace;
 }
 
@@ -289,25 +313,33 @@
   gap: 0.25rem;
 }
 
-.currency {
-  font-size: 10px;
-  font-weight: 900;
-  color: #60a5fa; /* blue-400 */
-  text-transform: uppercase;
-}
-
 .amountHighest {
-  font-size: 14px;
-  font-weight: 900;
-  color: #1e3a8a; /* blue-900 */
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-title);
+  color: var(--clr-primary); /* blue-900 */
 }
 
 .amountNormal {
-  font-size: 14px;
-  font-weight: 900;
-  color: #374151; /* gray-700 */
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-h4);
+  color: var(--clr-foreground); /* gray-700 */
 }
 
+.currencyHighest {
+  font-size: var(--fs-xs);
+  font-weight:  var(--fw-title);
+  color: var(--clr-primary);
+  /* text-transform: uppercase;
+  letter-spacing: -0.01em; */
+}
+
+.currencyNormal {
+  font-size: var(--fs-xs);
+  font-weight:  var(--fw-h4);
+  color: var(--clr-foreground);
+  /* text-transform: uppercase;
+  letter-spacing: -0.01em; */
+}
 
 /* right */
 .rightwrapper {
@@ -315,13 +347,14 @@
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+  margin-top: 2.2rem;
 }
 
 .rightcard {
-  background-color: white;
-  border-radius: 2.5rem;
+  background-color: var(--clr-white);
+  border-radius: var(--rad);
   padding: 2rem;
-  box-shadow: 0 25px 50px rgba(23, 37, 84, 0.1); /* shadow-blue-950/10 */
+  box-shadow: var(--shadow-md);
   border: 1px solid #f9fafb; /* gray-50 */
   display: flex;
   flex-direction: column;
@@ -341,25 +374,24 @@
   gap: 0.5rem;
 }
 
-.currency {
-  font-size: 20px;
-  font-weight: 900;
-  color: #1e3a8a;
-  text-transform: uppercase;
-  letter-spacing: -0.01em;
+.bidcurrency{
+  font-size: var(--fs-lg);
+  font-weight: var(--fw-title);
+  color: #172554; /* blue-950 */
 }
 
+
 .price {
-  font-size: 30px;
-  font-weight: 900;
+  font-size: var(--fs-tittle);
+  font-weight: var(--fw-title);
   color: #172554; /* blue-950 */
-  letter-spacing: -0.02em;
+  /* letter-spacing: -0.02em; */
 }
 
 .timerCard {
   background-color: #fff7ed; /* orange-50 */
   border: 1px solid #ffedd5; /* orange-100 */
-  border-radius: 1.5rem;
+  border-radius: var(--rad);
   padding: 1rem;
   display: flex;
   justify-content: space-between;
@@ -368,27 +400,36 @@
 
 .timerLabel {
   display: block;
-  font-size: 9px;
-  font-weight: 900;
+  font-size: var(--fs-live);
+  font-weight: 700;
   color: #fb923c; /* orange-400 */
   text-transform: uppercase;
-  letter-spacing: 0.1em;
-  margin-bottom: 0.25rem;
+  /* letter-spacing: 0.1em;
+  margin-bottom: 0.25rem; */
 }
 
 .timerValue {
-  font-size: 1.25rem; /* text-xl */
-  font-weight: 900;
+  font-size: var(--fs-md); /* text-xl */
+  font-weight: 700;
   color: #7c2d12; /* orange-900 */
-  font-family: monospace;
+  /* font-family: monospace; */
   letter-spacing: -0.02em;
 }
 
-.iconWrapper {
+.timerValueEnd {
+  font-size: var(--fs-md); /* text-xl */
+  font-weight: 700;
+  color: #7c2d12; /* orange-900 */
+  /* font-family: monospace; */
+  /* letter-spacing: -0.02em; */
+}
+
+
+.timericonWrapper {
   height: 2.5rem;
   width: 2.5rem;
   background-color: #ffedd5; /* orange-100 */
-  border-radius: 1rem;
+  border-radius: var(--rad);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -396,19 +437,16 @@
   transition: transform 0.2s ease;
 }
 
-.timerCard:hover .iconWrapper {
-  transform: rotate(12deg);
-}
-
-.icon {
-  height: 1.5rem;
-  width: 1.5rem;
+.timericon {
+  height: 1.25rem;
+  width: 1.25rem;
+  opacity: 0.7;
 }
 
 .inputlabel {
-  font-size: 10px;
-  font-weight: 600;
-  color: #6b7280;
+  font-size: var(--fs-live);
+  font-weight: var(--fw-h4);
+  color: var(--clr-text-muted);
   text-transform: uppercase;
 }
 
@@ -423,61 +461,120 @@
   left: 1.5rem;
   top: 52%;
   transform: translateY(-50%);
-  font-size: 16px;
+  font-size: var(--fs-base);
   font-weight: 700;
-  color: #939393;
-  text-transform: uppercase;
-  letter-spacing: -0.01em;
+  color: #a1a1a1;
+  /* text-transform: uppercase;
+  letter-spacing: -0.01em; */
 }
 
-.input {
+.winput {
   width: 100%;
-  background-color: #f9fafb;
-  border: none;
-  border-radius: 1rem;
-  padding-left: 3.5rem;
+  background-color: #f8fafc;
+  
+  border-radius: var(--rad);
+  padding-left: 3.6rem;
   padding-right: 1.5rem;
-  padding-top: 1.25rem;
-  padding-bottom: 1.25rem;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
   font-size: 1.125rem;
-  font-weight: 800;
+  font-weight: var(--fw-title);
   color: #a1a1a1;
   text-transform: uppercase;
-  outline: none;
+  
+  border: 1px solid var(--clr-border);
 }
 
-.input:focus {
-  box-shadow: 0 0 0 1px #1e3a8a;
+.winput:focus {
+  border: 1px solid var(--clr-primary);
+  outline: none;
+  box-shadow: none;
 }
 
 .hint {
-  font-size: 9px;
-  font-weight: 700;
-  color: #9ca3af;
+  font-size: var(--fs-live);
+  font-weight: var(--fw-h4);
+  color: var(--clr-text-muted);
   text-transform: uppercase;
   font-style: italic;
+}
+
+.bidBreakdown {
+  margin-top: 10px;
+  padding: 10px 12px;
+  background: #f8fafc;
+  border-radius: var(--rad);
+  border: 1px solid var(--clr-border);
+}
+
+.bidBreakdownRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.bidBreakdownSpacing {
+  margin-top: 4px;
+}
+
+.bidBreakdownLabel {
+  font-size: var(--fs-xs);
+  color: #64748b;
+}
+
+.bidBreakdownValue {
+  font-size: var(--fs-xs);
+  color: #64748b;
+}
+
+.bidBreakdownIncrease {
+  font-size: var(--fs-xs);
+  color: #16a34a;
+}
+
+.bidBreakdownTotal {
+  border-top: 1px solid #e2e8f0;
+  margin-top: 8px;
+  padding-top: 8px;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.bidBreakdownTotalLabel {
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-title
+  );
+  color: var(--clr-foreground);
+}
+
+.bidBreakdownTotalValue {
+  font-size: var(--fs-base);
+  font-weight: var(--fw-title);
+  color: var(--clr-primary);
 }
 
 .button {
   width: 100%;
   padding: .75rem 0;
-  background-color: #1e3a8a;
-  color: white;
-  border-radius: 1.5rem;
-  font-size: 16px;
-  font-weight: 800;
+  background-color: var(--clr-primary);
+  color: var(--clr-white);
+  border-radius: var(--rad);
+  font-size: var(--fs-base);
+  font-weight: var(--fw-title);
   text-transform: uppercase;
-  box-shadow: 0 7px 25px rgba(30, 58, 138, 0.3);
+  box-shadow: var(--shadow-md);
   border: none;
   cursor: pointer;
   margin-top: .5rem;
 }
 
 .devide{
-    background-color: #9ca3af32;
-    height: 1px;
-    width: 100%;
-    margin: 0px;
+  background-color: #9ca3af4c;
+  height: 1px;
+  width: 100%;
+  margin: 0px;
 }
 
 .walletcontainer {
@@ -495,20 +592,20 @@
 }
 
 .balanceLabel {
-  font-size: 14px;
-  color: #414750;
+  font-size: var(--fs-sm);
+  color: var(--clr-text-muted);
 }
 
 .balanceValue {
-  font-size: 15px;
-  font-weight: 600;
-  color: #172554;
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-h4);
+  color: var(--clr-foreground);
 }
 
 .warningBox {
   background-color: #fef2f2;
   color: #dc2626;
-  border-radius: 1rem;
+  border-radius: var(--rad);
   padding: 1rem;
   display: flex;
   align-items: center;
@@ -531,25 +628,27 @@
 .depositButton {
   width: 100%;
   padding: .5rem 0;
-  border: 2px solid #1e3a8a;
-  color: #1e3a8a;
-  border-radius: 1rem;
-  font-size: 14px;
-  font-weight: 600;
+  border: 2px solid var(--clr-primary);
+  color: var(--clr-primary);
+  border-radius: var(--rad);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-h4);
   background-color: transparent;
   cursor: pointer;
 }
 
 .depositButton:hover {
   background-color: #eff6ff;
+  border: 2px solid var(--clr-border);
 }
 
 
 /* seller */
 .sellercard {
-  background-color: rgba(249, 250, 251, 0.5); /* gray-50/50 */
+  background-color: var(--clr-white);
+  box-shadow: var(--shadow-md);
   border: 1px solid #f3f4f6; /* gray-100 */
-  border-radius: 2rem;
+  border-radius: var(--rad);
   padding: 1.5rem;
   display: flex;
   align-items: center;
@@ -565,7 +664,7 @@
 .selleravatarWrapper {
   height: 3rem;
   width: 3rem;
-  border-radius: 1rem;
+  border-radius: var(--radius-lg);
   background-color: #dbeafe; /* blue-100 */
   overflow: hidden;
   position: relative;
@@ -579,21 +678,21 @@
 
 .sellerlabel {
   display: block;
-  font-size: 8px;
-  font-weight: 800;
-  color: #9ca3af;
+  font-size: var(--fs-live);
+  font-weight: 700;
+  color: var(--clr-text-muted);
   text-transform: uppercase;
-  letter-spacing: 0.1em;
-  margin-bottom: 0.125rem;
+  /* letter-spacing: 0.1em; */
+  /* margin-bottom: 0.125rem; */
 }
 
 .sellername {
   display: flex;
   align-items: center;
-  gap: 0.375rem;
-  font-size: 0.875rem;
-  font-weight: 900;
-  color: #172554;
+  /* gap: 0.375rem; */
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-title);
+  color: var(--clr-primary);
   text-transform: uppercase;
 }
 
@@ -605,9 +704,9 @@
 }
 
 .sellermeta {
-  font-size: 9px;
-  font-weight: 700;
-  color: #636363;
+  font-size: var(--fs-live);
+  font-weight: var(--fw-h4);
+  color: var(--clr-text-muted);
 }
 
 .chatButton {
@@ -617,7 +716,7 @@
   align-items: center;
   justify-content: center;
   color: #9ca3af;
-  border-radius: 0.75rem;
+  border-radius: var(--rad);
   background-color: transparent;
   box-shadow: 0 1px 2px rgba(0,0,0,0.05);
   transition: all 0.2s ease;
@@ -626,7 +725,7 @@
 }
 
 .chatButton:hover {
-  color: #1e3a8a;
+  color: var(--clr-primary);
   background-color: #ffffff;
 }
 
@@ -643,32 +742,33 @@
 }
 
 .iconcard {
-  background-color: #f9fafb;
+  background-color: var(--clr-white);
+  box-shadow: var(--shadow-md);
   border: 1px solid #f3f4f6;
-  border-radius: 1rem;
+  border-radius: var(--rad);
   padding: 1rem;
   text-align: center;
-  transition: all 0.2s ease;
+  /* transition: all 0.2s ease; */
 }
 
 .icon {
   height: 1.25rem;
   width: 1.25rem;
-  color: #1b59de;
-  margin: 0 auto 0.5rem;
-  opacity: 0.7;
-  transition: opacity 0.2s ease;
+  color: var(--clr-primary-light);
+  margin: 0 auto 0.25rem;
+  opacity: 0.8;
+  /* transition: opacity 0.2s ease; */
 }
 
 .text {
   display: block;
-  font-size: 8px;
-  font-weight: 900;
-  color: #9ca3af; /* gray-400 */
-  text-transform: uppercase;
-  letter-spacing: 0.15em;
+  font-size: var(--fs-live);
+  font-weight: var(--fw-h4);
+  color: var(--clr-text-muted); /* gray-400 */
+  /* text-transform: uppercase; */
+  /* letter-spacing: 0.15em;
   line-height: 1.2;
-  transition: color 0.2s ease;
+  transition: color 0.2s ease; */
 }
 
 .iconcard:hover .icon {
@@ -676,5 +776,5 @@
 }
 
 .iconcard:hover .text {
-  color: #172554; /* blue-950 */
+  color: var(--clr-foreground); /* blue-950 */
 }

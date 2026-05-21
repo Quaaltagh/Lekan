@@ -34,7 +34,7 @@ export default function AuctionCard({
         opacity: timeLeft === 'Berakhir' ? 0 : 1,
       }}>
             <span className={styles.dot}></span>
-            Live Now
+            Sedang Berlangsung
           </span>
         </div>
 
