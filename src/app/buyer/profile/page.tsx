@@ -30,11 +30,14 @@ export default function Profile() {
   const [fullName,     setFullName]     = useState('');
   const [vesselName,   setVesselName]   = useState('');
   const [bio,          setBio]          = useState('');
+  const [phone,          setPhone]          = useState('');
+  const [email,          setEmail]          = useState('');
+  const [address,          setAddress]          = useState('');
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [loading,      setLoading]      = useState(true);
 
   // ── Password state ─────────────────────────────────────────────────────
-  const [showPasswordSection, setShowPasswordSection] = useState(false);
+  // const [showPasswordSection, setShowPasswordSection] = useState(false);
   const [currentPassword,     setCurrentPassword]     = useState('');
   const [newPassword,         setNewPassword]         = useState('');
   const [confirmPassword,     setConfirmPassword]     = useState('');
@@ -51,6 +54,7 @@ export default function Profile() {
   // ── UI state ───────────────────────────────────────────────────────────
   const [showSuccess, setShowSuccess] = useState(false);
   const [saveError,   setSaveError]   = useState('');
+  const [passwordApiError, setPasswordApiError] = useState('');
   const [saving,      setSaving]      = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -61,6 +65,9 @@ export default function Profile() {
       .then(p => {
         setProfile(p);
         setFullName(p.full_name ?? '');
+        setEmail(p.email ?? '');
+        setAddress(p.address ?? '');
+        setPhone(p.phone ?? '');
         setVesselName(p.vessel_name ?? '');
         setBio(p.bio ?? '');
         setProfileImage(p.avatar_url ?? null);
@@ -86,16 +93,16 @@ export default function Profile() {
   };
 
   // ── Toggle dropdown password — reset field saat ditutup ───────────────
-  const handleTogglePassword = () => {
-    if (showPasswordSection) {
-      // Tutup → reset semua field & error
-      setCurrentPassword('');
-      setNewPassword('');
-      setConfirmPassword('');
-      setPasswordError('');
-    }
-    setShowPasswordSection(prev => !prev);
-  };
+  // const handleTogglePassword = () => {
+  //   if (showPasswordSection) {
+  //     // Tutup → reset semua field & error
+  //     setCurrentPassword('');
+  //     setNewPassword('');
+  //     setConfirmPassword('');
+  //     setPasswordError('');
+  //   }
+  //   setShowPasswordSection(prev => !prev);
+  // };
 
   // ── Submit ─────────────────────────────────────────────────────────────
   const handleSubmit = async (e: React.FormEvent) => {
@@ -104,15 +111,18 @@ export default function Profile() {
 
     setSaveError('');
     setPasswordError('');
+    setPasswordApiError('');
+
     setSaving(true);
 
     try {
       // 1. Update profil (selalu)
-      await updateProfile(user.id, token, { full_name: fullName, vessel_name: vesselName, bio });
+      await updateProfile(user.id, token, { full_name: fullName, vessel_name: vesselName, bio, email, phone, address });
 
       // 2. Update password — hanya kalau dropdown dibuka
       //    Saat dropdown terbuka, semua field wajib diisi
-      if (showPasswordSection) {
+      const isPasswordFilled = currentPassword || newPassword || confirmPassword;
+      if (isPasswordFilled) {
         if (!currentPassword) {
           setPasswordError('Password sekarang wajib diisi.');
           setSaving(false);
@@ -133,12 +143,17 @@ export default function Profile() {
           setSaving(false);
           return;
         }
-        await updatePassword(user.id, token, currentPassword, newPassword);
-        // Reset dan tutup dropdown setelah berhasil
-        setCurrentPassword('');
-        setNewPassword('');
-        setConfirmPassword('');
-        setShowPasswordSection(false);
+        try {
+          await updatePassword(user.id, token, currentPassword, newPassword);
+          setCurrentPassword('');
+          setNewPassword('');
+          setConfirmPassword('');
+        } catch (err) {
+          // error password (misal password lama salah) → muncul di bawah input
+          setPasswordApiError(err instanceof Error ? err.message : 'Password lama tidak cocok.');
+          setSaving(false);
+          return;
+        }
       }
 
       // 3. Update preferences (selalu)
@@ -156,6 +171,9 @@ export default function Profile() {
   const handleCancel = () => {
     if (!profile) return;
     setFullName(profile.full_name ?? '');
+    setEmail(profile.email ?? '');
+    setAddress(profile.address ?? '');
+    setPhone(profile.phone ?? '');
     setVesselName(profile.vessel_name ?? '');
     setBio(profile.bio ?? '');
     setCurrentPassword('');
@@ -163,7 +181,8 @@ export default function Profile() {
     setConfirmPassword('');
     setPasswordError('');
     setSaveError('');
-    setShowPasswordSection(false);
+    setPasswordApiError('');  
+    // setShowPasswordSection(false);
   };
 
   if (loading) return (
@@ -225,13 +244,32 @@ export default function Profile() {
               </div>
 
               <div className={styles.formGrid}>
+                <div className={`${styles.formGroup} ${styles.fullWidth}`}>
+                  <label>email</label>
+                  <input type="text" value={email} onChange={e => setEmail(e.target.value)} />
+                </div>
+
                 <div className={styles.formGroup}>
                   <label>NAMA LENGKAP</label>
                   <input type="text" value={fullName} onChange={e => setFullName(e.target.value)} />
                 </div>
-                <div className={styles.formGroup}>
+                {/* <div className={styles.formGroup}>
                   <label>NAMA KAPAL</label>
                   <input type="text" value={vesselName} onChange={e => setVesselName(e.target.value)} />
+                </div> */}
+
+                <div className={`${styles.formGroup} ${styles.phoneInput}`}>
+                  <label>Nomor Telepon</label>
+                  <span className={styles.phonePrefix}>+62</span>
+                  <input type="tel" placeholder="81234567890" value={phone}onChange={(e) => {
+                    const onlyNumbers = e.target.value.replace(/\D/g, '');
+                    setPhone(onlyNumbers);
+                  }} />
+                </div>
+
+                 <div className={`${styles.formGroup} ${styles.fullWidth}`}>
+                  <label>Alamat</label>
+                  <textarea value={address} onChange={e => setAddress(e.target.value)} />
                 </div>
                 <div className={`${styles.formGroup} ${styles.fullWidth}`}>
                   <label>BIO</label>
@@ -276,26 +314,26 @@ export default function Profile() {
             <SettingsSection icon={Lock} title="Keamanan" description="Klik tombol di bawah jika ingin mengganti password akun Anda.">
 
               {/* Tombol toggle dropdown */}
-              <button
+              {/* <button
                 type="button"
                 className={styles.passwordToggleBtn}
                 onClick={handleTogglePassword}
               >
                 <span>{showPasswordSection ? 'Batal Ganti Password' : 'Ganti Password'}</span>
                 {showPasswordSection ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-              </button>
+              </button> */}
 
               {/* Dropdown password — muncul saat toggle dibuka */}
-              {showPasswordSection && (
+              {/* {showPasswordSection && (
                 <div className={styles.passwordDropdown}>
                   <p className={styles.passwordDropdownHint}>
                     Semua field wajib diisi untuk mengganti password.
-                  </p>
+                  </p> */}
 
                   <div className={styles.formGrid}>
                     {/* Password sekarang */}
-                    <div className={`${styles.fullWidth}`}>
-                      <div className={styles.formGroup}><label>PASSWORD SEKARANG</label></div>
+                    <div className={`${styles.formGroup} ${styles.fullWidth}`}>
+                        <label>PASSWORD SEKARANG</label>
                       <div className={styles.passwordWrapper}>
                         <input
                           type={showCurrentPass ? 'text' : 'password'}
@@ -304,9 +342,11 @@ export default function Profile() {
                           className={styles.passwordInput}
                           placeholder="Masukkan password sekarang"
                         />
-                        <button type="button" className={styles.eyeButton} onClick={() => setShowCurrentPass(p => !p)}>
+                        <button type="button" className={styles.eyeButtonFull} onClick={() => setShowCurrentPass(p => !p)}>
                           {showCurrentPass ? <Eye size={18} /> : <EyeOff size={18} />}
                         </button>
+
+
                       </div>
                     </div>
 
@@ -344,14 +384,22 @@ export default function Profile() {
                       </div>
                     </div>
 
+                    {passwordApiError && (
+                      <div className={styles.fullWidth} style={{ color: '#dc2626', fontSize: '0.8rem', marginTop: '-0.5rem' }}>
+                        {passwordApiError}
+                      </div>
+                    )}
+
                     {passwordError && (
                       <div className={styles.fullWidth} style={{ color: '#dc2626', fontSize: '0.8rem', marginTop: '-0.5rem' }}>
                         {passwordError}
                       </div>
                     )}
+
+                    
                   </div>
-                </div>
-              )}
+                {/* </div>
+              )} */}
             </SettingsSection>
 
             {/* ── Actions ── */}

@@ -235,7 +235,7 @@ function HistoryRow({ id, name, image, vessel, seller, finalPrice, date, status 
 
       {/* Action — FIX: pakai Link bukan button biasa */}
       <div className={styles.itemactions}>
-        <Link href={`/buyer/auction/${id}`} className={styles.itembutton}>
+        <Link href={`/buyer/orderDetail/${id}`} className={styles.itembutton}>
           Lihat Detail
         </Link>
       </div>
