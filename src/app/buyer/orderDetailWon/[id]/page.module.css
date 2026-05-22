@@ -78,7 +78,7 @@
 .imageContainer {
   position: relative;
   border-radius: var(--radius-lg);
-  background-color: #e4e4e4; /* gray-50 */
+  background-color: var(--clr-black); /* gray-50 */
   border: 1px solid #f3f4f6;
   overflow: hidden;
   margin-bottom: 2.5rem;
@@ -727,4 +727,11 @@
   /* font-weight: 600; */
   color: var(--clr-foreground);
   margin-top: 2px;
+}
+
+
+.image{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
