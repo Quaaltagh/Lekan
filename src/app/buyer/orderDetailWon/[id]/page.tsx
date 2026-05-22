@@ -181,32 +181,19 @@ export default function BuyerOrderDetailPage() {
   const finalPrice = auction.final_price || 0;
 
   // Timeline tracking status
+  const statusOrder = ['pending', 'shipped', 'arrived', 'delivered'];
+  const currentIdx  = statusOrder.indexOf(status); // status = logistics.status
+
   const steps = [
-  {
-    key: 'pending',
-    label: 'Pesanan Diterima',
-    desc: 'Dana disimpan aman di Escrow LEKAN',
-    status: 'completed',
-  },
-  {
-    key: 'shipped',
-    label: 'Dalam Perjalanan',
-    desc: 'Kapal Cargo telah berangkat dari dermaga nelayan',
-    status: 'active',
-  },
-  {
-    key: 'arrived',
-    label: 'Tiba di Pelabuhan',
-    desc: 'Kargo ikan siap diambil di pelabuhan tujuan',
-    status: 'inactive',
-  },
-  {
-    key: 'delivered',
-    label: 'Barang Diterima',
-    desc: 'Transaksi selesai & dana dirilis ke nelayan',
-    status: 'inactive',
-  },
-];
+    { key: 'pending',   label: 'Pesanan Diterima',    desc: 'Dana disimpan aman di Escrow LEKAN' },
+    { key: 'shipped',   label: 'Dalam Perjalanan',    desc: 'Kapal Cargo telah berangkat dari dermaga nelayan' },
+    { key: 'arrived',   label: 'Tiba di Pelabuhan',   desc: 'Kargo ikan siap diambil di pelabuhan tujuan' },
+    { key: 'delivered', label: 'Barang Diterima',     desc: 'Transaksi selesai & dana dirilis ke nelayan' },
+  ].map((step, idx) => ({
+    ...step,
+    status: idx < currentIdx ? 'completed' : idx === currentIdx ? 'active' : 'inactive',
+  }));
+
   const tags = [
     'SUSTAINABLE',
     auction?.grade ? `GRADE ${auction.grade}` : 'SASHIMI GRADE',
