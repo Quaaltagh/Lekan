@@ -8,7 +8,7 @@ export const getProfile = async (req: Request, res: Response): Promise<void> => 
 
   const { data, error } = await supabase
     .from('profiles')
-    .select('id, email, full_name, vessel_name, phone, bank_account, bank_name, bio, avatar_url, preferences, verified, role')
+    .select('id, email, full_name, vessel_name, phone, bank_account, bank_name, bio, avatar_url, preferences, verified, role, address')
     .eq('id', userId)
     .single();
 
@@ -21,22 +21,25 @@ export const getProfile = async (req: Request, res: Response): Promise<void> => 
 };
 
 // ── PUT /api/profile/:userId ───────────────────────────────────────────────
-// Update info profil: nama, kapal, bio, avatar_url
 export const updateProfile = async (req: Request, res: Response): Promise<void> => {
   const { userId } = req.params;
-  const { full_name, vessel_name, bio, avatar_url } = req.body;
+  const { full_name, vessel_name, bio, avatar_url, email, phone, address, bank_name, bank_account } = req.body;
 
-  // Minimal satu field harus diisi
-  if (!full_name && !vessel_name && bio === undefined && !avatar_url) {
+  const updates: Record<string, any> = {};
+  if (full_name   !== undefined) updates.full_name    = full_name;
+  if (vessel_name !== undefined) updates.vessel_name  = vessel_name;
+  if (bio         !== undefined) updates.bio          = bio;
+  if (avatar_url  !== undefined) updates.avatar_url   = avatar_url;
+  if (email       !== undefined) updates.email        = email;
+  if (phone       !== undefined) updates.phone        = phone;
+  if (address     !== undefined) updates.address      = address;
+  if (bank_name   !== undefined) updates.bank_name    = bank_name;
+  if (bank_account !== undefined) updates.bank_account = bank_account;
+
+  if (Object.keys(updates).length === 0) {
     res.status(400).json({ error: 'Tidak ada data yang diupdate.' });
     return;
   }
-
-  const updates: Record<string, any> = {};
-  if (full_name)   updates.full_name   = full_name;
-  if (vessel_name) updates.vessel_name = vessel_name;
-  if (bio !== undefined) updates.bio   = bio;
-  if (avatar_url)  updates.avatar_url  = avatar_url;
 
   const { data, error } = await supabase
     .from('profiles')
@@ -54,7 +57,6 @@ export const updateProfile = async (req: Request, res: Response): Promise<void> 
 };
 
 // ── PUT /api/profile/:userId/password ─────────────────────────────────────
-// Update password via Supabase Auth Admin
 export const updatePassword = async (req: Request, res: Response): Promise<void> => {
   const { userId } = req.params;
   const { currentPassword, newPassword } = req.body;
@@ -69,7 +71,6 @@ export const updatePassword = async (req: Request, res: Response): Promise<void>
     return;
   }
 
-  // Ambil email user untuk verifikasi password lama
   const { data: profile } = await supabase
     .from('profiles')
     .select('email')
@@ -81,7 +82,6 @@ export const updatePassword = async (req: Request, res: Response): Promise<void>
     return;
   }
 
-  // Verifikasi password lama dengan cara login ulang
   const { error: signInError } = await supabase.auth.signInWithPassword({
     email: profile.email,
     password: currentPassword,
@@ -92,7 +92,6 @@ export const updatePassword = async (req: Request, res: Response): Promise<void>
     return;
   }
 
-  // Update password via Admin API
   const { error: updateError } = await supabase.auth.admin.updateUserById(userId, {
     password: newPassword,
   });
@@ -102,7 +101,6 @@ export const updatePassword = async (req: Request, res: Response): Promise<void>
     return;
   }
 
-   // ── NOTIF: keamanan — password berhasil diganti ─────────────────────────
   await sendNotification(
     userId,
     'keamanan',
@@ -114,7 +112,6 @@ export const updatePassword = async (req: Request, res: Response): Promise<void>
 };
 
 // ── PUT /api/profile/:userId/preferences ──────────────────────────────────
-// Update preferences notifikasi
 export const updatePreferences = async (req: Request, res: Response): Promise<void> => {
   const { userId } = req.params;
   const { auctionAlerts, bidConfirmations, marketingUpdates } = req.body;
@@ -129,7 +126,6 @@ export const updatePreferences = async (req: Request, res: Response): Promise<vo
     return;
   }
 
-  // Merge dengan preferences yang ada (tidak overwrite semua)
   const { data: existing } = await supabase
     .from('profiles')
     .select('preferences')
@@ -154,26 +150,22 @@ export const updatePreferences = async (req: Request, res: Response): Promise<vo
 };
 
 // ── POST /api/profile/:userId/avatar ──────────────────────────────────────
-// Upload avatar ke Supabase Storage, return public URL
 export const uploadAvatar = async (req: Request, res: Response): Promise<void> => {
   const { userId } = req.params;
-  const { base64Image, mimeType } = req.body; // e.g. "image/jpeg"
+  const { base64Image, mimeType } = req.body;
 
   if (!base64Image || !mimeType) {
     res.status(400).json({ error: 'base64Image dan mimeType wajib diisi.' });
     return;
   }
 
-  const buffer     = Buffer.from(base64Image, 'base64');
-  const ext        = mimeType.split('/')[1] ?? 'jpg';
-  const filePath   = `avatars/${userId}.${ext}`;
+  const buffer   = Buffer.from(base64Image, 'base64');
+  const ext      = mimeType.split('/')[1] ?? 'jpg';
+  const filePath = `avatars/${userId}.${ext}`;
 
   const { error: uploadError } = await supabase.storage
-    .from('avatars') // buat bucket "avatars" di Supabase Storage
-    .upload(filePath, buffer, {
-      contentType: mimeType,
-      upsert: true, // overwrite kalau sudah ada
-    });
+    .from('avatars')
+    .upload(filePath, buffer, { contentType: mimeType, upsert: true });
 
   if (uploadError) {
     res.status(500).json({ error: 'Gagal upload avatar: ' + uploadError.message });
@@ -183,7 +175,6 @@ export const uploadAvatar = async (req: Request, res: Response): Promise<void> =
   const { data: urlData } = supabase.storage.from('avatars').getPublicUrl(filePath);
   const publicUrl = urlData.publicUrl;
 
-  // Simpan URL ke profiles
   await supabase.from('profiles').update({ avatar_url: publicUrl }).eq('id', userId);
 
   res.status(200).json({ message: 'Avatar berhasil diupload.', avatar_url: publicUrl });
