@@ -463,3 +463,71 @@
 .backLink:hover{
   color: var(--clr-primary);
 }
+
+/* ── Tambahkan ke invoice/page.module.css yang sudah ada ── */
+
+/* Loading / Error state */
+.stateWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  min-height: 60vh;
+  color: #64748b;
+  text-align: center;
+  padding: 2rem;
+}
+
+.errorText {
+  color: #ef4444;
+  font-weight: 500;
+  max-width: 360px;
+}
+
+.backBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 1.25rem;
+  background: var(--clr-primary, #2563eb);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* Unpaid badge */
+.unpaidBadge {
+  display: inline-block;
+  padding: 0.2rem 0.75rem;
+  background: #fef2f2;
+  color: #ef4444;
+  border: 1px solid #fecaca;
+  border-radius: 20px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.75rem;
+}
+
+/* Logistics row */
+.logisticsRow {
+  margin: 0 1.5rem 1.25rem;
+  padding: 0.875rem 1rem;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.logisticsText {
+  font-size: 0.8rem;
+  color: #475569;
+  line-height: 1.5;
+  margin: 0;
+}
