@@ -5,9 +5,10 @@ import styles from './page.module.css';
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import React from "react";
+import { useRouter } from 'next/navigation';
 
 export default function Invoice() {
-
+    const router = useRouter();
     const printRef = React.useRef(null);
     const handleDownloadPdf = async () => {
         const element = printRef.current;
@@ -45,7 +46,10 @@ export default function Invoice() {
 
             <div className={styles.titlewrapper}>
                 <div className={styles.titleSection}>
-                    <span className={styles.tag}>Catatan Transaksi</span>
+                    <button onClick={() => router.back()} className={styles.backLink}>
+                            <ArrowLeft size={18} /> Kembali ke Histori Lelang
+                          </button>
+                    {/* <span className={styles.tag}>Catatan Transaksi</span> */}
 
                     <h1 className={styles.title}>
                     Faktur
@@ -194,12 +198,12 @@ export default function Invoice() {
                 
             </div>
 
-            <div className={styles.backwrapper}>
+            {/* <div className={styles.backwrapper}>
                 <button className={styles.backbutton}>
                     <ArrowLeft className={styles.backicon} />
                     Kembali ke Riwayat Transaksi
                 </button>
-            </div>
+            </div> */}
 
         </div>
     </div>

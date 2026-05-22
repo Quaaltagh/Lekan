@@ -92,6 +92,22 @@
   object-fit: fill;
 }
 
+.backLink{
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--clr-text-muted);
+  margin-bottom: var(--space-sm);;
+  font-size: var(--fs-sm);
+}
+
+.backLink:hover{
+  color: var(--clr-primary);
+}
+
 .headerContainer {
   display: flex;
   justify-content: space-between;
@@ -343,7 +359,7 @@
 
 /* right */
 .rightwrapper {
-  width: 100%;
+  width: 80%;
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
