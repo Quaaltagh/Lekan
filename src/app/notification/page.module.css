@@ -20,7 +20,8 @@
   margin-left: auto; 
   margin-right: auto;
   padding: 32px 64px;
-  gap: 2rem; 
+  gap: 2rem;
+  align-items: center; 
 }
 
 .header{

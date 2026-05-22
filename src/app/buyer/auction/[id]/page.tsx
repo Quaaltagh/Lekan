@@ -358,7 +358,8 @@ export default function AuctionDetailPage() {
           {/* ── Kiri ── */}
           <div className={styles.mainContent}>
             <button onClick={() => router.back()}
-              style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'none', border: 'none', cursor: 'pointer', color: '#64748b', marginBottom: '1rem', fontSize: '0.875rem' }}>
+              className={styles.backLink}
+             >
               <ArrowLeft size={16} /> Kembali
             </button>
 

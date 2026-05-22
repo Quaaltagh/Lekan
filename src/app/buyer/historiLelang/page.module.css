@@ -65,12 +65,11 @@
 .searchinput {
   
   height: 100%;
-  background: var(--clr-white);
-  border: 1px solid #e5e7eb;
-  border-radius: var(--rad);
+  background: var(--clr-input);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius-lg);
   padding: 0.875rem 1rem 0.875rem 3rem; 
-  font-size: 12px;
-  font-weight: 500;
+  font-size: var(--fs-xs);
   outline: none;
   transition: all 0.2s ease;
 }
@@ -82,7 +81,7 @@
 }
 
 .searchinput::placeholder {
-  color: #c4c6c8;
+  color: var(--clr-text-muted);
 }
 
 .searchinput:focus {
@@ -97,7 +96,7 @@
 
 .filterButton {
   padding: 0.65rem 0.85rem;
-  background:#eaedf1;
+  background:var(--clr-input);
   border-radius: var(--rad);
   font-size: 12px;
   font-weight: 500;
@@ -105,8 +104,10 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  border: none;
+  /* border: none; */
+  border: 1px solid var(--clr-border);
   cursor: pointer;
+
 }
 
 .filterButton:hover {
@@ -368,7 +369,7 @@
 .emptydescription {
   font-size: 12px;
   font-weight: 600;
-  color: #9ca3af;
+  color: var(--clr-text-muted);
   letter-spacing: 0.05rem;
 }
 
@@ -388,8 +389,8 @@
   grid-template-columns:35% 18% 18% 14% auto;
   padding: 1.5rem 2rem;
   border-radius: var(--rad) var(--rad) 0 0 ;
-  background-color: #eaedf1;
-  border-bottom: 1px solid #f3f4f6;
+  background-color: var(--clr-input);
+  border-bottom: 1px solid var(--clr-input);
   gap: 1rem;
 }
 

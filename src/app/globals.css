@@ -10,9 +10,10 @@
   --clr-foreground: #0f172a;     /* Main Text Color */
   --clr-text-muted: #64748b;     /* Muted/Secondary Text */
   --clr-white: #ffffff;        /* White Card Background */
-  --clr-border: #e2e8f0;         /* Soft Border Color */
+  --clr-border: #e5e7eb;         /* Soft Border Color */
   --clr-black: #1a1a1a;
   --clr-live: #f97316;
+  --clr-input: #f9fafb;
 
   /* Typography */
   --fs-live: 10px;
