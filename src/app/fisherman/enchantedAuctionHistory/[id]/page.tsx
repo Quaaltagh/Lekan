@@ -5,7 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import {
   ArrowLeft, Clock, ShieldCheck, Truck, User, MapPin,
   Anchor, CheckCircle2, Loader2, Calendar, Gavel,
-  Scale, DollarSign, Fish, Award, TrendingUp
+  Scale, DollarSign, Fish, Award, TrendingUp, BadgeCheck
 } from 'lucide-react';
 import Navbar from '@/app/components/Navbar';
 import { useAuth } from '@/context/AuthContext';
@@ -280,7 +280,6 @@ export default function AuctionHistoryDetailPage() {
                 <h1 className={styles.pageTitle}>Detail Riwayat Lelang</h1>
                 <p className={styles.pageSubtitle}>ID: #{auction.id.slice(0, 8).toUpperCase()}</p>
               </div>
-              <span className={`${styles.statusBadge} ${statusInfo.cls}`}>{statusInfo.label}</span>
             </div>
           </div>
  
@@ -293,6 +292,7 @@ export default function AuctionHistoryDetailPage() {
               <div className={styles.card}>
                 <div className={styles.fishSection}>
                   <div className={styles.imageWrapper}>
+                    <span className={`${styles.statusBadge} ${statusInfo.cls}`}><BadgeCheck size={16} /></span>
                     <img
                       src={auction.image_url || '/fish-placeholder.jpg'}
                       alt={auction.name}
