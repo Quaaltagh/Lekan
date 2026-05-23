@@ -1,7 +1,7 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import styles from './page.module.css';
-import { Landmark, CreditCard, Wallet, QrCode, ShieldAlert, Headset, Info, Loader2, CheckCircle2, XCircle } from 'lucide-react';
+import { Landmark, CreditCard, Wallet, QrCode, ShieldAlert, Headset, Info, Loader2, CheckCircle2, XCircle, ArrowLeft } from 'lucide-react';
 import Navbar from '@/app/components/Navbar';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
@@ -14,10 +14,10 @@ type Method = 'bank_transfer' | 'e_wallet' | 'card' | 'qris';
 type Status  = 'idle' | 'loading' | 'success' | 'error';
 
 const METHODS: { id: Method; label: string; sub: string; icon: React.ReactNode }[] = [
-  { id: 'bank_transfer', label: 'Bank Transfer', sub: 'BCA, Mandiri, BNI, BRI', icon: <Landmark   size={24} color="#004370" /> },
-  { id: 'e_wallet',      label: 'E-Wallet',      sub: 'OVO, DANA, GoPay',       icon: <Wallet     size={24} color="#004370" /> },
-  { id: 'card',          label: 'Cards',          sub: 'Visa, Mastercard',       icon: <CreditCard size={24} color="#004370" /> },
-  { id: 'qris',          label: 'QRIS',           sub: 'Scan & Pay',             icon: <QrCode     size={24} color="#004370" /> },
+  { id: 'bank_transfer', label: 'Bank Transfer', sub: 'BCA, Mandiri, BNI, BRI', icon: <Landmark  className={styles.meticon} /> },
+  { id: 'e_wallet',      label: 'E-Wallet',      sub: 'OVO, DANA, GoPay',       icon: <Wallet    className={styles.meticon} /> },
+  { id: 'card',          label: 'Cards',          sub: 'Visa, Mastercard',       icon: <CreditCard className={styles.meticon} /> },
+  { id: 'qris',          label: 'QRIS',           sub: 'Scan & Pay',             icon: <QrCode     className={styles.meticon} /> },
 ];
 
 function parseInput(raw: string): number {
@@ -108,13 +108,16 @@ const DepositPage: React.FC = () => {
       <div className={styles.container}>
 
         <div className={styles.mainContent}>
+          <button onClick={() => router.back()} className={styles.backLink}>
+                            <ArrowLeft size={18} /> Kembali ke Histori Lelang
+                          </button>
           {/* Balance Header */}
           <header className={styles.balanceHeader}>
             <p className={styles.label}>TOTAL SALDO</p>
             <h1 className={styles.balanceValue}>
               {walletBal !== null ? formatRupiah(walletBal) : '—'}
             </h1>
-            <p className={styles.subtext}>Tersedia untuk menawar</p>
+            {/* <p className={styles.subtext}>Tersedia untuk menawar</p> */}
           </header>
 
           {/* Step 1: Amount */}
@@ -147,7 +150,7 @@ const DepositPage: React.FC = () => {
                   inputMode="numeric"
                   onChange={e => {
                     const raw = e.target.value.replace(/\D/g, '');
-                    if (Number(raw) > 50_000_000) return;
+                    if (Number(raw) > 999_999_999) return;
                     setCustom(raw);
                     setPreset(null);
                   }}
@@ -176,7 +179,7 @@ const DepositPage: React.FC = () => {
                     <p className={styles.methodName}>{m.label}</p>
                     <p className={styles.methodSub}>{m.sub}</p>
                   </div>
-                  {method === m.id && <div className={styles.checkIcon}>✔️</div>}
+                  {/* {method === m.id && <div className={styles.checkIcon}>✔️</div>} */}
                 </div>
               ))}
             </div>
@@ -185,11 +188,11 @@ const DepositPage: React.FC = () => {
 
         {/* Sidebar */}
         <aside className={styles.sidebar}>
-          <div className={styles.safetyCard}>
+          {/* <div className={styles.safetyCard}>
             <p className={styles.safetyLabel}>DEPOSIT KEAMANAN</p>
             <p className={styles.safetyValue}>Rp 2.000.000</p>
             <p className={styles.safetySub}>Cadangan untuk kepatuhan asuransi</p>
-          </div>
+          </div> */}
           <div className={styles.summaryCard}>
             <h3>Ringkasan</h3>
             <div className={styles.summaryRow}>

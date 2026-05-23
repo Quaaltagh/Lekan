@@ -1,6 +1,6 @@
 .all {
   min-height: 100vh;
-  background-color: white;
+  background-color: var(--clr-white);
   color: #111827;
   width: 100%;
    
@@ -65,7 +65,7 @@
 .searchinput {
   
   height: 100%;
-  background: var(--clr-input);
+  background: var(--clr-white);
   border: 1px solid var(--clr-border);
   border-radius: var(--radius-lg);
   padding: 0.875rem 1rem 0.875rem 3rem; 
@@ -96,7 +96,7 @@
 
 .filterButton {
   padding: 0.65rem 0.85rem;
-  background:var(--clr-input);
+  background:#fdfdfd;
   border-radius: var(--rad);
   font-size: 12px;
   font-weight: 500;
@@ -111,7 +111,7 @@
 }
 
 .filterButton:hover {
-  background: #e5e7eb;
+  background: #f6f7fa;
 }
 
 /* Dropdown */
@@ -143,11 +143,11 @@
   width: 100%;
   padding: 0.625rem 1rem;
   text-align: left;
-  font-size: 10px;
+  font-size: var(--fs-xs);
   font-weight: 700;
-  letter-spacing: 0.05em;
+  /* letter-spacing: 0.05em; */
   text-transform: capitalize;
-  color: #6b7280;
+  color: var(--clr-text-muted);
   background: transparent;
   border: none;
   cursor: pointer;
@@ -206,10 +206,10 @@
 }
 
 .calendartitle {
-  font-size: 11px;
-  font-weight: 800;
+  font-size: var(--fs-xs);
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
+  /* letter-spacing: 0.1em; */
   color: var(--clr-primary);
 }
 
@@ -233,7 +233,7 @@
 .calendarnavIcon {
   width: 1rem;
   height: 1rem;
-  color: #505661;
+  color: var(--clr-text-muted);
 }
 
 .calendardaysHeader {
@@ -245,9 +245,9 @@
 
 .calendardayLabel {
   text-align: center;
-  font-size: 10px;
-  font-weight: 900;
-  color: #c7d1e0;
+  font-size: var(--fs-live);
+  font-weight: 700;
+  color: var(--clr-primary);
   padding: 0.5rem 0;
 }
 
@@ -260,7 +260,7 @@
 .calendarday {
   aspect-ratio: 1 / 1;
   border-radius: var(--rad);
-  font-size: 10px;
+  font-size: var(--fs-live);
   font-weight: 700;
   display: flex;
   align-items: center;
@@ -273,7 +273,7 @@
 }
 
 .calendardayCurrent {
-  color: #4b5563;
+  color: var(--clr-foreground);
 }
 
 .calendardayCurrent:hover {
@@ -281,12 +281,12 @@
 }
 
 .calendardayOutside {
-  color: #e5e7eb;
+  color: var(--clr-text-muted);
 }
 
 .calendardayInRange {
   background: #eff6ff;
-  color: #2563eb;
+  color: var(--clr-primary-light);
   border-radius: 0;
 }
 
@@ -319,13 +319,13 @@
 .calendarclearButton {
   flex: 1;
   padding: 0.75rem;
-  background: #f3f4f6;
+  background: var(--clr-input);
   border-radius: var(--rad);
-  font-size: 9px;
-  font-weight: 900;
+  font-size: var(--fs-live);
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: #9ca3af;
+  /* letter-spacing: 0.1em; */
+  color: var(--clr-text-muted);
   border: none;
   cursor: pointer;
 }
@@ -339,17 +339,17 @@
   padding: 0.75rem;
   background: var(--clr-primary);
   border-radius: var(--rad);
-  font-size: 9px;
-  font-weight: 900;
+  font-size: var(--fs-live);
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
+  /* letter-spacing: 0.1em; */
   color: var(--clr-white);
   border: none;
   cursor: pointer;
 }
 
 .calendardoneButton:hover {
-  background: #1e40af;
+  background: var(--clr-primary-hover);
 }
 
 .emptyState {
@@ -389,7 +389,7 @@
   grid-template-columns:35% 18% 18% 14% auto;
   padding: 1.5rem 2rem;
   border-radius: var(--rad) var(--rad) 0 0 ;
-  background-color: var(--clr-input);
+  background-color: var(--clr-bg);
   border-bottom: 1px solid var(--clr-input);
   gap: 1rem;
 }
@@ -397,7 +397,7 @@
 .cardheaderText {
   font-size: 11px;
   font-weight: var(--fw-title);
-  color: var(--clr-text-muted);
+  color: var(--clr-foreground);
   text-transform: uppercase;
   justify-self: start;
 }
@@ -413,7 +413,7 @@
 }
 
 .itemrow:hover {
-  background-color: #fdfdff;
+  background-color: hsla(210, 42%, 93%, 0.40);
 }
 
 .itemproduct {
