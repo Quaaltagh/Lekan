@@ -3,7 +3,7 @@ import React, { useState, useRef, DragEvent, ChangeEvent } from 'react';
 import { Camera, MapPin, Ship, Info, X, Loader2, CheckCircle } from 'lucide-react';
 import SideFisherman from '../../components/sideFisherman';
 import NavbarFisherman from '../../components/NavbarFisherman';
-import styles from './page.module.css';
+import styles from './upload.module.css';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
@@ -178,7 +178,7 @@ export default function UploadAuction() {
                   onDragOver={onDragOver}
                   onDragLeave={onDragLeave}
                   onDrop={onDrop}
-                  className={`relative border-2 border-dashed rounded-3xl p-12 flex flex-col items-center justify-center text-center transition-all cursor-pointer group bg-gray-50/50 min-h-[280px] overflow-hidden ${
+                  className={`relative border-2 border-dashed rounded-3xl p-12 flex flex-col items-center justify-center text-center transition-all cursor-pointer group bg-gray-50/50 min-h-70 overflow-hidden ${
                     isDragging ? 'border-blue-500 bg-blue-50/50' : 'border-gray-200 hover:border-blue-300'
                   }`}
                 >
@@ -224,7 +224,7 @@ export default function UploadAuction() {
                     <input
                       type="number"
                       placeholder="0.00"
-                      className={styles.inputWithRightPadding}
+                      className={`${styles.input} ${styles.inputWithRightPadding}`}
                       value={weight}
                       onChange={e => setWeight(e.target.value)}
                       min="0"
@@ -236,11 +236,11 @@ export default function UploadAuction() {
                 <div className={styles.field}>
                 <label className={styles.label}>Harga Awal</label>
                   <div className={styles.relative}>
-                    <span className={styles.rp}>Rp</span>
+                    <span className={styles.Rp}>Rp</span>
                     <input
                       type="text"
                       placeholder="0"
-                      className={styles.inputWithLeftPadding}
+                      className={`${styles.input} ${styles.inputWithLeftPadding}`}
                       value={price}
                       onChange={e => {
                         // Hanya angka

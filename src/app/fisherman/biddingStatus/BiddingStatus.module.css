@@ -1,50 +1,54 @@
+/* ═══════════════════════════════════════════════════════════════
+   BiddingStatus.module.css — Fisherman Bidding Status Page
+   Konsisten dengan LEKAN design system
+═══════════════════════════════════════════════════════════════ */
+
+/* ── Layout ── */
 .layout {
   display: flex;
   min-height: 100vh;
-  background-color: #f8fafc;
+  background-color: var(--clr-background);
 }
 
 .mainWrapper {
   flex: 1;
   display: flex;
   flex-direction: column;
+  min-width: 0;
 }
 
 .main {
-  padding: var(--space-xl) 2.5rem;
-  max-width: 1200px;
+  padding: var(--page-py, 2rem) var(--page-px, 2.5rem);
+  max-width: var(--content-max-w, 1200px);
   width: 100%;
   margin: 0 auto;
 }
 
+/* ── Header ── */
 .headerContainer {
-  margin-bottom: var(--space-xl);
   display: flex;
-  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
   gap: var(--space-md);
-}
-
-@media (min-width: 768px) {
-  .headerContainer {
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-  }
+  margin-bottom: var(--space-xl);
+  flex-wrap: wrap;
 }
 
 .pageTitle {
   font-size: var(--fs-xl);
-  font-weight: 700;
+  font-weight: 800;
   color: var(--clr-foreground);
-  margin: 0 0 var(--space-xs) 0;
+  margin: 0 0 var(--space-xs);
+  letter-spacing: -0.02em;
 }
 
 .pageSubtitle {
-  color: var(--clr-text-muted);
   font-size: var(--fs-sm);
+  color: var(--clr-text-muted);
   margin: 0;
 }
 
+/* ── Search Bar ── */
 .searchBar {
   display: flex;
   align-items: center;
@@ -55,60 +59,58 @@
   position: relative;
   display: flex;
   align-items: center;
-  flex: 1;
 }
 
 .searchIcon {
   position: absolute;
   left: var(--space-md);
   color: var(--clr-text-muted);
+  pointer-events: none;
 }
 
 .searchInput {
   padding: var(--space-sm) var(--space-md) var(--space-sm) 2.75rem;
   border-radius: var(--radius-xl);
-  border: var(--border-width) solid var(--clr-border);
-  background-color: var(--clr-card-bg);
+  border: 1.5px solid var(--clr-border);
+  background: var(--clr-card-bg);
   font-size: var(--fs-sm);
   color: var(--clr-foreground);
-  width: 100%;
-  min-width: 250px;
+  width: 280px;
   min-height: 2.5rem;
   outline: none;
-  transition: all 0.2s ease;
+  transition: all var(--transition-base);
+  font-family: inherit;
 }
 
-@media (min-width: 768px) {
-  .searchInput {
-    width: 300px;
-  }
-}
+.searchInput::placeholder { color: var(--clr-text-placeholder); }
 
 .searchInput:focus {
   border-color: var(--clr-primary);
-  box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
+  box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.10);
 }
 
 .filterBtn {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0.5rem;
-  background-color: var(--clr-card-bg);
-  border: var(--border-width) solid var(--clr-border);
+  padding: var(--space-sm);
+  background: var(--clr-card-bg);
+  border: 1.5px solid var(--clr-border);
   border-radius: var(--radius-xl);
   cursor: pointer;
-  color: var(--clr-foreground);
+  color: var(--clr-text-muted);
   min-height: 2.5rem;
   min-width: 2.5rem;
-  transition: all 0.2s ease;
+  transition: all var(--transition-base);
 }
 
 .filterBtn:hover {
-  background-color: var(--clr-bg);
+  background: var(--clr-background);
   border-color: var(--clr-primary);
+  color: var(--clr-primary);
 }
 
+/* ── Section Title (LIVE) ── */
 .sectionTitleWrap {
   display: flex;
   align-items: center;
@@ -117,113 +119,130 @@
 }
 
 .sectionTitle {
-  font-size: var(--fs-md);
-  font-weight: 700;
+  font-size: var(--fs-lg);
+  font-weight: 800;
   color: var(--clr-foreground);
   margin: 0;
+  letter-spacing: -0.01em;
 }
 
 .liveBadge {
-  background-color: #c2410c;
+  background: #c2410c;
   color: white;
-  font-size: 10px;
+  font-size: var(--fs-xs);
   font-weight: 700;
-  padding: var(--space-xs) var(--space-sm);
-  border-radius: 20px;
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.06em;
 }
 
 .liveDot {
   width: 6px;
   height: 6px;
-  background-color: #bef264;
+  background: #bef264;
   border-radius: 50%;
-  box-shadow: 0 0 4px #bef264;
+  box-shadow: 0 0 6px #bef264;
+  animation: lekan-pulse-dot 1.4s ease infinite;
 }
 
+/* ── Active Auctions Grid ── */
 .activeAuctionsGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
   gap: var(--space-lg);
   margin-bottom: var(--space-xl);
 }
 
+/* ── Auction Card ── */
 .auctionCard {
-  background-color: var(--clr-card-bg);
-  border: var(--border-width) solid var(--clr-border);
-  border-radius: var(--radius-lg);
+  background: var(--clr-card-bg);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius-xl);
   padding: var(--space-md);
   display: flex;
   gap: var(--space-md);
   box-shadow: var(--shadow-sm);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: all var(--transition-base);
+  cursor: pointer;
 }
 
 .auctionCard:hover {
   transform: translateY(-2px);
   box-shadow: var(--shadow-md);
+  border-color: #cbd5e1;
 }
 
 .auctionImage {
-  width: 110px;
-  height: 110px;
-  border-radius: var(--radius-md);
+  width: 104px;
+  height: 104px;
+  border-radius: var(--radius-lg);
   object-fit: cover;
-  background-color: var(--clr-bg);
+  background: var(--clr-background);
+  flex-shrink: 0;
 }
 
 .auctionInfo {
   flex: 1;
   display: flex;
   flex-direction: column;
+  min-width: 0;
 }
 
 .auctionHeader {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
+  gap: var(--space-sm);
   margin-bottom: var(--space-xs);
 }
 
 .auctionName {
   font-weight: 700;
-  font-size: 16px;
+  font-size: var(--fs-base);
   color: var(--clr-foreground);
   line-height: 1.3;
   margin: 0;
-  max-width: 140px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 150px;
 }
 
 .endsInWrap {
   text-align: right;
+  flex-shrink: 0;
 }
 
 .endsInLabel {
-  font-size: 11px;
-  color: var(--clr-primary);
+  font-size: var(--fs-xs);
+  color: var(--clr-text-muted);
   font-weight: 600;
   display: block;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .endsInTime {
-  font-size: 12px;
+  font-size: var(--fs-sm);
   color: var(--clr-primary);
-  font-weight: 700;
+  font-weight: 800;
+  letter-spacing: -0.01em;
 }
 
 .metaRow {
   display: flex;
   gap: var(--space-sm);
-  font-size: 10px;
+  font-size: var(--fs-xs);
   color: var(--clr-text-muted);
   font-weight: 700;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
   margin-bottom: auto;
+  flex-wrap: wrap;
 }
 
 .bidRow {
@@ -234,42 +253,62 @@
 }
 
 .currentBidLabel {
-  font-size: 11px;
+  font-size: var(--fs-xs);
   color: var(--clr-text-muted);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
   margin-bottom: 2px;
 }
 
 .currentBidPrice {
-  font-size: 18px;
-  font-weight: 700;
+  font-size: var(--fs-md);
+  font-weight: 800;
   color: var(--clr-foreground);
   margin: 0;
-  letter-spacing: -0.5px;
+  letter-spacing: -0.02em;
 }
 
 .viewDetailBtn {
-  background-color: var(--clr-bg);
+  background: var(--clr-background);
   color: var(--clr-foreground);
-  font-weight: 600;
-  font-size: 12px;
-  padding: 6px var(--space-md);
+  font-weight: 700;
+  font-size: var(--fs-sm);
+  padding: var(--space-xs) var(--space-md);
   border-radius: var(--radius-md);
-  border: var(--border-width) solid var(--clr-border);
-  min-height: 2rem;
+  border: 1.5px solid var(--clr-border);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all var(--transition-base);
+  white-space: nowrap;
 }
 
 .viewDetailBtn:hover {
-  background-color: var(--clr-border);
-  border-color: var(--clr-text-muted);
+  background: var(--clr-primary-muted);
+  border-color: var(--clr-primary);
+  color: var(--clr-primary);
 }
 
-/* Finished Table */
+/* ── Bidder Count Badge ── */
+.biddersBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  color: var(--clr-text-muted);
+  background: var(--clr-border-light);
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+}
+
+/* ═════════════════════════════
+   FINISHED TABLE
+═════════════════════════════ */
+
 .finishedContainer {
-  background-color: var(--clr-card-bg);
-  border-radius: var(--radius-lg);
-  border: var(--border-width) solid var(--clr-border);
+  background: var(--clr-card-bg);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--clr-border);
   box-shadow: var(--shadow-sm);
   overflow: hidden;
 }
@@ -280,31 +319,27 @@
 }
 
 .table th {
-  background-color: var(--clr-bg);
+  background: var(--clr-background);
   padding: var(--space-md) var(--space-lg);
   text-align: left;
-  font-size: 11px;
+  font-size: var(--fs-xs);
   font-weight: 700;
   color: var(--clr-text-muted);
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-  border-bottom: var(--border-width) solid var(--clr-border);
+  letter-spacing: 0.07em;
+  border-bottom: 1px solid var(--clr-border);
 }
 
 .table td {
   padding: var(--space-md) var(--space-lg);
-  border-bottom: var(--border-width) solid var(--clr-border);
+  border-bottom: 1px solid var(--clr-border-light);
   vertical-align: middle;
+  font-size: var(--fs-sm);
   color: var(--clr-foreground);
 }
 
-.table tr:last-child td {
-  border-bottom: none;
-}
-
-.table tr:hover td {
-  background-color: var(--clr-bg);
-}
+.table tr:last-child td { border-bottom: none; }
+.table tr:hover td { background: var(--clr-background); }
 
 .fishDetailCell {
   display: flex;
@@ -317,33 +352,35 @@
   height: 48px;
   border-radius: var(--radius-md);
   object-fit: cover;
-  background-color: var(--clr-bg);
+  background: var(--clr-background);
+  flex-shrink: 0;
 }
 
 .fishDetailName {
   font-weight: 700;
   color: var(--clr-foreground);
-  font-size: 14px;
-  margin: 0 0 2px 0;
+  font-size: var(--fs-sm);
+  margin: 0 0 2px;
 }
 
 .fishDetailWeight {
-  font-size: 10px;
+  font-size: var(--fs-xs);
   color: var(--clr-text-muted);
   font-weight: 600;
   margin: 0;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.05em;
 }
 
 .finalBidPrice {
   font-weight: 700;
   color: var(--clr-foreground);
-  font-size: 14px;
+  font-size: var(--fs-sm);
+  letter-spacing: -0.01em;
 }
 
 .biddersCount {
-  font-size: 13px;
+  font-size: var(--fs-sm);
   color: var(--clr-text-muted);
   font-weight: 500;
 }
@@ -351,8 +388,8 @@
 .winnerWrap {
   display: flex;
   align-items: center;
-  gap: 6px;
-  font-size: 13px;
+  gap: var(--space-xs);
+  font-size: var(--fs-sm);
   font-weight: 600;
   color: var(--clr-foreground);
 }
@@ -360,29 +397,40 @@
 .actionLink {
   color: var(--clr-primary);
   font-weight: 700;
-  font-size: 12px;
+  font-size: var(--fs-sm);
   text-decoration: none;
   cursor: pointer;
-  padding: 6px var(--space-md);
+  padding: var(--space-xs) var(--space-md);
   border-radius: var(--radius-md);
-  border: var(--border-width) solid var(--clr-border);
-  background-color: var(--clr-card-bg);
-  transition: all 0.2s ease;
+  border: 1.5px solid var(--clr-border);
+  background: var(--clr-card-bg);
+  transition: all var(--transition-base);
+  display: inline-block;
 }
 
 .actionLink:hover {
-  background-color: var(--clr-primary);
+  background: var(--clr-primary);
   color: white;
   border-color: var(--clr-primary);
 }
 
+/* ── Status Badges ── */
+.badgeDone      { display:inline-flex; align-items:center; background:var(--clr-success-light); color:var(--clr-success); font-size:var(--fs-xs); font-weight:700; padding:3px 10px; border-radius:var(--radius-full); }
+.badgePending   { display:inline-flex; align-items:center; background:var(--clr-warning-light); color:var(--clr-warning); font-size:var(--fs-xs); font-weight:700; padding:3px 10px; border-radius:var(--radius-full); }
+.badgeCancelled { display:inline-flex; align-items:center; background:var(--clr-border-light);  color:var(--clr-text-muted); font-size:var(--fs-xs); font-weight:700; padding:3px 10px; border-radius:var(--radius-full); }
+
+/* ── States ── */
 .loadingState, .errorState, .emptyState {
   text-align: center;
-  padding: var(--space-xl);
+  padding: var(--space-2xl);
   color: var(--clr-text-muted);
-  font-weight: 500;
+  font-size: var(--fs-sm);
 }
 
-.errorState {
-  color: #ef4444;
+.errorState { color: var(--clr-danger); }
+
+.spinner {
+  display: inline-block;
+  color: var(--clr-primary);
+  animation: lekan-spin 1s linear infinite;
 }

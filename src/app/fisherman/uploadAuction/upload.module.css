@@ -1,0 +1,474 @@
+/* ═══════════════════════════════════════════════════════════════
+   upload.module.css — Fisherman Upload Lelang
+   Konsisten dengan LEKAN design system
+═══════════════════════════════════════════════════════════════ */
+
+/* ── Layout ── */
+.container {
+  display: flex;
+  height: 100vh;
+  background-color: var(--clr-background);
+  color: var(--clr-foreground);
+}
+
+.mainContent {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  padding: var(--page-py, 2rem) var(--page-px, 2.5rem);
+  gap: var(--space-lg);
+  max-width: var(--content-max-w, 1200px);
+  margin: 0 auto;
+}
+
+/* ── Page Header ── */
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.title {
+  font-size: var(--fs-xl);
+  font-weight: 800;
+  color: var(--clr-foreground);
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+.description {
+  color: var(--clr-text-muted);
+  font-size: var(--fs-sm);
+  margin: 0;
+  max-width: 500px;
+}
+
+/* ── Two-col layout: form + preview ── */
+.isi {
+  display: flex;
+  flex-direction: row;
+  gap: var(--space-xl);
+  width: 100%;
+  align-items: flex-start;
+}
+
+/* ── Form Card ── */
+.form {
+  flex: 1;
+  background: var(--clr-card-bg);
+  border-radius: var(--radius-xl);
+  padding: var(--space-xl);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--clr-border);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+  min-width: 0;
+}
+
+/* ── Field ── */
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.label {
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  color: var(--clr-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* ── Inputs ── */
+.input {
+  width: 100%;
+  background: var(--clr-background);
+  border: 1.5px solid var(--clr-border);
+  border-radius: var(--radius-lg);
+  padding: 14px 18px;
+  font-size: var(--fs-sm);
+  color: var(--clr-foreground);
+  outline: none;
+  transition: all var(--transition-base);
+  font-family: inherit;
+}
+
+.input::placeholder { color: var(--clr-text-placeholder); }
+
+.input:focus {
+  border-color: var(--clr-primary);
+  box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.10);
+  background: var(--clr-card-bg);
+}
+
+.select {
+  width: 100%;
+  background: var(--clr-background);
+  border: 1.5px solid var(--clr-border);
+  border-radius: var(--radius-lg);
+  padding: 14px 18px;
+  font-size: var(--fs-sm);
+  color: var(--clr-foreground);
+  outline: none;
+  appearance: none;
+  cursor: pointer;
+  transition: all var(--transition-base);
+  font-family: inherit;
+}
+
+.select:focus {
+  border-color: var(--clr-primary);
+  box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.10);
+  background: var(--clr-card-bg);
+}
+
+/* ── 2-col grid inside form ── */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-md);
+}
+
+/* ── Relative wrapper (unit label) ── */
+.relative {
+  position: relative;
+}
+
+.inputWithRightPadding {
+  padding-right: 52px;
+}
+
+.inputWithLeftPadding {
+  padding-left: 52px;
+}
+
+.KG {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  color: var(--clr-primary);
+  text-transform: uppercase;
+  pointer-events: none;
+  user-select: none;
+}
+
+.Rp {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  color: var(--clr-text-muted);
+  pointer-events: none;
+  user-select: none;
+}
+
+/* ── Dropzone ── */
+.dropzone {
+  border: 2px dashed var(--clr-border);
+  border-radius: var(--radius-xl);
+  padding: 44px var(--space-xl);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  background: var(--clr-background);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  gap: var(--space-sm);
+}
+
+.dropzone:hover {
+  border-color: var(--clr-primary);
+  background: var(--clr-primary-muted);
+}
+
+.iconWrapper {
+  width: 60px;
+  height: 60px;
+  background: var(--clr-primary-muted);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform var(--transition-base);
+}
+
+.dropzone:hover .iconWrapper {
+  transform: scale(1.08);
+}
+
+.icon {
+  width: 28px;
+  height: 28px;
+  color: var(--clr-primary);
+}
+
+.dropTitle {
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  color: var(--clr-foreground);
+  margin: 0;
+}
+
+.dropDesc {
+  font-size: var(--fs-xs);
+  color: var(--clr-text-muted);
+  margin: 0;
+}
+
+/* ── Submit Button ── */
+.startbutton {
+  width: 100%;
+  padding: 16px 0;
+  background: linear-gradient(135deg, var(--clr-primary) 0%, var(--clr-primary-hover) 100%);
+  color: white;
+  border-radius: var(--radius-xl);
+  font-size: var(--fs-base);
+  font-weight: 800;
+  box-shadow: var(--shadow-primary);
+  border: none;
+  cursor: pointer;
+  transition: all var(--transition-base);
+  letter-spacing: 0.01em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+}
+
+.startbutton:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-primary-lg);
+}
+
+.startbutton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ═══════════════════════════════
+   PREVIEW COLUMN
+═══════════════════════════════ */
+.previewcontainer {
+  width: 340px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  position: sticky;
+  top: var(--page-py, 2rem);
+}
+
+.sectionTitle {
+  font-size: var(--fs-xs);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--clr-text-muted);
+  margin: 0;
+}
+
+/* ── Preview Card ── */
+.card {
+  background: var(--clr-card-bg);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--clr-border);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+.imageWrapper {
+  position: relative;
+  background: #09090b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 11rem;
+}
+
+.image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.badges {
+  position: absolute;
+  top: 0.875rem;
+  left: 0.875rem;
+  display: flex;
+  gap: 6px;
+}
+
+.liveBadge {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: var(--fs-xs);
+  background: var(--clr-live);
+  color: white;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+}
+
+.gradeBadge {
+  padding: 3px 10px;
+  background: rgba(30, 58, 138, 0.85);
+  color: white;
+  font-size: var(--fs-xs);
+  font-weight: 800;
+  border-radius: var(--radius-full);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.previewcontent {
+  padding: var(--space-md);
+  display: flex;
+  flex-direction: row;
+  gap: var(--space-sm);
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.previewName {
+  font-size: var(--fs-base);
+  font-weight: 800;
+  color: var(--clr-foreground);
+  margin: 0 0 4px;
+  line-height: 1.3;
+}
+
+.location {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  color: var(--clr-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.locicon {
+  width: 11px;
+  height: 11px;
+  color: var(--clr-text-muted);
+  flex-shrink: 0;
+}
+
+.weightBox {
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.desclabel {
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  color: var(--clr-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  display: block;
+  margin-bottom: 2px;
+}
+
+.weight {
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  color: var(--clr-primary);
+}
+
+/* Harga awal di bawah gambar */
+.descbox {
+  background: var(--clr-background);
+  border-radius: var(--radius-md);
+  padding: var(--space-sm) var(--space-md);
+  margin: 0 var(--space-md) var(--space-md);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.descBox {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.priceLabel {
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  color: var(--clr-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.price {
+  font-size: var(--fs-sm);
+  font-weight: 800;
+  color: var(--clr-foreground);
+}
+
+.priceValue {
+  font-size: var(--fs-md);
+  font-weight: 800;
+  color: var(--clr-primary);
+  letter-spacing: -0.02em;
+}
+
+/* ── Pro Tip Card ── */
+.protipcard {
+  background: linear-gradient(135deg, var(--clr-primary-dark) 0%, var(--clr-primary) 100%);
+  border-radius: var(--radius-xl);
+  padding: var(--space-lg);
+  color: white;
+  position: relative;
+  overflow: hidden;
+}
+
+.iconBg {
+  position: absolute;
+  top: 0; right: 0;
+  padding: 1.5rem;
+  opacity: 0.12;
+  transform: translate(1rem, -1rem);
+}
+
+.shipIcon {
+  width: 7rem;
+  height: 7rem;
+}
+
+.infoIcon {
+  width: 1.25rem;
+  height: 1.25rem;
+  color: #93c5fd;
+  margin-bottom: var(--space-sm);
+}
+
+.protiptitle {
+  font-size: var(--fs-base);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  margin: 0 0 var(--space-xs);
+}
+
+.protipdescription {
+  font-size: var(--fs-sm);
+  color: rgba(255,255,255,0.75);
+  line-height: 1.6;
+  margin: 0;
+}
