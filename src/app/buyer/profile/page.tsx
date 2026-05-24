@@ -192,6 +192,11 @@ export default function Profile() {
     </div>
   );
 
+  const getInitials = (name?: string) => {
+    if (!name) return '?';
+    return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+  };
+
   return (
     <div className={styles.all}>
       <Navbar />
@@ -229,12 +234,13 @@ export default function Profile() {
           <form onSubmit={handleSubmit}>
 
             {/* ── Profil ── */}
-            <SettingsSection icon={UserRound} title="Informasi Profil" description="Kelola informasi akun dan identitas nelayan Anda.">
+            <SettingsSection icon={UserRound} title="Informasi Profil" description="Kelola informasi akun dan identitas Anda.">
               <div className={styles.profileUpload}>
                 <div className={styles.avatarPlaceholder}>
                   {profileImage
                     ? <img src={profileImage} alt="Profile" className={styles.avatarImage} />
-                    : <span className={styles.avatarText}>👤</span>
+                    : <div className={styles.avatar}>
+              {getInitials(user?.full_name || user?.email)} </div>
                   }
                 </div>
                 <input type="file" accept="image/*" ref={fileInputRef} onChange={handleImageChange} style={{ display: 'none' }} />
