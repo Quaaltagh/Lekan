@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Eye, EyeOff, UserRound, Landmark, Lock, ChevronDown, ChevronUp, CheckCircle, X } from 'lucide-react';
+import { Eye, EyeOff, UserRound, Landmark, Lock, ChevronDown, ChevronUp, CheckCircle, X,Settings } from 'lucide-react';
 import styles from './page.module.css';
 import SideFisherman from '../../components/sideFisherman';
 import NavbarFisherman from '../../components/NavbarFisherman';
@@ -46,6 +46,9 @@ export default function SettingsPage() {
   const [fullName,     setFullName]     = useState('');
   const [vesselName,   setVesselName]   = useState('');
   const [bio,          setBio]          = useState('');
+  const [phone,          setPhone]          = useState('');
+  const [email,          setEmail]          = useState('');
+  const [address,          setAddress]          = useState('');
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [loading,      setLoading]      = useState(true);
 
@@ -67,6 +70,7 @@ export default function SettingsPage() {
   // ── UI state ───────────────────────────────────────────────────────────────
   const [showSuccess, setShowSuccess] = useState(false);
   const [saveError,   setSaveError]   = useState('');
+  const [passwordApiError, setPasswordApiError] = useState('');
   const [saving,      setSaving]      = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -78,6 +82,9 @@ export default function SettingsPage() {
         setProfile(p);
         setFullName(p.full_name ?? '');
         setVesselName(p.vessel_name ?? '');
+        setEmail(p.email ?? '');
+        setAddress(p.address ?? '');
+        setPhone(p.phone ?? '');
         setBio(p.bio ?? '');
         setProfileImage(p.avatar_url ?? null);
         setBankName(p.bank_name ?? BANK_OPTIONS[0]);
@@ -102,15 +109,15 @@ export default function SettingsPage() {
   };
 
   // ── Toggle dropdown password ───────────────────────────────────────────────
-  const handleTogglePassword = () => {
-    if (showPasswordSection) {
-      setCurrentPassword('');
-      setNewPassword('');
-      setConfirmPassword('');
-      setPasswordError('');
-    }
-    setShowPasswordSection(prev => !prev);
-  };
+  // const handleTogglePassword = () => {
+  //   if (showPasswordSection) {
+  //     setCurrentPassword('');
+  //     setNewPassword('');
+  //     setConfirmPassword('');
+  //     setPasswordError('');
+  //   }
+  //   setShowPasswordSection(prev => !prev);
+  // };
 
   // ── Submit ─────────────────────────────────────────────────────────────────
   const handleSubmit = async (e: React.FormEvent) => {
@@ -129,20 +136,43 @@ export default function SettingsPage() {
         bio,
         bank_name:    bankName,
         bank_account: bankAccount,
+        email, phone, address
       });
 
       // 2. Update password — hanya kalau dropdown dibuka
-      if (showPasswordSection) {
-        if (!currentPassword) { setPasswordError('Password sekarang wajib diisi.'); setSaving(false); return; }
-        if (!newPassword)      { setPasswordError('Password baru wajib diisi.');     setSaving(false); return; }
-        if (newPassword.length < 6) { setPasswordError('Password baru minimal 6 karakter.'); setSaving(false); return; }
-        if (newPassword !== confirmPassword) { setPasswordError('Konfirmasi password tidak cocok.'); setSaving(false); return; }
-
-        await updatePassword(user.id, token, currentPassword, newPassword);
-        setCurrentPassword('');
-        setNewPassword('');
-        setConfirmPassword('');
-        setShowPasswordSection(false);
+      const isPasswordFilled = currentPassword || newPassword || confirmPassword;
+      if (isPasswordFilled) {
+        if (!currentPassword) {
+          setPasswordError('Password sekarang wajib diisi.');
+          setSaving(false);
+          return;
+        }
+        if (!newPassword) {
+          setPasswordError('Password baru wajib diisi.');
+          setSaving(false);
+          return;
+        }
+        if (newPassword.length < 6) {
+          setPasswordError('Password baru minimal 6 karakter.');
+          setSaving(false);
+          return;
+        }
+        if (newPassword !== confirmPassword) {
+          setPasswordError('Konfirmasi password tidak cocok.');
+          setSaving(false);
+          return;
+        }
+        try {
+          await updatePassword(user.id, token, currentPassword, newPassword);
+          setCurrentPassword('');
+          setNewPassword('');
+          setConfirmPassword('');
+        } catch (err) {
+          // error password (misal password lama salah) → muncul di bawah input
+          setPasswordApiError(err instanceof Error ? err.message : 'Password lama tidak cocok.');
+          setSaving(false);
+          return;
+        }
       }
 
       setShowSuccess(true);
@@ -159,6 +189,9 @@ export default function SettingsPage() {
     setFullName(profile.full_name ?? '');
     setVesselName(profile.vessel_name ?? '');
     setBio(profile.bio ?? '');
+    setEmail(profile.email ?? '');
+    setAddress(profile.address ?? '');
+    setPhone(profile.phone ?? '');
     setBankName(profile.bank_name ?? BANK_OPTIONS[0]);
     setBankAccount(profile.bank_account ?? '');
     setBankHolder(profile.full_name ?? '');
@@ -172,66 +205,68 @@ export default function SettingsPage() {
 
   // ── Loading ────────────────────────────────────────────────────────────────
   if (loading) return (
-    <div className={styles.container}>
-      <SideFisherman />
-      <main className={styles.mainContent}>
-        <NavbarFisherman />
-        <div style={{ padding: '4rem', textAlign: 'center', color: '#94a3b8' }}>
-          Memuat profil...
-        </div>
-      </main>
+    <div className={styles.all}>
+        <SideFisherman />
+           <div className={styles.container}>
+            <NavbarFisherman />
+            <div style={{ padding: '4rem', textAlign: 'center', color: '#94a3b8' }}>
+           Memuat profil...
+         </div>
+          </div>
     </div>
   );
 
-  return (
-    <div className={styles.container}>
-      <SideFisherman />
+  const getInitials = (name?: string) => {
+    if (!name) return '?';
+    return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+  };
 
-      <main className={styles.mainContent}>
-        <NavbarFisherman />
+  return(
+   <div className={styles.all}>
+        <SideFisherman />
+           <div className={styles.container}>
+            <NavbarFisherman />
 
-        {/* ── Success Popup — konsisten pakai Lucide, tanpa emoji ── */}
-        {showSuccess && (
-          <div className={styles.overlay} onClick={() => setShowSuccess(false)}>
-            <div className={styles.popup} onClick={e => e.stopPropagation()}>
-              <button className={styles.popupClose} onClick={() => setShowSuccess(false)} aria-label="Tutup">
-                <X size={18} />
-              </button>
-              <div className={styles.popupIconWrap}>
-                <CheckCircle size={40} strokeWidth={1.8} className={styles.popupCheckIcon} />
+            {/* ── Success Popup ── */}
+            {showSuccess && (
+              <div className={styles.overlay} onClick={() => setShowSuccess(false)}>
+                <div className={styles.popup} onClick={e => e.stopPropagation()}>
+                  <button className={styles.popupClose} onClick={() => setShowSuccess(false)} aria-label="Tutup">
+                    <X size={18} />
+                  </button>
+                  <div className={styles.popupIconWrap}>
+                    <CheckCircle size={40} strokeWidth={1.8} className={styles.popupCheckIcon} />
+                  </div>
+                  <h2 className={styles.popupTitle}>Berhasil Disimpan</h2>
+                  <p className={styles.popupDesc}>Data pengaturan berhasil diperbarui.</p>
+                  <button className={styles.popupButton} onClick={() => setShowSuccess(false)}>Tutup</button>
+                </div>
               </div>
-              <h2 className={styles.popupTitle}>Berhasil Disimpan</h2>
-              <p className={styles.popupDesc}>Data pengaturan berhasil diperbarui.</p>
-              <button className={styles.popupButton} onClick={() => setShowSuccess(false)}>Tutup</button>
-            </div>
-          </div>
-        )}
+            )}
 
-        <div className={styles.content}>
-          <div className={styles.titleSection}>
-            <h1>Pengaturan</h1>
-            <p className={styles.subtitle}>Kelola profil, rekening bank, dan keamanan akun Anda.</p>
-          </div>
+            <div className={styles.content}>
+              <div className={styles.titleSection}>
+                <h1>Pengaturan</h1>
+                <p className={styles.subtitle}>Kelola profil Anda, preferensi, dan keamanan akun.</p>
+              </div>
 
-          {saveError && (
-            <div style={{ background: '#fef2f2', border: '1px solid #fecaca', color: '#dc2626', padding: '0.75rem 1rem', borderRadius: '0.5rem', marginBottom: '1rem', fontSize: '0.875rem' }}>
-              {saveError}
-            </div>
-          )}
+              {saveError && (
+                <div style={{ background: '#fef2f2', border: '1px solid #fecaca', color: '#dc2626', padding: '0.75rem 1rem', borderRadius: '0.5rem', marginBottom: '1rem', fontSize: '0.875rem' }}>
+                  {saveError}
+                </div>
+              )}
 
-          <form onSubmit={handleSubmit}>
+              <form onSubmit={handleSubmit}>
 
             {/* ── Profil ── */}
-            <SettingsSection
-              icon={UserRound}
-              title="Informasi Profil"
-              description="Kelola informasi akun dan identitas nelayan Anda."
-            >
+            <SettingsSection icon={UserRound} title="Informasi Profil" description="Kelola informasi akun dan identitas nelayan Anda.">
               <div className={styles.profileUpload}>
                 <div className={styles.avatarPlaceholder}>
                   {profileImage
                     ? <img src={profileImage} alt="Profile" className={styles.avatarImage} />
-                    : <span className={styles.avatarText}>👤</span>
+                    : <div className={styles.avatar}>
+              {getInitials(user?.full_name || user?.email)}
+            </div>
                   }
                 </div>
                 <input type="file" accept="image/*" ref={fileInputRef} onChange={handleImageChange} style={{ display: 'none' }} />
@@ -241,13 +276,33 @@ export default function SettingsPage() {
               </div>
 
               <div className={styles.formGrid}>
+                <div className={`${styles.formGroup} ${styles.fullWidth}`}>
+                  <label>email</label>
+                  <input type="text" value={email} onChange={e => setEmail(e.target.value)} />
+                </div>
+
                 <div className={styles.formGroup}>
                   <label>NAMA LENGKAP</label>
                   <input type="text" value={fullName} onChange={e => setFullName(e.target.value)} />
                 </div>
-                <div className={styles.formGroup}>
+                
+                <div className={`${styles.formGroup} ${styles.phoneInput}`}>
+                  <label>Nomor Telepon</label>
+                  <span className={styles.phonePrefix}>+62</span>
+                  <input type="tel" placeholder="81234567890" value={phone}onChange={(e) => {
+                    const onlyNumbers = e.target.value.replace(/\D/g, '');
+                    setPhone(onlyNumbers);
+                  }} />
+                </div>
+                <div className={`${styles.formGroup} ${styles.fullWidth}`}>
                   <label>NAMA KAPAL</label>
                   <input type="text" value={vesselName} onChange={e => setVesselName(e.target.value)} />
+                </div>
+
+
+                 <div className={`${styles.formGroup} ${styles.fullWidth}`}>
+                  <label>Alamat</label>
+                  <textarea value={address} onChange={e => setAddress(e.target.value)} />
                 </div>
                 <div className={`${styles.formGroup} ${styles.fullWidth}`}>
                   <label>BIO</label>
@@ -272,10 +327,13 @@ export default function SettingsPage() {
                 <div className={styles.formGroup}>
                   <label>NOMOR REKENING</label>
                   <input
-                    type="text"
+                    type="tel"
                     value={bankAccount}
-                    onChange={e => setBankAccount(e.target.value)}
-                    placeholder="Contoh: 1234567890"
+                    onChange={(e) => {
+                      const onlyNumbers = e.target.value.replace(/\D/g, '');
+                      setBankAccount(onlyNumbers);
+                    }}
+                    placeholder="1234567890"
                   />
                 </div>
                 <div className={styles.formGroup}>
@@ -290,31 +348,29 @@ export default function SettingsPage() {
             </SettingsSection>
 
             {/* ── Security ── */}
-            <SettingsSection
-              icon={Lock}
-              title="Keamanan"
-              description="Klik tombol di bawah jika ingin mengganti password akun Anda."
-            >
-              {/* Tombol toggle */}
-              <button
+            <SettingsSection icon={Lock} title="Keamanan" description="Klik tombol di bawah jika ingin mengganti password akun Anda.">
+
+              {/* Tombol toggle dropdown */}
+              {/* <button
                 type="button"
                 className={styles.passwordToggleBtn}
                 onClick={handleTogglePassword}
               >
                 <span>{showPasswordSection ? 'Batal Ganti Password' : 'Ganti Password'}</span>
                 {showPasswordSection ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-              </button>
+              </button> */}
 
-              {/* Dropdown password */}
-              {showPasswordSection && (
+              {/* Dropdown password — muncul saat toggle dibuka */}
+              {/* {showPasswordSection && (
                 <div className={styles.passwordDropdown}>
                   <p className={styles.passwordDropdownHint}>
                     Semua field wajib diisi untuk mengganti password.
-                  </p>
+                  </p> */}
 
                   <div className={styles.formGrid}>
-                    <div className={styles.fullWidth}>
-                      <div className={styles.formGroup}><label>PASSWORD SEKARANG</label></div>
+                    {/* Password sekarang */}
+                    <div className={`${styles.formGroup} ${styles.fullWidth}`}>
+                        <label>PASSWORD SEKARANG</label>
                       <div className={styles.passwordWrapper}>
                         <input
                           type={showCurrentPass ? 'text' : 'password'}
@@ -323,9 +379,11 @@ export default function SettingsPage() {
                           className={styles.passwordInput}
                           placeholder="Masukkan password sekarang"
                         />
-                        <button type="button" className={styles.eyeButton} onClick={() => setShowCurrentPass(p => !p)}>
+                        <button type="button" className={styles.eyeButtonFull} onClick={() => setShowCurrentPass(p => !p)}>
                           {showCurrentPass ? <Eye size={18} /> : <EyeOff size={18} />}
                         </button>
+
+
                       </div>
                     </div>
 
@@ -363,14 +421,22 @@ export default function SettingsPage() {
                       </div>
                     </div>
 
+                    {passwordApiError && (
+                      <div className={styles.fullWidth} style={{ color: '#dc2626', fontSize: '0.8rem', marginTop: '-0.5rem' }}>
+                        {passwordApiError}
+                      </div>
+                    )}
+
                     {passwordError && (
                       <div className={styles.fullWidth} style={{ color: '#dc2626', fontSize: '0.8rem', marginTop: '-0.5rem' }}>
                         {passwordError}
                       </div>
                     )}
+
+                    
                   </div>
-                </div>
-              )}
+                {/* </div>
+              )} */}
             </SettingsSection>
 
             {/* ── Actions ── */}
@@ -384,8 +450,13 @@ export default function SettingsPage() {
             </div>
 
           </form>
-        </div>
-      </main>
+
+            </div>
+
+
+
+
+          </div>
     </div>
   );
 }
