@@ -1,26 +1,41 @@
-.container {
-  display: grid;
-  grid-template-columns: 540px 290px;
-  gap: 40px;
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 40px 150px;
-  font-family: 'Inter', sans-serif;
-  background-color: #ffffff;
-}
-
 .all {
   min-height: 100vh;
-  background-color: white;
-  color: #111827;
-  font-family: sans-serif;
-   
+  background-color: var(--clr-white);
+  display: flex;
+  flex-direction: column;
 }
+
+.container {
+  width: 80rem;
+  display: flex;
+  /* flex-direction: column; */
+  margin-left: auto; 
+  margin-right: auto;
+  padding: 32px 65px;
+  gap: 5rem; 
+}
+
+.backLink{
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--clr-text-muted);
+  font-size: var(--fs-sm);
+  margin-bottom: 1rem;
+}
+.backLink:hover{
+  color: var(--clr-primary);
+}
+
 
 .mainContent{
   display: flex;
   flex-direction: column;
-  align-items: flex-start
+  align-items: flex-start;
+  width: 85%;
 }
 
 .balanceHeader {
@@ -29,31 +44,28 @@
 }
 
 .label {
-  color: #005a92;
-  font-weight: 700;
-  font-size: 12px;
-  letter-spacing: 0.5px;
-  margin-bottom: 8px;
+  color: var(--clr-primary);
+  font-weight: var(--fw-title);
+  font-size: var(--fs-xs);
   text-align: left;
 }
 
 .balanceValue {
-  letter-spacing: 1;
   font-size: 42px;
-  font-weight: 800;
-  color: #1a1a1a;
+  font-weight: var(--fw-title);
+  color: var(--clr-foreground);
   margin: 0;
 }
 
 .subtext {
-  color: #6c757d;
-  font-size: 14px;
+  color: var(--clr-text-muted);
+  font-size: var(--fs-xs);
   margin-top: 15px;
 }
 
 /* Stepper Section */
 .stepSection {
-  width: 550px;
+  width: 100%;
   margin-bottom: 40px;
 }
 
@@ -65,23 +77,23 @@
 }
 
 .stepNumber {
-  background: #005a92;
-  color: white;
+  background: var(--clr-primary);
+  color:var(--clr-white);
   width: 24px;
   height: 24px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 12px;
-  font-weight: 700;
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-title);
 }
 
 .stepTitle h3 {
-  font-size: 18px;
-  font-weight: 700;
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-title);
   margin: 0;
-  color: #1a1a1a;
+  color: var(--clr-foreground);
 }
 
 /* Amount Grid */
@@ -94,11 +106,11 @@
 
 .amountBtn {
   padding: 14px;
-  border: 1px solid #edf0f2;
-  background: white;
-  color: #1a1a1a;
-  border-radius: 8px;
-  font-weight: 600;
+  border: 1px solid var(--clr-border);
+  background:var(--clr-white);
+  color: var(--clr-foreground);
+  border-radius: var(--rad);
+  font-weight: var(--fw-h4);
   cursor: pointer;
   transition: all 0.2s;
 }
@@ -112,26 +124,26 @@
 /* Custom Input */
 .customInputWrapper label {
   width: 100%;
-  font-size: 10px;
-  font-weight: 700;
-  color: #adb5bd;
+  font-size: var(--fs-live);
+  font-weight: var(--fw-h4);
+  color: var(--clr-text-muted);
   display: block;
-  margin-bottom: 4px;
-  padding-left: 15px;
+  margin-bottom: 5px;
+  /* padding-left: 15px; */
   text-align: left;
 }
 
 .inputField {
   display: flex;
   align-items: center;
-  background: #f8f9fa;
+  background: var(--clr-input);
   padding: 12px 16px;
-  border-radius: 8px;
+  border-radius: var(--rad);
   gap: 10px;
 }
 
 .inputField span {
-  color: #adb5bd;
+  color: var(--clr-text-muted);
   font-weight: 600;
 }
 
@@ -139,25 +151,29 @@
   background: transparent;
   border: none;
   outline: none;
-  font-weight: 600;
+  font-weight: var(--fw-h4);
   width: 100%;
+}
+
+.inputField input::placeholder{
+  color: var(--clr-text-muted);
 }
 
 /* Method Grid */
 .methodGrid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 16px;
+  gap: var(--space-md);
 }
 
 .methodCard {
-  width: 250px;
-  border: 1px solid #edf0f2;
+  /* width: 250px; */
+  border: 1px solid var(--clr-border);
   padding: 10px;
-  border-radius: 12px;
+  border-radius: var(--rad);
   display: flex;
   align-items: center;
-  gap: 12px;
+  /* gap: 12px; */
   cursor: pointer;
   position: relative;
 }
@@ -169,9 +185,15 @@
 
 .methodIcon{
   margin: 0 10px;
-  background-color: #F2F4F6;
+  /* background-color: var(pr); */
   padding: 8px 8px 4px 8px;
   border-radius: 5px;
+
+}
+
+.meticon{
+  size: 24px;
+  color: var(--clr-primary);
 }
 
 .methodText{
@@ -185,24 +207,25 @@
   font-weight: 700;
   font-size: 14px;
   padding: 0;
-  color: #191C1E;
+  color: var(--clr-foreground);
 }
 
 .methodSub {
   font-size: 11px;
-  color: #adb5bd;
+  color: var(--clr-text-muted);
   margin: 0px 0 0 0;
 }
 
 .checkIcon {
   position: absolute;
   right: 12px;
-  color: #005a92;
+  color: var(--clr-primary);
   font-size: 12px;
 }
 
 /* Sidebar / Summary */
 .sidebar {
+  margin-top: 2rem;
   display: flex;
   flex-direction: column;
   gap: 20px;
@@ -211,52 +234,53 @@
 .safetyCard {
   display: flex;
   flex-direction: column;
-  background: #f8f9fa;
+  background: var(--clr-white);
   padding: 10px 20px;
   border-radius: 16px;
-  border-left: 4px solid #005a92;
+  border-left: 4px solid var(--clr-primary);
   text-align: left;
 }
 
 .safetyLabel {
-  font-size: 10px;
-  font-weight: 700;
-  color: #005a92;
+  font-size: var(--fs-live);
+  font-weight: var(--fw-h4);
+  color: var(--clr-primary);
 }
 
 .safetyValue {
-  font-weight: 600;
-  font-size: 18px;
+  font-weight: var(--fw-title);
+  font-size: var(--fs-xs);
   margin: 4px 0;
-  color:#1a1a1a;
+  color: var(--clr-foreground);
 }
 
 .safetySub {
-  font-size: 10px;
-  color: #adb5bd;
+  font-size: var(--fs-live);
+  color: var(--clr-text-muted);
 }
 
 .summaryCard {
-  background: white;
-  border: 1px solid #edf0f2;
-  border-radius: 20px;
-  padding: 24px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+  background: var(--clr-white);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  box-shadow:var(--shadow-md);
   text-align: left;
 }
 
 .summaryCard H3 {
-  color: #1a1a1a;
-  font-weight: bold;
+  color: var(--clr-foreground);
+  font-weight: var(--fw-title);
+  font-size: var(--fs-md);
   margin-bottom: 20px;
 }
 
 .summaryRow {
   display: flex;
   justify-content: space-between;
-  font-size: 13px;
+  font-size: var(--fs-sm);
   margin-bottom: 12px;
-  color: #6c757d;
+  color: var(--clr-text-muted);
 }
 
 .freeText {
@@ -270,29 +294,29 @@
   align-items: center;
   margin: 24px 0;
   padding-top: 20px;
-  border-top: 1px dashed #edf0f2;
+  border-top: 1px dashed var(--clr-border);
 }
 
 .totalLabel p {
   margin: 0;
-  font-weight: 600;
-  line-height: 1.1;
-  font-size: 18px;
-  color: #1a1a1a;
+  font-weight: var(--fw-h4);
+  /* line-height: 1.1; */
+  font-size: var(--fs-base);
+  color: var(--clr-foreground);
 }
 
 .totalAmount {
   font-size: 24px;
   font-weight: 800;
-  color: #005a92;
+  color: var(--clr-primary);
 }
 
 .infoBox {
   background: #f0f7ff;
   padding: 15px;
-  border-radius: 8px;
-  font-size: 11px;
-  color: #005a92;
+  border-radius: var(--rad);
+  font-size: var(--fs-live);
+  color: var(--clr-primary);
   margin-bottom: 20px;
   display: flex;
   gap: 10px;
@@ -300,13 +324,13 @@
 
 .btnDeposit {
   width: 100%;
-  background: #005a92;
-  color: white;
+  background: var(--clr-primary);
+  color: var(--clr-white);
   border: none;
   padding: 16px;
-  border-radius: 12px;
-  font-weight: 700;
-  font-size: 16px;
+  border-radius: var(--rad);
+  font-weight: var(--fw-h4);
+  font-size: var(--fs-sm);
   cursor: pointer;
 }
 
@@ -317,6 +341,7 @@
   margin-top: 12px;
   display: flex;
   gap: 5px;
+  align-items: center;
 }
 
 .secureText p {
@@ -328,20 +353,20 @@
   align-items: center;
   gap: 12px;
   padding: 16px;
-  background: #f8f9fa;
-  border-radius: 12px;
+  background: var(--clr-white);
+  border-radius: var(--rad);
   text-align: left;
 }
 
 .helpTitle {
-  font-size: 12px;
-  font-weight: 700;
-  margin-top: 10px;
-  line-height: 5px;
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-h4);
+  /* margin-top: 10px; */
+  /* line-height: 5px; */
 }
 
 .helpSub {
-  font-size: 11px;
-  color: #6c757d;
+  font-size: var(--fs-live);
+  color: var(--clr-text-muted);
   margin: 0px 0 0 0;
 }

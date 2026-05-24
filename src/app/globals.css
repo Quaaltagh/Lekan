@@ -13,7 +13,7 @@
   --clr-border: #e5e7eb;         /* Soft Border Color */
   --clr-black: #1a1a1a;
   --clr-live: #f97316;
-  --clr-input: #f9fafb;
+  --clr-input: rgb(243, 247, 250);
 
   /* Typography */
   --fs-live: 10px;

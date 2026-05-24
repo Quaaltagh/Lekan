@@ -19,6 +19,7 @@ import {
   isBefore,
   startOfDay, endOfDay,
 } from 'date-fns';
+import { id } from 'date-fns/locale';
 
 // ─── Fallback image ────────────────────────────────────────────────────────────
 function safeSrc(url?: string | null): string | undefined {
@@ -44,7 +45,7 @@ function CalendarPicker({ onSelect, dateRange, onClose }: {
 
   const days = useMemo(() => {
     const startIdx = startOfWeek(startOfMonth(currentMonth));
-    const endIdx   = endOfWeek(endOfMonth(currentMonth));
+    const endIdx = endOfWeek(endOfMonth(currentMonth));
     return eachDayOfInterval({ start: startIdx, end: endIdx });
   }, [currentMonth]);
 
@@ -61,7 +62,7 @@ function CalendarPicker({ onSelect, dateRange, onClose }: {
   return (
     <div className={styles.calendarcontainer}>
       <div className={styles.calendarheader}>
-        <h4 className={styles.calendartitle}>{format(currentMonth, 'MMMM yyyy')}</h4>
+        <h4 className={styles.calendartitle}>{format(currentMonth, 'MMMM yyyy', { locale: id })}</h4>
         <div className={styles.calendarnav}>
           <button onClick={() => setCurrentMonth(subMonths(currentMonth, 1))} className={styles.calendarnavButton}>
             <ChevronLeft className={styles.calendarnavIcon} />
@@ -73,7 +74,7 @@ function CalendarPicker({ onSelect, dateRange, onClose }: {
       </div>
 
       <div className={styles.calendardaysHeader}>
-        {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((d, i) => (
+        {['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'].map((d, i) => (
           <div key={i} className={styles.calendardayLabel}>{d}</div>
         ))}
       </div>
@@ -81,10 +82,10 @@ function CalendarPicker({ onSelect, dateRange, onClose }: {
       <div className={styles.calendargrid}>
         {days.map((day, i) => {
           const isSelectedStart = dateRange.start && isSameDay(day, dateRange.start);
-          const isSelectedEnd   = dateRange.end   && isSameDay(day, dateRange.end);
-          const isInRange       = dateRange.start && dateRange.end &&
+          const isSelectedEnd = dateRange.end && isSameDay(day, dateRange.end);
+          const isInRange = dateRange.start && dateRange.end &&
             isWithinInterval(day, { start: startOfDay(dateRange.start), end: endOfDay(dateRange.end) });
-          const isCurrentMonth  = isSameMonth(day, currentMonth);
+          const isCurrentMonth = isSameMonth(day, currentMonth);
 
           return (
             <button
@@ -93,11 +94,11 @@ function CalendarPicker({ onSelect, dateRange, onClose }: {
               className={`
                 ${styles.calendarday}
                 ${!isCurrentMonth ? styles.calendardayOutside : styles.calendardayCurrent}
-                ${isInRange        ? styles.calendardayInRange  : ''}
-                ${isSelectedStart  ? styles.calendardayStart    : ''}
-                ${isSelectedEnd    ? styles.calendardayEnd      : ''}
-                ${isSelectedStart && dateRange.end   ? styles.calendarroundRightNone : ''}
-                ${isSelectedEnd   && dateRange.start ? styles.calendarroundLeftNone  : ''}
+                ${isInRange ? styles.calendardayInRange : ''}
+                ${isSelectedStart ? styles.calendardayStart : ''}
+                ${isSelectedEnd ? styles.calendardayEnd : ''}
+                ${isSelectedStart && dateRange.end ? styles.calendarroundRightNone : ''}
+                ${isSelectedEnd && dateRange.start ? styles.calendarroundLeftNone : ''}
               `}
             >
               {format(day, 'd')}
@@ -107,14 +108,12 @@ function CalendarPicker({ onSelect, dateRange, onClose }: {
       </div>
 
       <div className={styles.calendarfooter}>
-        <button
-          onClick={() => { onSelect({ start: null, end: null }); setSelectingStep('START'); }}
-          className={styles.calendarclearButton}
-        >
-          Bersihkan
+        <button onClick={() => { onSelect({ start: null, end: null }); setSelectingStep('START'); }}
+          className={styles.calendarclearButton}>
+          Reset
         </button>
         <button onClick={onClose} className={styles.calendardoneButton}>
-          {dateRange.start && !dateRange.end ? 'Pilih Akhir' : 'Selesai'}
+          {dateRange.start && !dateRange.end ? 'Pilih Rentang' : 'Selesai'}
         </button>
       </div>
     </div>
@@ -124,49 +123,57 @@ function CalendarPicker({ onSelect, dateRange, onClose }: {
 // ─── TransactionItem ──────────────────────────────────────────────────────────
 function TransactionItem({ item }: any) {
   const imgSrc = safeSrc(item.image_url);
+  const date = new Date(item.ends_at);
 
+  const formatted = `${String(date.getDate()).padStart(2, '0')} ${date.toLocaleDateString('id-ID', {
+    month: 'long',
+    year: 'numeric'
+  })}`;
   return (
-    <tr>
+    <div className={styles.itemrow}>
       {/* Ikan */}
-      <td>
-        <div className={styles.fishCell}>
-          <div className={styles.imagePlaceholder}>
-            {imgSrc ? (
+      <div className={styles.itemproduct}>
+        <div className={styles.itemimageWrapper}>
+          {imgSrc ? (
               <img src={imgSrc} alt={item.name} />
             ) : (
               <Fish size={24} color="#94a3b8" />
             )}
-          </div>
-          <div>
-            <strong>{item.name}</strong>
-            <p>{item.grade || 'STANDAR'} • {item.weight_kg}KG</p>
-          </div>
         </div>
-      </td>
+        <div>
+          <h4 className={styles.itemname}>{item.name}</h4>
+          <p className={styles.itemmeta}>
+            {item.grade || 'STANDAR'} • {item.weight_kg}KG
+          </p>
+        </div>
+      </div>
 
       {/* Tanggal */}
-      <td>{new Date(item.ends_at).toLocaleDateString('id-ID')}</td>
+      <div className={styles.itemtext}>{formatted}</div>
 
       {/* Pembeli */}
-      <td>Pembeli Pasar</td>
+      <div className={styles.itemtext}>Pembeli Pasar</div>
 
-      {/* Harga */}
-      <td className={styles.price}>
+      {/* Price */}
+      <div className={styles.itempriceWrapper}>
         {item.current_bid
-          ? `Rp ${item.current_bid.toLocaleString('id-ID')}`
-          : `Rp ${item.start_price.toLocaleString('id-ID')}`}
-      </td>
+          ?  <span className= {styles.itemprice}>
+          Rp {item.current_bid.toLocaleString('id-ID')}
+        </span>
+          : 
+          <span className= {styles.itemprice}>
+          Rp ${item.start_price.toLocaleString('id-ID')}
+        </span>
+}
+      </div>
 
-      {/* Aksi */}
-      <td>
-        <Link
-          href={`/fisherman/enchantedAuctionHistory/${item.id}`}
-          className={styles.detailBtn}
-        >
+      {/* Action — FIX: pakai Link bukan button biasa */}
+      <div className={styles.itemactions}>
+        <Link href={`/fisherman/enchantedAuctionHistory/${item.id}`} className={styles.itembutton}>
           Lihat Detail
         </Link>
-      </td>
-    </tr>
+      </div>
+    </div>
   );
 }
 
@@ -207,14 +214,12 @@ export default function AuctionHistory() {
   };
 
   return (
-    <div className={styles.container}>
+    <div className={styles.all}>
       <SideFisherman />
-
-      <main className={styles.mainContent}>
+      <div className={styles.container}>
         <NavbarFisherman />
 
         <div className={styles.content}>
-
           <section className={styles.titleSection}>
             <h1>Histori Lelang</h1>
             <p className={styles.subtitle}>Riwayat seluruh transaksi hasil laut Anda.</p>
@@ -260,42 +265,36 @@ export default function AuctionHistory() {
             </div>
           </div>
 
-          {/* Table */}
-          <section className={styles.tableContainer}>
-            <table className={styles.table}>
-              <thead>
-                <tr>
-                  <th>SPESIES IKAN</th>
-                  <th>TANGGAL TRANSAKSI</th>
-                  <th>PEMBELI</th>
-                  <th>HARGA AKHIR</th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody>
-                {loading ? (
-                  <tr>
-                    <td colSpan={5} style={{ textAlign: 'center', padding: '2rem', color: '#94a3b8' }}>
-                      Memuat data...
-                    </td>
-                  </tr>
+          <div className={styles.cardcontainer}>
+          <div className={styles.cardheader}>
+            <div className={styles.cardheaderText}>Spesies Ikan</div>
+            <div className={styles.cardheaderText}>Tanggal Transaksi</div>
+            <div className={styles.cardheaderText}>Pembeli</div>
+            <div className={styles.cardheaderText}>Harga Akhir</div>
+          </div>
+
+          <div>
+             {loading ? (
+                <div style={{ padding: '3rem', textAlign: 'center', color: '#94a3b8' }}>
+                  Memuat histori lelang...
+                </div>
                 ) : historyAuctions.length === 0 ? (
-                  <tr>
-                    <td colSpan={5} style={{ textAlign: 'center', padding: '2rem', color: '#94a3b8' }}>
-                      Belum ada histori lelang
-                    </td>
-                  </tr>
+                  <div className={styles.emptyState}>
+                    <h3 className={styles.emptytitle}>Tidak ada hasil ditemukan</h3>
+                    <p className={styles.emptydescription}>
+                      Coba sesuaikan pencarian atau filter Anda untuk menemukan apa yang Anda cari.
+                    </p>
+                  </div>
                 ) : (
                   historyAuctions.map(item => (
                     <TransactionItem key={item.id} item={item} />
                   ))
                 )}
-              </tbody>
-            </table>
-          </section>
+          </div>
+        </div>
 
         </div>
-      </main>
+      </div>
     </div>
   );
 }
