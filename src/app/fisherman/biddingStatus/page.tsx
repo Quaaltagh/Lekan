@@ -1,14 +1,27 @@
 'use client';
 import React, { useState, useEffect, useCallback } from 'react';
-import { TrendingUp, AlertCircle } from 'lucide-react';
+import { TrendingUp, Clock, Loader2, Fish, ArrowRight } from 'lucide-react';
 import SideFisherman from '../../components/sideFisherman';
 import NavbarFisherman from '../../components/NavbarFisherman';
 import styles from './BiddingStatus.module.css';
 import { useAuth } from '@/context/AuthContext';
-import { getActiveBidStatus, ActiveBidItem } from '@/services/statusLelangService';
 import { useRouter } from 'next/navigation';
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+
+interface ActiveAuction {
+  id: string;
+  name: string;
+  weight_kg: number;
+  image_url?: string;
+  current_bid?: number;
+  start_price: number;
+  ends_at: string;
+  status: string;
+  grade?: string;
+  species?: string;
+}
+
 function formatCountdown(endsAt: string): string {
   const diff = new Date(endsAt).getTime() - Date.now();
   if (diff <= 0) return 'Berakhir';
@@ -19,7 +32,6 @@ function formatCountdown(endsAt: string): string {
   return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
 }
 
-// Hitung progress bar — sisa waktu relatif terhadap 24 jam (max display)
 function getProgressPercent(endsAt: string): number {
   const diff = new Date(endsAt).getTime() - Date.now();
   if (diff <= 0) return 0;
@@ -27,22 +39,25 @@ function getProgressPercent(endsAt: string): number {
   return Math.min(100, (diff / maxMs) * 100);
 }
 
-// ─── BidCard ──────────────────────────────────────────────────────────────────
-function BidCard({ id, name, lot, weight, image, highestBid, yourBid, status, endsAt }: ActiveBidItem) {
+function AuctionCard({ auction }: { auction: ActiveAuction }) {
   const router = useRouter();
-  const isWinning = status === 'winning';
-  const [countdown, setCountdown] = useState(formatCountdown(endsAt));
-  const [progress, setProgress]   = useState(getProgressPercent(endsAt));
+  const [countdown, setCountdown] = useState(formatCountdown(auction.ends_at));
+  const [progress, setProgress]   = useState(getProgressPercent(auction.ends_at));
 
   useEffect(() => {
     const tick = () => {
-      setCountdown(formatCountdown(endsAt));
-      setProgress(getProgressPercent(endsAt));
+      setCountdown(formatCountdown(auction.ends_at));
+      setProgress(getProgressPercent(auction.ends_at));
     };
     tick();
     const timer = setInterval(tick, 1000);
     return () => clearInterval(timer);
-  }, [endsAt]);
+  }, [auction.ends_at]);
+
+  const currentBid  = auction.current_bid ?? auction.start_price;
+  const shortId     = auction.id.replace(/-/g, '').slice(-4).toUpperCase();
+  const lotPrefix   = auction.name.slice(0, 2).toUpperCase();
+  const hasBid      = !!auction.current_bid && auction.current_bid > auction.start_price;
 
   return (
     <div className={styles.card}>
@@ -55,44 +70,52 @@ function BidCard({ id, name, lot, weight, image, highestBid, yourBid, status, en
         </div>
 
         <div className={styles.wrapper}>
-          <span className={`${styles.cardbadge} ${isWinning ? styles.winning : styles.losing}`}>
-            {isWinning ? <TrendingUp className={styles.icon} /> : <AlertCircle className={styles.icon} />}
-            {status}
+          <span className={`${styles.cardbadge} ${hasBid ? styles.winning : styles.losing}`}>
+            {hasBid
+              ? <><TrendingUp className={styles.icon} /> Ada Penawaran</>
+              : <><Clock className={styles.icon} /> Menunggu Bid</>}
           </span>
         </div>
 
         <img
-          src={image || 'https://darilaut.id/wp-content/uploads/2021/09/Tuna-3.jpg'}
+          src={auction.image_url || 'https://darilaut.id/wp-content/uploads/2021/09/Tuna-3.jpg'}
           className={styles.image}
-          alt={name}
+          alt={auction.name}
+          onError={e => {
+            (e.target as HTMLImageElement).src =
+              'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><rect width="100%" height="100%" fill="%230f172a"/></svg>';
+          }}
         />
       </div>
 
       <div className={styles.cardcontainer}>
         <div className={styles.name}>
-          <h3 className={styles.cardtitle}>{name}</h3>
-          <p className={styles.cardmeta}>LOT #{lot} • {weight}</p>
+          <h3 className={styles.cardtitle}>{auction.name}</h3>
+          <p className={styles.cardmeta}>
+            LOT #{lotPrefix}-{shortId} • {auction.weight_kg}KG
+            {auction.grade ? ` • Grade ${auction.grade}` : ''}
+          </p>
         </div>
 
         <div className={styles.bid}>
-          <div className={`${styles.contentcard} ${isWinning ? styles.cardNeutral : styles.cardLosing}`}>
+          <div className={`${styles.contentcard} ${hasBid ? styles.cardNeutral : styles.cardLosing}`}>
             <div className={styles.bidcontent}>
-              <span className={`${styles.label} ${isWinning ? styles.cardNeutral : styles.cardLosing}`}>
-                Highest Bid
+              <span className={`${styles.label} ${hasBid ? styles.cardNeutral : styles.cardLosing}`}>
+                Harga Awal
               </span>
-              <span className={`${styles.value} ${isWinning ? styles.cardNeutral : styles.cardLosing}`}>
-                Rp {highestBid}
+              <span className={`${styles.value} ${hasBid ? styles.cardNeutral : styles.cardLosing}`}>
+                Rp {auction.start_price.toLocaleString('id-ID')}
               </span>
             </div>
 
             <div className={styles.divider}></div>
 
             <div className={styles.bidcontent}>
-              <span className={`${styles.label} ${isWinning ? styles.labelNeutral : styles.labelLosing}`}>
-                Your Bid
+              <span className={`${styles.label} ${hasBid ? styles.labelNeutral : styles.labelLosing}`}>
+                Bid Tertinggi
               </span>
-              <span className={`${styles.value} ${isWinning ? styles.valueYourWin : styles.valueYourLose}`}>
-                Rp {yourBid}
+              <span className={`${styles.value} ${hasBid ? styles.valueYourWin : styles.valueYourLose}`}>
+                Rp {currentBid.toLocaleString('id-ID')}
               </span>
             </div>
           </div>
@@ -101,7 +124,7 @@ function BidCard({ id, name, lot, weight, image, highestBid, yourBid, status, en
         <div className={styles.timercontainer}>
           <div>
             <div className={styles.timerheader}>
-              <span className={styles.timerlabel}>Time Remaining</span>
+              <span className={styles.timerlabel}>Sisa Waktu</span>
               <span className={styles.time}>{countdown}</span>
             </div>
             <div className={styles.timerprogressBar}>
@@ -110,10 +133,10 @@ function BidCard({ id, name, lot, weight, image, highestBid, yourBid, status, en
           </div>
 
           <button
-            onClick={() => router.push(`/buyer/auction/${id}`)}
-            className={`${styles.button} ${isWinning ? styles.buttonWin : styles.buttonLose}`}
+            onClick={() => router.push(`/fisherman/enchantedAuctionHistory/${auction.id}`)}
+            className={`${styles.button} ${hasBid ? styles.buttonWin : styles.buttonLose}`}
           >
-            {isWinning ? 'View Detail' : 'Bid Now'}
+            Lihat Detail <ArrowRight size={14} />
           </button>
         </div>
       </div>
@@ -121,78 +144,81 @@ function BidCard({ id, name, lot, weight, image, highestBid, yourBid, status, en
   );
 }
 
-export default function BiddingStatusPage() {
- const { user, token } = useAuth();
-   const [activeBids, setActiveBids] = useState<ActiveBidItem[]>([]);
-   const [loading, setLoading]       = useState(true);
-   const [fetchError, setFetchError] = useState('');
- 
-   const fetchStatus = useCallback(async () => {
-     if (!user?.id || !token) return;
-     try {
-       const res = await getActiveBidStatus(user.id, token);
-       setActiveBids(res.data);
-     } catch (err) {
-       setFetchError(err instanceof Error ? err.message : 'Terjadi kesalahan.');
-     } finally {
-       setLoading(false);
-     }
-   }, [user?.id, token]);
- 
-   // Fetch awal + auto-refresh tiap 30 detik (status winning/outbid bisa berubah)
-   useEffect(() => {
-     fetchStatus();
-     const interval = setInterval(fetchStatus, 30_000);
-     return () => clearInterval(interval);
-   }, [fetchStatus]);
+export default function FishermanStatusPage() {
+  const { user, token } = useAuth();
+  const [auctions, setAuctions] = useState<ActiveAuction[]>([]);
+  const [loading, setLoading]   = useState(true);
+  const [fetchError, setFetchError] = useState('');
+
+  const fetchAuctions = useCallback(async () => {
+    if (!user?.id || !token) return;
+    try {
+      const res = await fetch(`${API_URL}/api/auctions/seller/${user.id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) throw new Error((await res.json()).error || 'Gagal memuat lelang.');
+      const data: ActiveAuction[] = await res.json();
+      // Filter hanya yang aktif
+      setAuctions(data.filter(a => a.status === 'active'));
+    } catch (err) {
+      setFetchError(err instanceof Error ? err.message : 'Terjadi kesalahan.');
+    } finally {
+      setLoading(false);
+    }
+  }, [user?.id, token]);
+
+  useEffect(() => {
+    fetchAuctions();
+    const interval = setInterval(fetchAuctions, 30_000);
+    return () => clearInterval(interval);
+  }, [fetchAuctions]);
 
   return (
     <div className={styles.all}>
       <SideFisherman />
       <div className={styles.container}>
         <NavbarFisherman />
-        
-        <div className={styles.content}>
 
+        <div className={styles.content}>
           <div className={styles.headerContainer}>
-          <section className={styles.titleSection}>
-            <h1 className={styles.pageTitle}>Status Lelang</h1>
-            <p className={styles.pageSubtitle}>
-              Pantau daftar aktif Anda dan tinjau lelang yang sudah selesai.
-            </p>
-          </section>
+            <section className={styles.titleSection}>
+              <h1 className={styles.pageTitle}>Status Lelang</h1>
+              <p className={styles.pageSubtitle}>
+                Pantau lelang aktif milik Anda dan lihat penawaran yang masuk.
+              </p>
+            </section>
           </div>
 
           <div className={styles.contentcontainer}>
-          <div className={styles.contentheader}>
-            <h2 className={styles.contenttitle}>Penawaran Aktif</h2>
-            <span className={styles.badge}>{activeBids.length} Aktif</span>
+            <div className={styles.contentheader}>
+              <h2 className={styles.contenttitle}>Lelang Aktif Anda</h2>
+              <span className={styles.badge}>{auctions.length} Aktif</span>
+            </div>
+
+            {loading ? (
+              <div style={{ padding: '3rem', textAlign: 'center', color: '#94a3b8', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
+                <Loader2 size={28} className="animate-spin" />
+                Memuat lelang aktif...
+              </div>
+            ) : fetchError ? (
+              <div style={{ padding: '3rem', textAlign: 'center', color: '#dc2626' }}>
+                {fetchError}
+              </div>
+            ) : auctions.length === 0 ? (
+              <div style={{ padding: '3rem', textAlign: 'center', color: '#94a3b8', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.75rem' }}>
+                <Fish size={40} style={{ opacity: 0.3 }} />
+                <p>Tidak ada lelang aktif saat ini.</p>
+              </div>
+            ) : (
+              <div className={styles.grid}>
+                {auctions.map(auction => (
+                  <AuctionCard key={auction.id} auction={auction} />
+                ))}
+              </div>
+            )}
           </div>
-
-          {loading ? (
-            <div style={{ padding: '3rem', textAlign: 'center', color: '#94a3b8' }}>
-              Memuat status lelang...
-            </div>
-          ) : fetchError ? (
-            <div style={{ padding: '3rem', textAlign: 'center', color: '#dc2626' }}>
-              {fetchError}
-            </div>
-          ) : activeBids.length === 0 ? (
-            <div style={{ padding: '3rem', textAlign: 'center', color: '#94a3b8' }}>
-              Kamu belum memiliki bid aktif saat ini.
-            </div>
-          ) : (
-            <div className={styles.grid}>
-              {activeBids.map(bid => (
-                <BidCard key={bid.id} {...bid} />
-              ))}
-            </div>
-          )}
         </div>
-
-
       </div>
-    </div>
     </div>
   );
 }

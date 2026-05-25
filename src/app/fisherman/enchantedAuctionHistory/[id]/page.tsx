@@ -212,7 +212,7 @@ export default function AuctionHistoryDetailPage() {
         <div className={styles.content}>
           <div className={styles.header}>
             <button onClick={() => router.back()} className={styles.backLink}>
-              <ArrowLeft size={18} /> Kembali ke Daftar Histori
+              <ArrowLeft size={18} /> Kembali 
             </button>
             <div className={styles.pageTitleRow}>
               <div>
