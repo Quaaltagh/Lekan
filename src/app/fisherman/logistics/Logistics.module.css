@@ -1,272 +1,316 @@
+/* ═══════════════════════════════════════════════════════════════
+   Logistics.module.css — Fisherman Logistics Page
+   Konsisten dengan LEKAN design system
+═══════════════════════════════════════════════════════════════ */
+
+/* ── Layout ── */
 .layout {
   display: flex;
   min-height: 100vh;
-  background-color: #f8fafc;
+  background-color: var(--clr-background);
 }
 
 .mainWrapper {
   flex: 1;
   display: flex;
   flex-direction: column;
+  min-width: 0;
 }
 
 .main {
-  padding: 32px 40px;
-  max-width: 1200px;
+  padding: var(--page-py, 2rem) var(--page-px, 2.5rem);
+  max-width: var(--content-max-w, 1200px);
   width: 100%;
   margin: 0 auto;
 }
 
+/* ── Header ── */
 .headerContainer {
-  margin-bottom: 40px;
   display: flex;
-  justify-content: space-between;
   align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-md);
+  margin-bottom: var(--space-xl);
 }
 
 .pageTitle {
-  font-size: 36px;
-  font-weight: 900;
-  color: #0f172a;
-  margin: 0 0 8px 0;
-  letter-spacing: -1.5px;
+  font-size: var(--fs-xl);
+  font-weight: 800;
+  color: var(--clr-foreground);
+  margin: 0 0 var(--space-xs);
+  letter-spacing: -0.02em;
 }
 
 .pageSubtitle {
-  color: #64748b;
-  font-size: 15px;
+  font-size: var(--fs-sm);
+  color: var(--clr-text-muted);
   margin: 0;
 }
 
+/* ── Two-col layout ── */
 .contentGrid {
   display: grid;
-  grid-template-columns: 2fr 1fr;
-  gap: 32px;
+  grid-template-columns: 1fr 280px;
+  gap: var(--space-xl);
   align-items: start;
 }
 
-/* LEFT COLUMN */
+@media (max-width: 900px) {
+  .contentGrid { grid-template-columns: 1fr; }
+}
+
+/* ── LEFT COLUMN ── */
 .leftCol {
   display: flex;
   flex-direction: column;
-  gap: 32px;
+  gap: var(--space-xl);
 }
 
+/* ── Section Box ── */
 .sectionBox {
-  background-color: #f1f5f9;
-  border-radius: 16px;
-  padding: 24px;
+  background: var(--clr-border-light);
+  border-radius: var(--radius-xl);
+  padding: var(--space-lg);
 }
 
 .sectionTitleWrap {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-bottom: 24px;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-lg);
 }
 
 .sectionTitle {
-  font-size: 20px;
-  font-weight: 800;
-  color: #0f172a;
+  font-size: var(--fs-lg); /* Diperbesar dari base */
+  font-weight: 700; /* Diturunkan dari 800 agar lebih elegan */
+  color: var(--clr-foreground);
   margin: 0;
+  letter-spacing: -0.01em;
 }
 
-/* Active Shipment Card */
+/* ── Shipment Card ── */
 .shipmentCard {
-  background-color: white;
-  border-radius: 12px;
-  padding: 20px;
-  margin-bottom: 16px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  background: var(--clr-card-bg);
+  border-radius: var(--radius-xl);
+  padding: var(--space-md);
+  margin-bottom: var(--space-md);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--clr-border);
+  transition: box-shadow var(--transition-base);
 }
-.shipmentCard:last-child {
-  margin-bottom: 0;
-}
+
+.shipmentCard:last-child { margin-bottom: 0; }
+.shipmentCard:hover { box-shadow: var(--shadow-md); }
 
 .shipmentHeader {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 16px;
+  margin-bottom: var(--space-md);
+  gap: var(--space-sm);
 }
 
 .fishMeta {
-  font-size: 11px;
-  font-weight: 800;
-  color: #64748b;
+  font-size: var(--fs-xs);
+  font-weight: 600; 
+  color: var(--clr-text-muted);
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-bottom: 4px;
+  letter-spacing: 0.05em; /* Disesuaikan agar tidak terlalu renggang */
+  margin-bottom: 6px; 
 }
 
 .destination {
-  font-size: 18px;
-  font-weight: 800;
-  color: #0f172a;
+  font-size: var(--fs-lg); /* Diperbesar dari lg */
+  font-weight: 600;
+  color: var(--clr-foreground);
   margin: 0;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
 }
 
-/* Badges */
+.estArrival {
+  font-size: var(--fs-sm);
+  color: var(--clr-foreground); /* Diubah ke warna solid, bukan muted */
+  font-weight: 600; 
+}
+
+/* ── Status Badges ── */
 .badge {
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 11px;
+  font-size: var(--fs-xs);
   font-weight: 700;
-  padding: 6px 12px;
-  border-radius: 20px;
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+  flex-shrink: 0;
+  letter-spacing: 0.04em;
 }
+
 .badgeDot {
   width: 6px;
   height: 6px;
   border-radius: 50%;
-}
-.badgePending {
-  background-color: #fef3c7;
-  color: #d97706;
-}
-.badgePending .badgeDot {
-  background-color: #fbbf24;
-}
-.badgeShipped {
-  background-color: #dbeafe;
-  color: #1e40af;
-}
-.badgeShipped .badgeDot {
-  background-color: #3b82f6;
-}
-.badgeArrived {
-  background-color: #ccfbf1;
-  color: #0f766e;
-}
-.badgeArrived .badgeDot {
-  background-color: #14b8a6;
-}
-.badgeDelivered {
-  background-color: #dcfce7;
-  color: #15803d;
-}
-.badgeDelivered .badgeDot {
-  background-color: #22c55e;
+  flex-shrink: 0;
 }
 
+.badgePending  { background: #fef3c7; color: var(--clr-warning); }
+.badgePending .badgeDot  { background: #fbbf24; }
+
+.badgeShipped  { background: var(--clr-primary-muted); color: var(--clr-primary); }
+.badgeShipped .badgeDot  { background: #3b82f6; }
+
+.badgeArrived  { background: #ccfbf1; color: #0f766e; }
+.badgeArrived .badgeDot  { background: #14b8a6; }
+
+.badgeDelivered { background: var(--clr-success-light); color: var(--clr-success); }
+.badgeDelivered .badgeDot { background: #22c55e; }
+
+/* ── Shipment Footer ── */
 .shipmentFooter {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-top: 1px solid #f1f5f9;
-  padding-top: 16px;
+  border-top: 1px solid var(--clr-border-light);
+  padding-top: var(--space-md);
+  margin-top: var(--space-md);
 }
 
 .estArrival {
-  font-size: 13px;
-  color: #64748b;
+  font-size: var(--fs-sm);
+  color: var(--clr-text-muted);
   font-weight: 500;
 }
 
 .trackLink {
-  font-size: 13px;
+  font-size: var(--fs-sm);
   font-weight: 700;
-  color: #0284c7;
+  color: var(--clr-primary);
   text-decoration: none;
   display: flex;
   align-items: center;
   gap: 4px;
-  transition: opacity 0.2s;
-}
-.trackLink:hover {
-  opacity: 0.8;
+  transition: opacity var(--transition-fast);
 }
 
-/* History Table */
+.trackLink:hover { opacity: 0.75; }
+
+/* ── History Table ── */
 .historyTable {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate; 
+  border-spacing: 0;
 }
+
 .historyTable th {
   text-align: left;
-  font-size: 11px;
-  font-weight: 800;
-  color: #64748b;
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  color: var(--clr-text-muted);
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-  padding-bottom: 16px;
-  border-bottom: 1px solid #e2e8f0;
+  letter-spacing: 0.05em;
+  padding: 12px 16px; /* Tambahan padding agar header tidak sesak */
+  border-bottom: 2px solid var(--clr-border-light); /* Garis bawah sedikit lebih tebal dari baris biasa */
 }
+
 .historyTable td {
-  padding: 16px 0;
-  font-size: 13px;
-  color: #334155;
-  border-bottom: 1px solid #e2e8f0;
+  padding: 16px; /* Memperluas area baca/klik tiap baris */
+  font-size: var(--fs-sm);
+  color: var(--clr-foreground);
+  border-bottom: 1px solid var(--clr-border-light);
+  vertical-align: middle;
 }
+
+.historyDest {
+  font-weight: 700;
+  color: var(--clr-foreground);
+  font-size: var(--fs-base); /* Sedikit lebih besar dari teks tabel lainnya */
+}
+
 .historyTable tr:last-child td {
   border-bottom: none;
   padding-bottom: 0;
 }
-.historyDest {
-  font-weight: 700;
-  color: #0f172a;
+
+.historyTable tr:hover td {
+  background: rgba(248, 250, 252, 0.8);
 }
 
-/* RIGHT COLUMN (Partners) */
-.rightCol {
-  background-color: #f8fafc; /* Matches main bg, but we give the box itself a color */
-}
+/* ── RIGHT COLUMN ── */
+/* .rightCol {} */
 
 .partnersBox {
-  background-color: #f1f5f9;
-  border-radius: 16px;
-  padding: 24px;
+  background: var(--clr-border-light);
+  border-radius: var(--radius-xl);
+  padding: var(--space-lg);
 }
 
+/* ── Partner Card ── */
 .partnerCard {
-  background-color: white;
-  border-radius: 12px;
-  padding: 16px;
+  background: var(--clr-card-bg);
+  border-radius: var(--radius-xl);
+  padding: var(--space-md);
   display: flex;
   align-items: center;
-  gap: 16px;
-  margin-bottom: 16px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  gap: var(--space-md);
+  margin-bottom: var(--space-md);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--clr-border);
+  transition: all var(--transition-base);
 }
-.partnerCard:last-child {
-  margin-bottom: 0;
+
+.partnerCard:last-child { margin-bottom: 0; }
+
+.partnerCard:hover {
+  box-shadow: var(--shadow-md);
+  border-color: #cbd5e1;
 }
 
 .partnerIconWrap {
   width: 48px;
   height: 48px;
-  background-color: #e2e8f0;
-  border-radius: 8px;
+  background: var(--clr-primary-muted);
+  border-radius: var(--radius-lg);
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 800;
-  color: #0f172a;
-  font-size: 14px;
+  color: var(--clr-primary);
+  font-size: var(--fs-base);
+  flex-shrink: 0;
 }
 
 .partnerInfo h4 {
-  margin: 0 0 4px 0;
-  font-size: 14px;
-  font-weight: 800;
-  color: #0f172a;
+  margin: 0 0 4px;
+  font-size: var(--fs-base); /* Diperbesar dari sm */
+  font-weight: 700;
+  color: var(--clr-foreground);
 }
 
 .partnerInfo p {
   margin: 0;
-  font-size: 11px;
-  color: #64748b;
+  font-size: var(--fs-sm); /* Diperbesar dari xs */
+  color: var(--clr-text-muted);
+  line-height: 1.4;
 }
 
-/* Utility */
-.loadingState, .errorState, .emptyState {
+/* ── States ── */
+.loadingState,
+.errorState,
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm);
   text-align: center;
-  padding: 48px;
-  color: #64748b;
-  font-weight: 500;
+  padding: 3rem;
+  color: var(--clr-text-muted);
+  font-size: var(--fs-sm);
 }
-.errorState {
-  color: #ef4444;
+
+.errorState { color: var(--clr-danger); }
+
+.spinner {
+  color: var(--clr-primary);
+  animation: lekan-spin 1s linear infinite;
 }
