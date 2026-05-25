@@ -187,12 +187,13 @@
   transition: 0.2s;
 }
 
-.phoneInput input{
-  padding: 0.9rem 2.8rem;
+.phoneInput {
+  position: relative;
+  width: 100%;
 }
 
-.phoneInput input::placeholder{
-  color: var(--clr-text-muted);
+.phoneInput input {
+  padding-left: 3rem; /* Memberi ruang untuk teks +62 */
 }
 
 .formGroup input:focus,
@@ -203,36 +204,43 @@
 }
 
 .phonePrefix {
-  padding: 0 1rem;
-  font-size: var(--fs-sm);
+  position: absolute;
+  left: 1rem;
+  top: 50.4%;
+  transform: translateY(-50%); /* Menempatkan presisi di tengah vertikal */
+  font-size: 13.7447px;
   color: var(--clr-foreground);
-
-  position: absolute;
-  margin-top: 38px;
+  pointer-events: none; /* Agar area +62 tetap menembus klik ke input */
 }
 
-
-.passwordWrapper{
+.passwordWrapper {
+  position: relative;
   width: 100%;
-  /* border: 1px solid #e2e8f0;
-  background: #f8fafc;
-  border-radius: 0.85rem;
-  padding: 0.9rem 1rem;
-  font-size: 0.92rem;
-  color: #0f172a;
-  outline: none;
-  transition: 0.2s; */
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
 }
 
-.eyeButton{
+.passwordWrapper input {
+  width: 100%;
+  padding-right: 2.5rem; /* Memberi ruang agar teks tidak tertutup ikon mata */
+}
+
+.eyeButton {
   position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%); /* Menempatkan presisi di tengah vertikal */
+  background: none;
+  border: none;
   cursor: pointer;
-  margin-top: 17px;
-  margin-left: 22.5rem;
-  /* transform: translateY(-50%); */
+  color: var(--clr-text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: color 0.2s ease;
+}
+
+.eyeButton:hover {
+  color: var(--clr-foreground);
 }
 
 .eyeButtonFull{

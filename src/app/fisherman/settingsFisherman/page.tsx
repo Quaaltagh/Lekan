@@ -288,11 +288,13 @@ export default function SettingsPage() {
                 
                 <div className={`${styles.formGroup} ${styles.phoneInput}`}>
                   <label>Nomor Telepon</label>
-                  <span className={styles.phonePrefix}>+62</span>
-                  <input type="tel" placeholder="81234567890" value={phone}onChange={(e) => {
-                    const onlyNumbers = e.target.value.replace(/\D/g, '');
-                    setPhone(onlyNumbers);
-                  }} />
+                  <div className={styles.phoneInput}>  
+                    <span className={styles.phonePrefix}>+62</span>
+                    <input type="tel" className={styles.input} placeholder="81234567890" value={phone} onChange={(e) => {
+                      const onlyNumbers = e.target.value.replace(/\D/g, '');
+                      setPhone(onlyNumbers);}} 
+                    />
+                  </div>
                 </div>
                 <div className={`${styles.formGroup} ${styles.fullWidth}`}>
                   <label>NAMA KAPAL</label>
@@ -379,7 +381,7 @@ export default function SettingsPage() {
                           className={styles.passwordInput}
                           placeholder="Masukkan password sekarang"
                         />
-                        <button type="button" className={styles.eyeButtonFull} onClick={() => setShowCurrentPass(p => !p)}>
+                        <button type="button" className={styles.eyeButton} onClick={() => setShowCurrentPass(p => !p)}>
                           {showCurrentPass ? <Eye size={18} /> : <EyeOff size={18} />}
                         </button>
 
