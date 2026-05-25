@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import { auctionService } from '@/services/auctionService';
+import AuctionCard from '@/app/components/AuctionCard'
 
 const DURATION_OPTIONS = [
   { label: '2 Jam',   value: '2'  },
@@ -109,19 +110,18 @@ export default function UploadAuction() {
 
   // ── Render ────────────────────────────────────────────────────────────────
   return (
-    <div className={styles.container}>
+     <div className={styles.all}>
       <SideFisherman />
-
-      <main className={styles.mainContent}>
+      <div className={styles.container}>
         <NavbarFisherman />
 
         <div className={styles.content}>
-          <div className={styles.header}>
-            <h1 className={styles.title}>Unggah Lelang</h1>
+          <section className={styles.titleSection}>
+           <h1 className={styles.title}>Unggah Lelang</h1>
             <p className={styles.description}>
               Daftarkan hasil tangkapan segar Anda ke pasar global. Pastikan semua detail akurat untuk menarik penawar bernilai tinggi.
             </p>
-          </div>
+          </section>
 
           <div className={styles.isi}>
             {/* ── Form ── */}
@@ -166,20 +166,22 @@ export default function UploadAuction() {
               {/* Upload Foto */}
               <div>
                 <label className={styles.label}>Unggah Foto</label>
+
                 <input
                   type="file"
                   ref={fileInputRef}
                   onChange={onFileChange}
                   accept="image/*"
-                  className="hidden"
+                  className={styles.hiddenInput}
                 />
+
                 <div
                   onClick={() => fileInputRef.current?.click()}
                   onDragOver={onDragOver}
                   onDragLeave={onDragLeave}
                   onDrop={onDrop}
-                  className={`relative border-2 border-dashed rounded-3xl p-12 flex flex-col items-center justify-center text-center transition-all cursor-pointer group bg-gray-50/50 min-h-70 overflow-hidden ${
-                    isDragging ? 'border-blue-500 bg-blue-50/50' : 'border-gray-200 hover:border-blue-300'
+                  className={`${styles.uploadBox} ${
+                    isDragging ? styles.dragging : styles.notDragging
                   }`}
                 >
                   <AnimatePresence mode="wait">
@@ -189,27 +191,39 @@ export default function UploadAuction() {
                         initial={{ opacity: 0, scale: 0.9 }}
                         animate={{ opacity: 1, scale: 1 }}
                         exit={{ opacity: 0, scale: 0.9 }}
-                        className="absolute inset-0 w-full h-full p-4"
+                        className={styles.previewWrapper}
                       >
                         <img
                           src={imagePreview}
                           alt="Preview"
-                          className="w-full h-full object-cover rounded-2xl drop-shadow-lg"
+                          className={styles.previewImage}
                         />
+
                         <button
                           onClick={clearImage}
-                          className="absolute top-6 right-6 h-10 w-10 bg-white shadow-xl rounded-full flex items-center justify-center text-gray-400 hover:text-red-500 transition-colors z-20 border border-gray-100"
+                          className={styles.clearButton}
                         >
-                          <X className="h-5 w-5" />
+                          <X className={styles.clearIcon} />
                         </button>
                       </motion.div>
                     ) : (
-                      <motion.div key="placeholder" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="z-10 flex flex-col items-center">
+                      <motion.div
+                        key="placeholder"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        className={styles.placeholder}
+                      >
                         <div className={styles.iconWrapper}>
                           <Camera className={styles.icon} />
                         </div>
-                        <h4 className={styles.dropTitle}>Klik atau seret untuk unggah</h4>
-                        <p className={styles.dropDesc}>SVG, PNG, JPG (maks 10MB)</p>
+
+                        <h4 className={styles.dropTitle}>
+                          Klik atau seret untuk unggah
+                        </h4>
+
+                        <p className={styles.dropDesc}>
+                          SVG, PNG, JPG (maks 10MB)
+                        </p>
                       </motion.div>
                     )}
                   </AnimatePresence>
@@ -300,55 +314,17 @@ export default function UploadAuction() {
             {/* ── Live Preview ── */}
             <div className={styles.previewcontainer}>
               <h4 className={styles.sectionTitle}>Pratinjau Pasar</h4>
-              <div className={styles.card}>
-                <div className={styles.imageWrapper}>
-                  <div className={styles.badges}>
-                    <span className={styles.liveBadge}>● Pratinjau Langsung</span>
-                    {grade && <span className={styles.gradeBadge}>Kelas {grade}</span>}
-                  </div>
-                  <img
-                    src={imagePreview || 'https://darilaut.id/wp-content/uploads/2021/09/Tuna-3.jpg'}
-                    alt="FishPreview"
-                    className={styles.image}
-                    style={{ objectFit: 'cover' }}
-                  />
-                </div>
-
-                <div className={styles.previewcontent}>
-                  <div className={styles.header}>
-                    <div>
-                      <h2 className={styles.title}>
-                        {fishName || 'Nama Ikan'}
-                      </h2>
-                      {species && (
-                        <p style={{ fontSize: '0.75rem', color: '#94a3b8', marginTop: '2px' }}>{species}</p>
-                      )}
-                      <div className={styles.location}>
-                        <MapPin className={styles.icon} />
-                        <span>Pelabuhan Makassar</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className={styles.weightBox}>
-                    <span className={styles.desclabel}>Berat</span>
-                    <div className={styles.weight}>
-                      {weightNumber > 0 ? `${weightNumber} KG` : '— KG'}
-                    </div>
-                  </div>
-                </div>
-
-                <div className={styles.descbox}>
-                  <div className={styles.descBox}>
-                    <span className={styles.desclabel}>Harga Awal</span>
-                    <span className={styles.price}>{formatPreviewPrice(priceNumber)}</span>
-                  </div>
-                  <div className={styles.descBox} style={{ alignItems: 'end' }}>
-                    <span className={styles.desclabel}>Batas Waktu</span>
-                    <span className={styles.price}>{endsAtPreview()}</span>
-                  </div>
-                </div>
-              </div>
+              <AuctionCard
+                id="preview"
+                name={fishName || 'Nama Ikan'}
+                image={imagePreview || '/placeholder-fish.jpg'}
+                weight={weight ? `${weight} KG` : '0 KG'}
+                grade={grade || '-'}
+                origin="Pelabuhan Jakarta"
+                startingPrice={price || '0'}
+                highestBid={price || '0'}
+                timeLeft={endsAtPreview()}
+              />
 
               {/* Pro Tip */}
               <div className={styles.protipcard}>
@@ -362,9 +338,11 @@ export default function UploadAuction() {
                 </p>
               </div>
             </div>
+
           </div>
+
         </div>
-      </main>
+      </div>
     </div>
   );
 }
