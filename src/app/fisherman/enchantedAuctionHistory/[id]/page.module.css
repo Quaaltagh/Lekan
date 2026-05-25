@@ -1,9 +1,14 @@
 .all {
   display: flex;
   min-height: 100vh;
-  background-color:var(--clr-white);
-  display: flex;
-  justify-content: start;
+  background-color: #f8fafc;
+  color: #111827;
+  font-family: sans-serif;
+}
+
+.mainContainer {
+  flex: 1;
+  padding: 2rem 2.5rem;
 }
 
 .container {

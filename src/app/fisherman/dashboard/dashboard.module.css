@@ -1,0 +1,477 @@
+/* ═══════════════════════════════════════════════════════════════
+   dashboard.module.css — Fisherman Dashboard
+   Konsisten dengan LEKAN design system
+═══════════════════════════════════════════════════════════════ */
+
+/* ── Layout ── */
+.container {
+  display: flex;
+  height: 100vh;
+  background-color: var(--clr-background);
+  color: var(--clr-foreground);
+}
+
+.mainContent {
+  flex: 1;
+  overflow-y: auto;
+}
+
+/* ── Inner padding wrapper ── */
+.dashboardPadding {
+  padding: var(--page-py, 2rem) var(--page-px, 2.5rem);
+  max-width: var(--content-max-w, 1200px);
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xl);
+}
+
+/* ── Page Header ── */
+.pageHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-md);
+}
+
+.pageTitle {
+  font-size: var(--fs-xl);
+  font-weight: 800;
+  color: var(--clr-foreground);
+  margin: 0 0 var(--space-xs);
+  letter-spacing: -0.02em;
+}
+
+.pageSubtitle {
+  font-size: var(--fs-sm);
+  color: var(--clr-text-muted);
+  margin: 0;
+}
+
+/* ── Tombol Upload (CTA header) ── */
+.uploadBtn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-lg);
+  background: linear-gradient(135deg, var(--clr-primary) 0%, var(--clr-primary-hover) 100%);
+  color: #ffffff;
+  border: none;
+  border-radius: var(--radius-lg);
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  cursor: pointer;
+  transition: all var(--transition-base);
+  box-shadow: var(--shadow-primary);
+  white-space: nowrap;
+  text-decoration: none;
+}
+
+.uploadBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-primary-lg);
+}
+
+/* ── Stat Cards Grid ── */
+.cardGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-lg);
+}
+
+@media (max-width: 900px) {
+  .cardGrid { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 600px) {
+  .cardGrid { grid-template-columns: 1fr; }
+}
+
+.statCard {
+  background: var(--clr-card-bg);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius-xl);
+  padding: var(--space-lg);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  transition: box-shadow var(--transition-base), transform var(--transition-base);
+}
+
+.statCard:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+
+.cardicon {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-sm);
+}
+
+.cardIconWrap {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.cardIconBlue   { background: var(--clr-primary-muted); color: var(--clr-primary); }
+.cardIconGreen  { background: var(--clr-success-light); color: var(--clr-success); }
+.cardIconOrange { background: var(--clr-warning-light); color: var(--clr-warning); }
+
+.cardBadge {
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  background: var(--clr-border-light);
+  color: var(--clr-text-muted);
+}
+
+.cardLabel {
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--clr-text-muted);
+}
+
+.cardValue {
+  font-size: var(--fs-2xl);
+  font-weight: 800;
+  color: var(--clr-foreground);
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+
+.cardSub {
+  font-size: var(--fs-xs);
+  color: var(--clr-text-muted);
+  margin-top: 2px;
+}
+
+/* ── Section: Lelang Terkini ── */
+.auctionHeader {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-top: 3rem; /* Menambahkan gap atas agar tidak menempel dengan Card */
+  margin-bottom: 1.5rem; /* Memperbesar sedikit gap bawah agar lebih lega */
+}
+
+.auctionHeaderTitle {
+  font-size: var(--fs-lg);
+  font-weight: 800;
+  color: var(--clr-foreground);
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.auctionHeaderSubtitle {
+  font-size: var(--fs-sm);
+  color: var(--clr-text-muted);
+  margin: 6px 0 0; /* Sedikit penyesuaian gap antara judul dan subjudul */
+}
+
+.viewAllLink {
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  color: var(--clr-primary);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: opacity var(--transition-fast);
+}
+
+.viewAllLink:hover { opacity: 0.75; }
+
+/* ── Auction Item Card ── */
+.auctionItem {
+  background: var(--clr-card-bg);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius-xl);
+  padding: var(--space-md);
+  display: flex;
+  gap: var(--space-md);
+  align-items: center;
+  margin-bottom: var(--space-md);
+  transition: box-shadow var(--transition-base), border-color var(--transition-base);
+  cursor: pointer;
+}
+
+.auctionItem:last-child { margin-bottom: 0; }
+
+.auctionItem:hover {
+  box-shadow: var(--shadow-md);
+  border-color: #cbd5e1;
+}
+
+.imagePlaceholder {
+  width: 90px; /* Diperbesar sedikit dari 80px agar lebih lega */
+  height: 90px;
+  border-radius: var(--radius-lg);
+  background: #f1f5f9; /* Memberikan background abu-abu terang */
+  flex-shrink: 0;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #e2e8f0; /* Tambahan border tipis agar rapi */
+}
+
+.imagePlaceholder img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Membuat gambar otomatis memenuhi seluruh area kotak */
+  object-position: center; /* Memastikan fokus potongan ada di tengah gambar */
+  /* Catatan: Hapus 'padding: 4px;' dari kode sebelumnya agar gambar full menyentuh tepi */
+}
+
+/* ── Status Badges ── */
+.badgeLive {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: #fef2f2;
+  color: var(--clr-danger);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  letter-spacing: 0.04em;
+}
+
+.badgeLiveDot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--clr-danger);
+  animation: lekan-pulse-dot 1.4s ease infinite;
+}
+
+.badgeDone {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: var(--clr-success-light);
+  color: var(--clr-success);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+}
+
+.badgePending {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: var(--clr-warning-light);
+  color: var(--clr-warning);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+}
+
+.badgeCancelled {
+  display: inline-flex;
+  align-items: center;
+  background: var(--clr-border-light);
+  color: var(--clr-text-muted);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+}
+
+/* ── CTA Box (Upload Banner) ── */
+.ctaBox {
+  background: linear-gradient(135deg, var(--clr-primary-dark) 0%, var(--clr-primary) 60%, #2563eb 100%);
+  border-radius: var(--radius-2xl);
+  padding: var(--space-lg) var(--space-xl);
+  color: #ffffff;
+  position: relative;
+  overflow: hidden;
+}
+
+.ctaBox::before {
+  content: '';
+  position: absolute;
+  top: -50px; right: -50px;
+  width: 160px; height: 160px;
+  background: rgba(255,255,255,0.05);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.ctaTitle {
+  font-size: var(--fs-lg);
+  font-weight: 800;
+  margin: 0 0 var(--space-xs);
+  letter-spacing: -0.01em;
+}
+
+.ctaDesc {
+  font-size: var(--fs-sm);
+  color: rgba(255,255,255,0.75);
+  margin: 0 0 var(--space-md);
+  line-height: 1.5;
+}
+
+.primaryButton {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-sm);
+  background: rgba(255,255,255,0.15);
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(255,255,255,0.25);
+  color: #ffffff;
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-lg);
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  cursor: pointer;
+  transition: background var(--transition-base);
+  text-decoration: none;
+}
+
+.primaryButton:hover {
+  background: rgba(255,255,255,0.25);
+}
+
+/* ── Market Trend Widget ── */
+.marketTrendTitle {
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  color: var(--clr-text-muted);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: var(--space-md);
+}
+
+.marketTrendCard {
+  background: var(--clr-card-bg);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius-xl);
+  padding: var(--space-md);
+  box-shadow: var(--shadow-sm);
+}
+
+.marketTrendItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-sm) 0;
+  border-bottom: 1px solid var(--clr-border-light);
+}
+
+.marketTrendItem:last-child { border-bottom: none; padding-bottom: 0; }
+
+.trendInfo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--clr-foreground);
+}
+
+.indicatorDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.trendPositive {
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  color: var(--clr-success);
+}
+
+.trendNegative {
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  color: var(--clr-danger);
+}
+
+/* ── Loading / Error ── */
+.loadingState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-md);
+  padding: 4rem 0;
+  color: var(--clr-text-muted);
+}
+
+.spinner {
+  color: var(--clr-primary);
+  animation: lekan-spin 1s linear infinite;
+}
+
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: 3rem 0;
+  text-align: center;
+  color: var(--clr-text-muted);
+}
+
+/* ── Header sticky (opsional, kalau ada search bar di atas) ── */
+.header {
+  background: var(--clr-card-bg);
+  border-bottom: 1px solid var(--clr-border);
+  padding: var(--space-md) var(--space-xl);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.searchWrapper {
+  position: relative;
+  width: 20rem;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 0.875rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--clr-text-muted);
+  pointer-events: none;
+}
+
+.searchInput {
+  width: 100%;
+  background: var(--clr-background);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-sm) var(--space-md) var(--space-sm) 2.5rem;
+  font-size: var(--fs-sm);
+  color: var(--clr-foreground);
+  outline: none;
+  transition: all var(--transition-base);
+}
+
+.searchInput::placeholder { color: var(--clr-text-placeholder); }
+.searchInput:focus {
+  border-color: var(--clr-primary);
+  box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.10);
+  background: var(--clr-card-bg);
+}
