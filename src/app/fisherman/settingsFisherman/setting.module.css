@@ -204,7 +204,8 @@
   font-size: var(--fs-sm);
   color: var(--clr-foreground);
   position: absolute;
-  margin-top: 2.8rem;
+  margin-top: 2.65rem;
+  /* top: 10%; */
 }
 
 .passwordWrapper{
