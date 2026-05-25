@@ -1,53 +1,51 @@
 /* ═══════════════════════════════════════════════════════════════
-   Logistics.module.css — Fisherman Logistics Page
-   Konsisten dengan LEKAN design system
+   Logistics.module.css — konsisten dengan settings.module.css
 ═══════════════════════════════════════════════════════════════ */
 
-/* ── Layout ── */
+/* ── Layout (sama dengan settings) ── */
 .layout {
   display: flex;
   min-height: 100vh;
-  background-color: var(--clr-background);
+  background-color: var(--clr-white);
+  justify-content: start;
 }
 
 .mainWrapper {
-  flex: 1;
   display: flex;
   flex-direction: column;
-  min-width: 0;
+  flex: 1;
+  overflow: auto;
+  width: 100%;
 }
 
 .main {
-  padding: var(--page-py, 2rem) var(--page-px, 2.5rem);
-  max-width: var(--content-max-w, 1200px);
-  width: 100%;
-  margin: 0 auto;
+  width: 80rem;
+  display: flex;
+  flex-direction: column;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 32px 64px;
 }
 
-/* ── Header ── */
+/* ── Header (sama dengan settings .titleSection) ── */
 .headerContainer {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: var(--space-md);
-  margin-bottom: var(--space-xl);
+  margin-bottom: 2rem;
 }
 
 .pageTitle {
-  font-size: var(--fs-xl);
-  font-weight: 800;
-  color: var(--clr-foreground);
-  margin: 0 0 var(--space-xs);
-  letter-spacing: -0.02em;
+  font-size: var(--fs-tittle);
+  font-weight: var(--fw-title);
+  margin: 0;
+  color: var(--clr-black);
 }
 
 .pageSubtitle {
-  font-size: var(--fs-sm);
   color: var(--clr-text-muted);
-  margin: 0;
+  font-size: var(--fs-sm);
+  margin: 0.25rem 0 0;
 }
 
-/* ── Two-col layout ── */
+/* ── Two-col grid ── */
 .contentGrid {
   display: grid;
   grid-template-columns: 1fr 280px;
@@ -57,50 +55,82 @@
 
 @media (max-width: 900px) {
   .contentGrid { grid-template-columns: 1fr; }
+  .main { width: 100%; padding: 24px 24px; }
 }
 
-/* ── LEFT COLUMN ── */
 .leftCol {
   display: flex;
   flex-direction: column;
-  gap: var(--space-xl);
+  gap: var(--space-lg);
 }
 
-/* ── Section Box ── */
+/* ── Section card (sama persis dengan settings .settingsCard) ── */
 .sectionBox {
-  background: var(--clr-border-light);
-  border-radius: var(--radius-xl);
-  padding: var(--space-lg);
+  background: var(--clr-white);
+  border-radius: var(--rad);
+  border: 1px solid var(--clr-border);
+  padding: 2rem;
+  box-shadow: var(--shadow-lg);
 }
 
+/* ── Section title row (mirip settings .iconWrap) ── */
 .sectionTitleWrap {
   display: flex;
   align-items: center;
-  gap: var(--space-sm);
+  gap: 0.75rem;
   margin-bottom: var(--space-lg);
 }
 
+/* Icon box (sama dengan settings .iconContainer) */
+.sectionIconBox {
+  width: 52px;
+  height: 52px;
+  border-radius: var(--radius-lg);
+  background: #eff6ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--clr-primary);
+  flex-shrink: 0;
+}
+
 .sectionTitle {
-  font-size: var(--fs-lg); /* Diperbesar dari base */
-  font-weight: 700; /* Diturunkan dari 800 agar lebih elegan */
+  font-size: var(--fs-base);
+  font-weight: var(--fw-title);
   color: var(--clr-foreground);
   margin: 0;
-  letter-spacing: -0.01em;
 }
 
-/* ── Shipment Card ── */
+/* ── Empty state ── */
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm);
+  text-align: center;
+  padding: 2rem;
+  color: var(--clr-text-muted);
+  font-size: var(--fs-sm);
+}
+
+/* ── Shipment card (mirip settings card item) ── */
 .shipmentCard {
-  background: var(--clr-card-bg);
-  border-radius: var(--radius-xl);
+  background: var(--clr-input);
+  border-radius: var(--rad);
+  border: 1px solid var(--clr-border);
   padding: var(--space-md);
   margin-bottom: var(--space-md);
-  box-shadow: var(--shadow-sm);
-  border: 1px solid var(--clr-border);
-  transition: box-shadow var(--transition-base);
+  transition: box-shadow 0.2s, border-color 0.2s;
 }
 
-.shipmentCard:last-child { margin-bottom: 0; }
-.shipmentCard:hover { box-shadow: var(--shadow-md); }
+.shipmentCard:last-child {
+  margin-bottom: 0;
+}
+
+.shipmentCard:hover {
+  box-shadow: var(--shadow-lg);
+  border-color: #cbd5e1;
+}
 
 .shipmentHeader {
   display: flex;
@@ -111,67 +141,26 @@
 }
 
 .fishMeta {
-  font-size: var(--fs-xs);
-  font-weight: 600; 
+  font-size: var(--fs-live);
+  font-weight: var(--fw-h4);
   color: var(--clr-text-muted);
   text-transform: uppercase;
-  letter-spacing: 0.05em; /* Disesuaikan agar tidak terlalu renggang */
-  margin-bottom: 6px; 
+  letter-spacing: 0.05em;
+  margin-bottom: 4px;
 }
 
 .destination {
-  font-size: var(--fs-lg); /* Diperbesar dari lg */
-  font-weight: 600;
+  font-size: var(--fs-md);
+  font-weight: var(--fw-title);
   color: var(--clr-foreground);
   margin: 0;
-  letter-spacing: -0.02em;
-  line-height: 1.2;
 }
 
-.estArrival {
-  font-size: var(--fs-sm);
-  color: var(--clr-foreground); /* Diubah ke warna solid, bukan muted */
-  font-weight: 600; 
-}
-
-/* ── Status Badges ── */
-.badge {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: var(--fs-xs);
-  font-weight: 700;
-  padding: 4px 12px;
-  border-radius: var(--radius-full);
-  flex-shrink: 0;
-  letter-spacing: 0.04em;
-}
-
-.badgeDot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-
-.badgePending  { background: #fef3c7; color: var(--clr-warning); }
-.badgePending .badgeDot  { background: #fbbf24; }
-
-.badgeShipped  { background: var(--clr-primary-muted); color: var(--clr-primary); }
-.badgeShipped .badgeDot  { background: #3b82f6; }
-
-.badgeArrived  { background: #ccfbf1; color: #0f766e; }
-.badgeArrived .badgeDot  { background: #14b8a6; }
-
-.badgeDelivered { background: var(--clr-success-light); color: var(--clr-success); }
-.badgeDelivered .badgeDot { background: #22c55e; }
-
-/* ── Shipment Footer ── */
 .shipmentFooter {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-top: 1px solid var(--clr-border-light);
+  border-top: 1px solid var(--clr-border);
   padding-top: var(--space-md);
   margin-top: var(--space-md);
 }
@@ -184,133 +173,162 @@
 
 .trackLink {
   font-size: var(--fs-sm);
-  font-weight: 700;
+  font-weight: var(--fw-h4);
   color: var(--clr-primary);
   text-decoration: none;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 4px;
-  transition: opacity var(--transition-fast);
+  transition: opacity 0.15s;
 }
 
-.trackLink:hover { opacity: 0.75; }
+.trackLink:hover {
+  opacity: 0.75;
+}
 
-/* ── History Table ── */
+/* ── Status badges (warna sama, radius pakai var) ── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--fs-live);
+  font-weight: var(--fw-h4);
+  padding: 4px 12px;
+  border-radius: var(--rad);
+  flex-shrink: 0;
+  letter-spacing: 0.03em;
+}
+
+.badgeDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.badgePending   { background: #fef3c7; color: #b45309; }
+.badgePending .badgeDot   { background: #f59e0b; }
+
+.badgeShipped   { background: #eff6ff; color: var(--clr-primary); }
+.badgeShipped .badgeDot   { background: var(--clr-primary); }
+
+.badgeArrived   { background: #ccfbf1; color: #0f766e; }
+.badgeArrived .badgeDot   { background: #14b8a6; }
+
+.badgeDelivered { background: #f0fdf4; color: #15803d; }
+.badgeDelivered .badgeDot { background: #22c55e; }
+
+/* ── History table (font & spacing konsisten dengan form settings) ── */
 .historyTable {
   width: 100%;
-  border-collapse: separate; 
-  border-spacing: 0;
+  border-collapse: collapse;
 }
 
 .historyTable th {
   text-align: left;
-  font-size: var(--fs-xs);
-  font-weight: 700;
+  font-size: var(--fs-live);
+  font-weight: var(--fw-h4);
   color: var(--clr-text-muted);
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  padding: 12px 16px; /* Tambahan padding agar header tidak sesak */
-  border-bottom: 2px solid var(--clr-border-light); /* Garis bawah sedikit lebih tebal dari baris biasa */
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--clr-border);
 }
 
 .historyTable td {
-  padding: 16px; /* Memperluas area baca/klik tiap baris */
+  padding: 14px;
   font-size: var(--fs-sm);
   color: var(--clr-foreground);
-  border-bottom: 1px solid var(--clr-border-light);
+  border-bottom: 1px solid var(--clr-border);
   vertical-align: middle;
-}
-
-.historyDest {
-  font-weight: 700;
-  color: var(--clr-foreground);
-  font-size: var(--fs-base); /* Sedikit lebih besar dari teks tabel lainnya */
 }
 
 .historyTable tr:last-child td {
   border-bottom: none;
-  padding-bottom: 0;
 }
 
-.historyTable tr:hover td {
-  background: rgba(248, 250, 252, 0.8);
+.historyTable tbody tr:hover td {
+  background: var(--clr-input);
 }
 
-/* ── RIGHT COLUMN ── */
-/* .rightCol {} */
+.historyDest {
+  font-weight: var(--fw-h4);
+  color: var(--clr-foreground);
+}
 
+/* ── Partners box (sama style dengan sectionBox) ── */
 .partnersBox {
-  background: var(--clr-border-light);
-  border-radius: var(--radius-xl);
-  padding: var(--space-lg);
+  background: var(--clr-white);
+  border-radius: var(--rad);
+  border: 1px solid var(--clr-border);
+  padding: 2rem;
+  box-shadow: var(--shadow-lg);
 }
 
-/* ── Partner Card ── */
+/* ── Partner card (mirip prefcard di settings) ── */
 .partnerCard {
-  background: var(--clr-card-bg);
-  border-radius: var(--radius-xl);
-  padding: var(--space-md);
   display: flex;
   align-items: center;
   gap: var(--space-md);
-  margin-bottom: var(--space-md);
-  box-shadow: var(--shadow-sm);
+  padding: var(--space-md);
+  border-radius: var(--rad);
   border: 1px solid var(--clr-border);
-  transition: all var(--transition-base);
+  background: var(--clr-input);
+  margin-bottom: var(--space-md);
+  transition: box-shadow 0.2s, border-color 0.2s;
 }
 
-.partnerCard:last-child { margin-bottom: 0; }
+.partnerCard:last-child {
+  margin-bottom: 0;
+}
 
 .partnerCard:hover {
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-lg);
   border-color: #cbd5e1;
 }
 
+/* Icon box partner (sama dengan settings .preficonBox aktif) */
 .partnerIconWrap {
-  width: 48px;
-  height: 48px;
-  background: var(--clr-primary-muted);
+  width: 52px;
+  height: 52px;
   border-radius: var(--radius-lg);
+  background: #eff6ff;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 800;
   color: var(--clr-primary);
-  font-size: var(--fs-base);
+  font-size: var(--fs-sm);
   flex-shrink: 0;
+  box-shadow: var(--shadow-md);
 }
 
 .partnerInfo h4 {
-  margin: 0 0 4px;
-  font-size: var(--fs-base); /* Diperbesar dari sm */
-  font-weight: 700;
+  margin: 0 0 2px;
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-h4);
   color: var(--clr-foreground);
 }
 
 .partnerInfo p {
   margin: 0;
-  font-size: var(--fs-sm); /* Diperbesar dari xs */
+  font-size: var(--fs-xs);
   color: var(--clr-text-muted);
-  line-height: 1.4;
 }
 
-/* ── States ── */
+/* ── Loading / Error states ── */
 .loadingState,
-.errorState,
-.emptyState {
+.errorState {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: var(--space-sm);
   text-align: center;
-  padding: 3rem;
+  padding: 4rem 2rem;
   color: var(--clr-text-muted);
   font-size: var(--fs-sm);
 }
 
-.errorState { color: var(--clr-danger); }
-
-.spinner {
-  color: var(--clr-primary);
-  animation: lekan-spin 1s linear infinite;
+.errorState {
+  color: #dc2626;
 }
