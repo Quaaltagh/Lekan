@@ -44,15 +44,45 @@ interface BuyerProfile {
   email?: string;
 }
 
+// Urutan status logistik
+const STATUS_ORDER: LogisticsData['status'][] = ['pending', 'shipped', 'arrived', 'delivered'];
+
+const STEP_CONFIG = [
+  {
+    key: 'pending'   as const,
+    label: 'Pesanan Diterima',
+    desc:  'Pembayaran terverifikasi di Escrow',
+    Icon:  ShieldCheck,
+  },
+  {
+    key: 'shipped'   as const,
+    label: 'Kapal Berangkat',
+    desc:  'Tangkapan sedang dikirim via kapal logistik',
+    Icon:  Truck,
+  },
+  {
+    key: 'arrived'   as const,
+    label: 'Kapal Tiba',
+    desc:  'Kargo telah tiba di pelabuhan tujuan',
+    Icon:  Anchor,
+  },
+  {
+    key: 'delivered' as const,
+    label: 'Diterima Pembeli',
+    desc:  'Pembeli mengonfirmasi penerimaan barang',
+    Icon:  CheckCircle2,
+  },
+];
+
 export default function FishermanAuctionDetailPage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
   const { user, token, isLoading } = useAuth();
 
-  const [logistics, setLogistics] = useState<LogisticsData | null>(null);
-  const [buyer, setBuyer] = useState<BuyerProfile | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [logistics, setLogistics]     = useState<LogisticsData | null>(null);
+  const [buyer, setBuyer]             = useState<BuyerProfile | null>(null);
+  const [loading, setLoading]         = useState(true);
+  const [error, setError]             = useState<string | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
 
   const fetchDetails = useCallback(async () => {
@@ -70,15 +100,11 @@ export default function FishermanAuctionDetailPage() {
       setLogistics(data);
       setError(null);
 
-      // Fetch profile pembeli jika buyer_id tersedia
       if (data.buyer_id) {
         const pRes = await fetch(`${API_URL}/api/profile/${data.buyer_id}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        if (pRes.ok) {
-          const pData = await pRes.json();
-          setBuyer(pData);
-        }
+        if (pRes.ok) setBuyer(await pRes.json());
       }
     } catch (err: any) {
       setError(err.message || 'Terjadi kesalahan.');
@@ -89,10 +115,7 @@ export default function FishermanAuctionDetailPage() {
 
   useEffect(() => {
     if (isLoading) return;
-    if (!user) {
-      router.push('/');
-      return;
-    }
+    if (!user) { router.push('/'); return; }
     fetchDetails();
   }, [user, isLoading, fetchDetails, router]);
 
@@ -102,10 +125,7 @@ export default function FishermanAuctionDetailPage() {
     try {
       const res = await fetch(`${API_URL}/api/logistics/${logistics.id}/${action}`, {
         method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
       });
       if (!res.ok) {
         const errData = await res.json();
@@ -119,6 +139,7 @@ export default function FishermanAuctionDetailPage() {
     }
   };
 
+  /* ── Loading ── */
   if (loading) {
     return (
       <div className={styles.layout}>
@@ -134,6 +155,7 @@ export default function FishermanAuctionDetailPage() {
     );
   }
 
+  /* ── Error ── */
   if (error || !logistics) {
     return (
       <div className={styles.layout}>
@@ -154,13 +176,13 @@ export default function FishermanAuctionDetailPage() {
   const { auctions: auction, status } = logistics;
   const finalPrice = auction.final_price || 0;
 
-  // Timeline tracking status
-  const steps = [
-    { label: 'Pesanan Diterima', desc: 'Pembayaran terverifikasi di Escrow', isDone: true, key: 'pending' },
-    { label: 'Kapal Berangkat', desc: 'Tangkapan sedang dikirim via kapal logistik', isDone: status !== 'pending', key: 'shipped' },
-    { label: 'Kapal Tiba', desc: 'Kargo telah tiba di pelabuhan tujuan', isDone: status === 'arrived' || status === 'delivered', key: 'arrived' },
-    { label: 'Diterima Pembeli', desc: 'Pembeli mengonfirmasi penerimaan barang', isDone: status === 'delivered', key: 'delivered' },
-  ];
+  // ── Derive timeline steps dari status real ──────────────────────────────
+  const currentIdx = STATUS_ORDER.indexOf(status);
+  const steps = STEP_CONFIG.map((step, idx) => ({
+    ...step,
+    isDone:    idx <= currentIdx,
+    isCurrent: idx === currentIdx,
+  }));
 
   return (
     <div className={styles.layout}>
@@ -170,7 +192,7 @@ export default function FishermanAuctionDetailPage() {
 
         <main className={styles.main}>
           <div className={styles.container}>
-            {/* Header / Back Link */}
+
             <div className={styles.header}>
               <button onClick={() => router.back()} className={styles.backLink}>
                 <ArrowLeft size={18} /> Kembali ke Status Lelang
@@ -180,8 +202,11 @@ export default function FishermanAuctionDetailPage() {
             </div>
 
             <div className={styles.contentGrid}>
-              {/* Kolom Kiri: Info Ikan & Timeline */}
+
+              {/* ── Kolom Kiri ── */}
               <div className={styles.leftCol}>
+
+                {/* Info Ikan */}
                 <div className={styles.card}>
                   <div className={styles.cardHeaderRow}>
                     <div className={styles.imageWrapper}>
@@ -195,30 +220,33 @@ export default function FishermanAuctionDetailPage() {
                       <span className={styles.badgeSelesai}>SELESAI</span>
                       <h2 className={styles.fishName}>{auction.name}</h2>
                       <div className={styles.tagGrid}>
-                        <span className={styles.tag}>Grade {auction.grade || 'A'}</span>
+                        {auction.grade && <span className={styles.tag}>Grade {auction.grade}</span>}
                         <span className={styles.tag}>{auction.weight_kg} KG</span>
                       </div>
                     </div>
                   </div>
-
                   <p className={styles.description}>
                     Kargo ikan berkualitas tinggi Anda telah dilelang dengan sukses. Gunakan kontrol pengiriman di sebelah kanan untuk memperbarui status logistik perjalanan kapal dari dermaga asal ke pelabuhan tujuan pembeli.
                   </p>
                 </div>
 
-                {/* Timeline Pelacakan */}
+                {/* Timeline — sekarang dinamis dari status DB */}
                 <div className={styles.card}>
                   <h3 className={styles.cardTitle}>Status Pelacakan Logistik</h3>
                   <div className={styles.timeline}>
                     {steps.map((step, idx) => {
-                      const isActive = step.isDone;
+                      const { Icon } = step;
                       return (
-                        <div key={step.key} className={`${styles.timelineItem} ${isActive ? styles.activeTimeline : ''}`}>
+                        <div
+                          key={step.key}
+                          className={`
+                            ${styles.timelineItem}
+                            ${step.isDone    ? styles.activeTimeline   : ''}
+                            ${step.isCurrent ? styles.currentTimeline  : ''}
+                          `}
+                        >
                           <div className={styles.timelineIconWrapper}>
-                            {idx === 0 && <ShieldCheck size={20} />}
-                            {idx === 1 && <Truck size={20} />}
-                            {idx === 2 && <Anchor size={20} />}
-                            {idx === 3 && <CheckCircle2 size={20} />}
+                            <Icon size={20} />
                             {idx < steps.length - 1 && <div className={styles.timelineLine} />}
                           </div>
                           <div className={styles.timelineContent}>
@@ -230,14 +258,16 @@ export default function FishermanAuctionDetailPage() {
                     })}
                   </div>
                 </div>
+
               </div>
 
-              {/* Kolom Kanan: Detail Ringkasan & Aksi Kontrol */}
+              {/* ── Kolom Kanan ── */}
               <div className={styles.rightCol}>
-                {/* Rincian Harga & Pembeli */}
+
+                {/* Info Pesanan & Pembeli */}
                 <div className={styles.card}>
                   <h3 className={styles.cardTitle}>Informasi Pesanan</h3>
-                  
+
                   <div className={styles.infoRow}>
                     <span className={styles.infoLabel}>Harga Akhir Terjual</span>
                     <span className={styles.priceValue}>
@@ -248,18 +278,16 @@ export default function FishermanAuctionDetailPage() {
                   <div className={styles.divider} />
 
                   <div className={styles.buyerInfoRow}>
-                    <div className={styles.avatarCircle}>
-                      <User size={20} />
-                    </div>
+                    <div className={styles.avatarCircle}><User size={20} /></div>
                     <div>
                       <span className={styles.infoLabel}>Pemenang Lelang (Pembeli)</span>
                       <h4 className={styles.buyerName}>{buyer?.full_name || 'Pembeli Terverifikasi'}</h4>
-                      <p className={styles.buyerContact}>{buyer?.phone || buyer?.email || 'No Telp Tidak Tersedia'}</p>
+                      <p className={styles.buyerContact}>{buyer?.phone ? `+62${buyer.phone}` : buyer?.email || 'Kontak tidak tersedia'}</p>
                     </div>
                   </div>
                 </div>
 
-                {/* Detail Pengiriman & Rute */}
+                {/* Detail Pengiriman */}
                 <div className={styles.card}>
                   <h3 className={styles.cardTitle}>Detail Pengiriman</h3>
 
@@ -271,7 +299,6 @@ export default function FishermanAuctionDetailPage() {
                         <p className={styles.routeAddress}>{logistics.pickup_address || 'Dermaga Asal Nelayan'}</p>
                       </div>
                     </div>
-
                     <div className={styles.routeItem}>
                       <Anchor size={18} className={styles.deliveryIcon} />
                       <div>
@@ -295,15 +322,17 @@ export default function FishermanAuctionDetailPage() {
                     <div>
                       <span className={styles.infoLabel}>Estimasi Tiba</span>
                       <p className={styles.metaValue}>
-                        {logistics.estimated_arrival ? new Date(logistics.estimated_arrival).toLocaleDateString('id-ID', {
-                          day: 'numeric', month: 'short', year: 'numeric'
-                        }) : '-'}
+                        {logistics.estimated_arrival
+                          ? new Date(logistics.estimated_arrival).toLocaleDateString('id-ID', {
+                              day: 'numeric', month: 'short', year: 'numeric',
+                            })
+                          : '-'}
                       </p>
                     </div>
                   </div>
                 </div>
 
-                {/* Aksi Kontrol Nelayan */}
+                {/* Kontrol Nelayan */}
                 <div className={styles.card} style={{ border: '1.5px solid var(--clr-primary-light)', background: 'var(--clr-primary-lightest)' }}>
                   <h3 className={styles.cardTitle}>Kontrol Pengiriman Nelayan</h3>
                   <p className={styles.controlHint}>
@@ -316,7 +345,9 @@ export default function FishermanAuctionDetailPage() {
                       disabled={actionLoading}
                       className={styles.primaryActionBtn}
                     >
-                      {actionLoading ? <Loader2 className="animate-spin" size={18} /> : 'Kirim Kargo (Kapal Berangkat)'}
+                      {actionLoading
+                        ? <Loader2 className="animate-spin" size={18} />
+                        : 'Kirim Kargo (Kapal Berangkat)'}
                     </button>
                   )}
 
@@ -326,7 +357,9 @@ export default function FishermanAuctionDetailPage() {
                       disabled={actionLoading}
                       className={styles.secondaryActionBtn}
                     >
-                      {actionLoading ? <Loader2 className="animate-spin" size={18} /> : 'Konfirmasi Kapal Tiba'}
+                      {actionLoading
+                        ? <Loader2 className="animate-spin" size={18} />
+                        : 'Konfirmasi Kapal Tiba'}
                     </button>
                   )}
 
@@ -344,6 +377,7 @@ export default function FishermanAuctionDetailPage() {
                     </div>
                   )}
                 </div>
+
               </div>
             </div>
           </div>
