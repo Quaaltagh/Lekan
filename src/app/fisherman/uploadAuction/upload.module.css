@@ -224,7 +224,7 @@
 .startbutton {
   width: 100%;
   padding: 16px 0;
-  background: linear-gradient(135deg, var(--clr-primary) 0%, var(--clr-primary-hover) 100%);
+  background-color: var(--clr-primary);
   color: white;
   border-radius: var(--rad);
   font-size: var(--fs-base);
@@ -241,8 +241,9 @@
 }
 
 .startbutton:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-primary-lg);
+  /* transform: translateY(-2px); */
+  /* box-shadow: var(--shadow-primary-lg); */
+  background: var(--clr-primary-hover);
 }
 
 .startbutton:disabled {
