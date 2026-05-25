@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { Eye, EyeOff, UserRound, Landmark, Lock, ChevronDown, ChevronUp, CheckCircle, X,Settings } from 'lucide-react';
-import styles from './setting.module.css';
+import styles from './settings.module.css';
 import SideFisherman from '../../components/sideFisherman';
 import NavbarFisherman from '../../components/NavbarFisherman';
 import { useAuth } from '@/context/AuthContext';
