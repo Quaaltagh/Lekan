@@ -1,356 +1,405 @@
+/* ═══════════════════════════════════════════════════════════════
+   DompetPage.module.css — Fisherman Wallet Page
+   Konsisten dengan LEKAN design system
+═══════════════════════════════════════════════════════════════ */
+
 /* ── Layout ── */
 .layout {
-    display: flex;
-    min-height: 100vh;
-    background-color: #f8fafc;
-    font-family: 'Geist', 'DM Sans', sans-serif;
+  display: flex;
+  min-height: 100vh;
+  background-color: var(--clr-background);
 }
 
 .mainWrapper {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
 }
 
 .main {
-    flex: 1;
-    padding: 32px 40px;
-    overflow-y: auto;
+  flex: 1;
+  padding: var(--page-py, 2rem) var(--page-px, 2.5rem);
+  max-width: var(--content-max-w, 1200px);
+  width: 100%;
+  margin: 0 auto;
 }
 
 /* ── Page Header ── */
 .pageHeader {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    margin-bottom: 28px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-md);
+  margin-bottom: var(--space-xl);
 }
 
 .pageTitle {
-    font-size: 1.75rem;
-    font-weight: 800;
-    color: #0f172a;
-    margin: 0 0 4px;
-    letter-spacing: -0.02em;
+  font-size: var(--fs-xl);
+  font-weight: 800;
+  color: var(--clr-foreground);
+  margin: 0 0 var(--space-xs);
+  letter-spacing: -0.02em;
 }
 
 .pageSubtitle {
-    font-size: 0.875rem;
-    color: #64748b;
-    margin: 0;
+  font-size: var(--fs-sm);
+  color: var(--clr-text-muted);
+  margin: 0;
 }
 
+/* ── Withdraw Button ── */
 .withdrawBtn {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 20px;
-    background-color: #1e3a8a;
-    color: #ffffff;
-    border: none;
-    border-radius: 10px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background 0.2s, transform 0.15s;
-    box-shadow: 0 4px 14px rgba(30, 58, 138, 0.3);
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-lg);
+  background: linear-gradient(135deg, var(--clr-primary) 0%, var(--clr-primary-hover) 100%);
+  color: #ffffff;
+  border: none;
+  border-radius: var(--radius-lg);
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  cursor: pointer;
+  transition: all var(--transition-base);
+  box-shadow: var(--shadow-primary);
+  white-space: nowrap;
 }
 
 .withdrawBtn:hover {
-    background-color: #1e40af;
-    transform: translateY(-1px);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-primary-lg);
 }
 
-/* ── Balance Card ── */
+/* ── Balance Card (gradient navy) ── */
 .balanceCard {
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
-    border-radius: 1.25rem;
-    padding: 32px 36px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 32px;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+  background: linear-gradient(135deg, var(--clr-primary-dark) 0%, var(--clr-primary) 45%, #2563eb 100%);
+  border-radius: var(--radius-2xl);
+  padding: var(--space-lg) var(--space-xl);
+  color: white;
+  margin-bottom: var(--space-lg);
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-primary-lg);
+}
+
+.balanceCard::before {
+  content: '';
+  position: absolute;
+  top: -60px; right: -60px;
+  width: 200px; height: 200px;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.balanceCard::after {
+  content: '';
+  position: absolute;
+  bottom: -40px; left: 30%;
+  width: 120px; height: 120px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 50%;
+  pointer-events: none;
 }
 
 .balanceLeft {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  position: relative;
+  z-index: 1;
 }
 
 .balanceLabel {
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 0.12em;
-    color: #94a3b8;
-    text-transform: uppercase;
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: rgba(255, 255, 255, 0.65);
+  text-transform: uppercase;
 }
 
 .balanceAmount {
-    font-size: 2.75rem;
-    font-weight: 800;
-    color: #172554;
-    letter-spacing: -0.03em;
-    line-height: 1;
+  font-size: var(--fs-3xl);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1;
 }
 
 .balanceSafe {
-    font-size: 12px;
-    color: #64748b;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    margin-top: 4px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--fs-xs);
+  color: rgba(255, 255, 255, 0.7);
+  margin-top: var(--space-xs);
 }
 
 .safeIcon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 16px;
-    height: 16px;
-    background-color: #dcfce7;
-    color: #16a34a;
-    border-radius: 50%;
-    font-size: 9px;
-    font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 15px;
+  height: 15px;
+  background: rgba(255,255,255,0.2);
+  color: #ffffff;
+  border-radius: 50%;
+  font-size: 10px;
+  font-weight: 800;
+  flex-shrink: 0;
 }
 
+/* ── Pending Box (sudut kanan balance card) ── */
 .pendingBox {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    background: #f8fafc;
-    border: 1px solid #e2e8f0;
-    border-radius: 12px;
-    padding: 16px 24px;
-    text-align: right;
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: var(--radius-lg);
+  padding: var(--space-md) var(--space-lg);
+  text-align: right;
+  backdrop-filter: blur(4px);
+  align-self: flex-start;
 }
 
 .pendingLabel {
-    font-size: 9px;
-    font-weight: 700;
-    letter-spacing: 0.12em;
-    color: #94a3b8;
-    text-transform: uppercase;
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: rgba(255, 255, 255, 0.65);
+  text-transform: uppercase;
 }
 
 .pendingAmount {
-    font-size: 1.125rem;
-    font-weight: 700;
-    color: #374151;
+  font-size: var(--fs-lg);
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: -0.02em;
 }
 
-/* ── Sections ── */
+/* Baris tengah balance card */
+.balanceRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* ── Section ── */
 .section {
-    margin-bottom: 32px;
+  margin-bottom: var(--space-xl);
 }
 
 .sectionHeader {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-md);
 }
 
 .sectionTitle {
-    font-size: 1rem;
-    font-weight: 700;
-    color: #0f172a;
-    margin: 0 0 16px;
+  font-size: var(--fs-base);
+  font-weight: 700;
+  color: var(--clr-foreground);
+  margin: 0;
+  letter-spacing: -0.01em;
 }
 
 .viewAllBtn {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    font-size: 13px;
-    font-weight: 600;
-    color: #1e3a8a;
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 0;
-    margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  color: var(--clr-primary);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: opacity var(--transition-fast);
 }
 
-.viewAllBtn:hover {
-    text-decoration: underline;
-}
+.viewAllBtn:hover { opacity: 0.75; }
 
-/* ── Stats Grid ── */
+/* ── Stat Cards Grid ── */
 .statsGrid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 16px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-md);
+  margin-bottom: var(--space-xl);
 }
 
 @media (max-width: 768px) {
-    .statsGrid {
-        grid-template-columns: 1fr;
-    }
+  .statsGrid { grid-template-columns: 1fr; }
 }
 
 .statCard {
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
-    border-radius: 1rem;
-    padding: 20px 24px;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.03);
+  background: var(--clr-card-bg);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius-xl);
+  padding: var(--space-md) var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow var(--transition-base);
 }
 
+.statCard:hover { box-shadow: var(--shadow-md); }
+
 .statTopRow {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-xs);
 }
 
 .statIcon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 36px;
-    height: 36px;
-    border-radius: 10px;
+  width: 38px;
+  height: 38px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 }
 
-.statIconBlue {
-    background: #eff6ff;
-    color: #1e40af;
-}
-
-.statIconOrange {
-    background: #fff7ed;
-    color: #ea580c;
-}
-
-.statIconGray {
-    background: #f1f5f9;
-    color: #475569;
-}
+.statIconBlue   { background: var(--clr-primary-muted); color: var(--clr-primary); }
+.statIconOrange { background: var(--clr-warning-light);  color: var(--clr-warning); }
+.statIconGray   { background: var(--clr-border-light);   color: var(--clr-text-muted); }
 
 .statBadge {
-    font-size: 10px;
-    font-weight: 600;
-    color: #94a3b8;
-    background: #f1f5f9;
-    padding: 3px 8px;
-    border-radius: 999px;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--clr-text-muted);
+  background: var(--clr-border-light);
+  padding: 3px 9px;
+  border-radius: var(--radius-full);
+  text-transform: uppercase;
 }
 
 .statLabel {
-    font-size: 9px;
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    color: #94a3b8;
-    text-transform: uppercase;
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--clr-text-muted);
+  text-transform: uppercase;
 }
 
 .statValue {
-    font-size: 1.375rem;
-    font-weight: 800;
-    color: #0f172a;
-    letter-spacing: -0.02em;
+  font-size: var(--fs-lg);
+  font-weight: 800;
+  color: var(--clr-foreground);
+  letter-spacing: -0.02em;
 }
 
 /* ── Transaction List ── */
 .transactionList {
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
-    border-radius: 1.25rem;
-    overflow: hidden;
-    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.03);
+  background: var(--clr-card-bg);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
 }
 
 .txRow {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    padding: 18px 24px;
-    border-bottom: 1px solid #f1f5f9;
-    transition: background 0.15s;
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-md) var(--space-lg);
+  border-bottom: 1px solid var(--clr-border-light);
+  transition: background var(--transition-fast);
+  cursor: pointer;
 }
 
-.txRow:last-child {
-    border-bottom: none;
-}
-
-.txRow:hover {
-    background: #f8fafc;
-}
+.txRow:last-child { border-bottom: none; }
+.txRow:hover { background: var(--clr-background); }
 
 .txIcon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 38px;
-    height: 38px;
-    border-radius: 10px;
-    flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  flex-shrink: 0;
 }
 
-.txIconIncome {
-    background: #eff6ff;
-    color: #1e40af;
-}
-
-.txIconWithdraw {
-    background: #fef2f2;
-    color: #dc2626;
-}
+.txIconIncome  { background: var(--clr-primary-muted); color: var(--clr-primary); }
+.txIconWithdraw { background: var(--clr-danger-light);  color: var(--clr-danger); }
 
 .txInfo {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
 }
 
 .txTitle {
-    font-size: 13px;
-    font-weight: 600;
-    color: #0f172a;
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--clr-foreground);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .txMeta {
-    font-size: 11px;
-    color: #94a3b8;
+  font-size: var(--fs-xs);
+  color: var(--clr-text-muted);
 }
 
 .txRight {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  flex-shrink: 0;
 }
 
 .txAmount {
-    font-size: 14px;
-    font-weight: 700;
+  font-size: var(--fs-sm);
+  font-weight: 700;
 }
 
-.txAmountIncome {
-    color: #16a34a;
-}
-
-.txAmountWithdraw {
-    color: #dc2626;
-}
+.txAmountIncome  { color: var(--clr-success); }
+.txAmountWithdraw { color: var(--clr-danger); }
 
 .txStatus {
-    font-size: 10px;
-    font-weight: 600;
-    color: #64748b;
-    background: #f1f5f9;
-    padding: 2px 8px;
-    border-radius: 999px;
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  color: var(--clr-text-muted);
+  background: var(--clr-border-light);
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+}
+
+/* ── Empty / Loading ── */
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: 3rem;
+  text-align: center;
+  color: var(--clr-text-muted);
+  font-size: var(--fs-sm);
+}
+
+.loadingState {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  padding: 3rem;
+  color: var(--clr-text-muted);
+}
+
+.spinner {
+  color: var(--clr-primary);
+  animation: lekan-spin 1s linear infinite;
 }

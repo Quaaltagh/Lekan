@@ -3,7 +3,7 @@ import React, { useEffect } from 'react';
 import { Activity, Wallet, Ellipsis, Fish, Link } from 'lucide-react';
 import SideFisherman from '../../components/sideFisherman';
 import NavbarFisherman from '../../components/NavbarFisherman';
-import styles from './page.module.css';
+import styles from './dashboard.module.css';
 import { useSellerAuctions, Auction, AuctionStatus } from '@/hooks/useSellerAuctions';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
@@ -29,12 +29,9 @@ function AuctionItem({ auction }: { auction: Auction }) {
 
   return (
     <div className={styles.auctionItem}>
-      <div className={styles.imagePlaceholder} style={{
-        overflow: 'hidden', display: 'flex',
-        alignItems: 'center', justifyContent: 'center', background: '#f1f5f9',
-      }}>
+      <div className={styles.imagePlaceholder}>
         {auction.image_url ? (
-          <img src={auction.image_url} alt={auction.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          <img src={auction.image_url} alt={auction.name} />
         ) : (
           <Fish size={32} color="#94a3b8" />
         )}
