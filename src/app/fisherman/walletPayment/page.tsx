@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import styles from "./DompetPage.module.css";
 import SideFisherman from "../../components/sideFisherman";
 import NavbarFisherman from "../../components/NavbarFisherman";
+import { useRouter } from 'next/navigation';
 import {
   Wallet,
   ArrowDownToLine,
@@ -72,7 +73,8 @@ export default function DompetPage() {
     data?.transactions
       .filter((tx: Transaction) => tx.type === "withdrawal" && tx.status === "completed")
       .reduce((s: number, tx: Transaction) => s + tx.amount, 0) ?? 0;
-
+  
+  const router = useRouter();
   return (
     <div className={styles.layout}>
       <SideFisherman />
@@ -87,7 +89,7 @@ export default function DompetPage() {
                 Kelola penghasilan dan penarikan Anda.
               </p>
             </div>
-            <button className={styles.withdrawBtn}>
+            <button className={styles.withdrawBtn} onClick={() => router.push(`/fisherman/withdraw`)}>
               <Wallet size={16} /> Tarik Dana
             </button>
           </div>
@@ -139,7 +141,7 @@ export default function DompetPage() {
                   </span>
                 </div>
                 <div className={styles.pendingBox}>
-                  <span className={styles.pendingLabel}>MENUNGGU PROSES</span>
+                  <span className={styles.pendingLabel}>menunggu proses</span>
                   <span className={styles.pendingAmount}>
                     {formatRupiah(data.wallet.pending)}
                   </span>
@@ -159,7 +161,7 @@ export default function DompetPage() {
                       </div>
                       <span className={styles.statBadge}>Terbaru</span>
                     </div>
-                    <span className={styles.statLabel}>TOTAL PENDAPATAN</span>
+                    <span className={styles.statLabel}>Total Pendapatan</span>
                     <span className={styles.statValue}>
                       {formatRupiah(totalEarned)}
                     </span>
@@ -173,7 +175,7 @@ export default function DompetPage() {
                       </div>
                       <span className={styles.statBadge}>Lelang</span>
                     </div>
-                    <span className={styles.statLabel}>LELANG SUKSES</span>
+                    <span className={styles.statLabel}>Lelang Sukses</span>
                     <span className={styles.statValue}>{successfulBids}</span>
                   </div>
                   <div className={styles.statCard}>
@@ -185,7 +187,7 @@ export default function DompetPage() {
                       </div>
                       <span className={styles.statBadge}>Terbaru</span>
                     </div>
-                    <span className={styles.statLabel}>TOTAL PENARIKAN</span>
+                    <span className={styles.statLabel}>Total Penarikan</span>
                     <span className={styles.statValue}>
                       {formatRupiah(totalWithdrawn)}
                     </span>
@@ -197,7 +199,7 @@ export default function DompetPage() {
               <section className={styles.section}>
                 <div className={styles.sectionHeader}>
                   <h2 className={styles.sectionTitle}>Transaksi Terbaru</h2>
-                  <button className={styles.viewAllBtn}>
+                  <button className={styles.viewAllBtn} onClick={() => router.push(`/fisherman/transactionDetail`)}>
                     Lihat Semua <ChevronRight size={14} />
                   </button>
                 </div>
@@ -214,7 +216,7 @@ export default function DompetPage() {
                       Belum ada transaksi.
                     </div>
                   )}
-                  {data.transactions.map((tx: Transaction) => (
+                  {data.transactions.slice(0, 5).map((tx: Transaction) => (
                     <div key={tx.id} className={styles.txRow}>
                       <div
                         className={`${styles.txIcon} ${isIncome(tx) ? styles.txIconIncome : styles.txIconWithdraw}`}

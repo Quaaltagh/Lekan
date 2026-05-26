@@ -105,7 +105,7 @@
 
 .statCard:hover {
   box-shadow: var(--shadow-md);
-  transform: translateY(-1px);
+  /* transform: translateY(-1px); */
 }
 
 .cardicon {
@@ -167,12 +167,12 @@
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
-  margin-top: 3rem; /* Menambahkan gap atas agar tidak menempel dengan Card */
-  margin-bottom: 1.5rem; /* Memperbesar sedikit gap bawah agar lebih lega */
+  margin-top: 3rem;
+  margin-bottom: 1.5rem; 
 }
 
 .auctionHeaderTitle {
-  font-size: var(--fs-xl);
+  font-size: var(--fs-lg);
   font-weight: var(--fw-title);
   color: var(--clr-foreground);
   margin: 0;
@@ -202,12 +202,11 @@
 
 /* ── Auction Item Card ── */
 .auctionItem {
-  background: var(--clr-card-bg);
   border: 1px solid var(--clr-border);
   border-radius: var(--radius-lg);
   padding: var(--space-md);
   display: flex;
-  gap: var(--space-md);
+  gap: var(--space-lg);
   align-items: center;
   margin-bottom: var(--space-md);
   transition: box-shadow var(--transition-base), border-color var(--transition-base);
@@ -215,15 +214,14 @@
   box-shadow: var(--shadow-sm);
 }
 
-.auctionItem:last-child { margin-bottom: 0; }
 
 .auctionItem:hover {
   box-shadow: var(--shadow-md);
 }
 
 .imagePlaceholder {
-  width: 90px; /* Diperbesar sedikit dari 80px agar lebih lega */
-  height: 90px;
+  width: 120px; /* Diperbesar sedikit dari 80px agar lebih lega */
+  height: 120px;
   border-radius: var(--rad);
   background: #f1f5f9; /* Memberikan background abu-abu terang */
   flex-shrink: 0;
@@ -246,14 +244,13 @@
 .badgeLive {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
+  /* gap: 5px; */
   background: #fef2f2;
   color: var(--clr-danger);
   font-size: var(--fs-xs);
   font-weight: 700;
   padding: 3px 10px;
-  border-radius: 50%;
-  letter-spacing: 0.04em;
+  border-radius: var(--radius-lg);
 }
 
 .badgeLiveDot {
@@ -480,4 +477,96 @@
   border-color: var(--clr-primary);
   box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.10);
   background: var(--clr-card-bg);
+}
+
+
+
+
+.auctionContent {
+  flex: 1;
+}
+
+.auctionItemHeader {
+  display: flex;
+  justify-content: space-between;
+  /* margin-bottom: 0.5rem; */
+}
+
+.auctionTitle {
+  font-size: var(--fs-lg);
+  font-weight: bold;
+}
+
+.gradeText {
+  font-size: var(--fs-sm);
+  color: var(--clr-text-muted);
+  font-weight: normal;
+  margin-left: 6px;
+}
+
+.statusText {
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-h4);
+}
+
+.auctionInfoGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.infoLabel {
+  font-size: var(--fs-xs);
+  color: var(--clr-text-muted);
+}
+
+.infoValue {
+  font-weight: bold;
+}
+
+.bidPrice {
+  font-weight: var(--fw-title);
+  color: var(--clr-primary);
+  font-size: var(--fs-md);
+}
+
+.endDate {
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-h4);
+  color: var(--clr-foreground);
+}
+
+.speciesText {
+  font-size: var(--fs-sm);
+  /* font-weight: 500; */
+}
+
+.buttonGroup {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.detailButton {
+  flex: 1;
+  padding: 0.5rem;
+  border-radius: var(--rad);
+  border: 1px solid var(--clr-border);
+  background: #f8fafc;
+  color: var(--clr-foreground);
+  cursor: pointer;
+}
+
+.detailButton:hover{
+   background: var(--clr-border);
+}
+
+.upgradeButton {
+  flex: 1;
+  padding: 0.5rem;
+  border-radius: var(--rad);
+  background: #1e40af;
+  color: white;
+  border: none;
+  cursor: pointer;
 }
