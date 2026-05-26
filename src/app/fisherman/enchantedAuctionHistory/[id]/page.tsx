@@ -216,7 +216,7 @@ export default function AuctionHistoryDetailPage() {
             </button>
             <div className={styles.pageTitleRow}>
               <div>
-                <h1 className={styles.pageTitle}>Detail Riwayat Lelang</h1>
+                <h1 className={styles.pageTitle}>Detail Lelang</h1>
                 <p className={styles.pageSubtitle}>ID: #{auction.id.slice(0, 8).toUpperCase()}</p>
               </div>
             </div>
