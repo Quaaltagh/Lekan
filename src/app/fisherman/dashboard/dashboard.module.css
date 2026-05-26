@@ -7,7 +7,7 @@
 .container {
   display: flex;
   height: 100vh;
-  background-color: var(--clr-background);
+  background-color: var(--clr-white);
   color: var(--clr-foreground);
 }
 
@@ -18,7 +18,11 @@
 
 /* ── Inner padding wrapper ── */
 .dashboardPadding {
-  padding: var(--page-py, 2rem) var(--page-px, 2.5rem);
+  /* padding: 32px 37px; */
+  padding-left: 37px;
+  padding-right: 15px;
+  padding-bottom: 45px;
+  padding-top: 45px;
   max-width: var(--content-max-w, 1200px);
   margin: 0 auto;
   display: flex;
@@ -57,7 +61,7 @@
   background: linear-gradient(135deg, var(--clr-primary) 0%, var(--clr-primary-hover) 100%);
   color: #ffffff;
   border: none;
-  border-radius: var(--radius-lg);
+  border-radius: var(--rad);
   font-size: var(--fs-sm);
   font-weight: 700;
   cursor: pointer;
@@ -90,7 +94,7 @@
 .statCard {
   background: var(--clr-card-bg);
   border: 1px solid var(--clr-border);
-  border-radius: var(--radius-xl);
+  border-radius: var(--radius-lg);
   padding: var(--space-lg);
   box-shadow: var(--shadow-sm);
   display: flex;
@@ -114,7 +118,7 @@
 .cardIconWrap {
   width: 40px;
   height: 40px;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -131,7 +135,7 @@
   letter-spacing: 0.06em;
   text-transform: uppercase;
   padding: 3px 10px;
-  border-radius: var(--radius-full);
+  border-radius: var(--radius-lg);
   background: var(--clr-border-light);
   color: var(--clr-text-muted);
 }
@@ -168,17 +172,17 @@
 }
 
 .auctionHeaderTitle {
-  font-size: var(--fs-lg);
-  font-weight: 800;
+  font-size: var(--fs-xl);
+  font-weight: var(--fw-title);
   color: var(--clr-foreground);
   margin: 0;
-  letter-spacing: -0.01em;
+  /* letter-spacing: -0.01em; */
 }
 
 .auctionHeaderSubtitle {
   font-size: var(--fs-sm);
   color: var(--clr-text-muted);
-  margin: 6px 0 0; /* Sedikit penyesuaian gap antara judul dan subjudul */
+  /* margin: 6px 0 0; Sedikit penyesuaian gap antara judul dan subjudul */
 }
 
 .viewAllLink {
@@ -192,13 +196,15 @@
   transition: opacity var(--transition-fast);
 }
 
-.viewAllLink:hover { opacity: 0.75; }
+.viewAllLink:hover { 
+  color: var(--clr-primary-hover);
+}
 
 /* ── Auction Item Card ── */
 .auctionItem {
   background: var(--clr-card-bg);
   border: 1px solid var(--clr-border);
-  border-radius: var(--radius-xl);
+  border-radius: var(--radius-lg);
   padding: var(--space-md);
   display: flex;
   gap: var(--space-md);
@@ -206,19 +212,19 @@
   margin-bottom: var(--space-md);
   transition: box-shadow var(--transition-base), border-color var(--transition-base);
   cursor: pointer;
+  box-shadow: var(--shadow-sm);
 }
 
 .auctionItem:last-child { margin-bottom: 0; }
 
 .auctionItem:hover {
   box-shadow: var(--shadow-md);
-  border-color: #cbd5e1;
 }
 
 .imagePlaceholder {
   width: 90px; /* Diperbesar sedikit dari 80px agar lebih lega */
   height: 90px;
-  border-radius: var(--radius-lg);
+  border-radius: var(--rad);
   background: #f1f5f9; /* Memberikan background abu-abu terang */
   flex-shrink: 0;
   overflow: hidden;
@@ -246,7 +252,7 @@
   font-size: var(--fs-xs);
   font-weight: 700;
   padding: 3px 10px;
-  border-radius: var(--radius-full);
+  border-radius: 50%;
   letter-spacing: 0.04em;
 }
 
@@ -267,7 +273,7 @@
   font-size: var(--fs-xs);
   font-weight: 700;
   padding: 3px 10px;
-  border-radius: var(--radius-full);
+  border-radius: var(--radius-lg);
 }
 
 .badgePending {
@@ -279,7 +285,7 @@
   font-size: var(--fs-xs);
   font-weight: 700;
   padding: 3px 10px;
-  border-radius: var(--radius-full);
+  border-radius: var(--radius-lg);
 }
 
 .badgeCancelled {
@@ -290,13 +296,13 @@
   font-size: var(--fs-xs);
   font-weight: 700;
   padding: 3px 10px;
-  border-radius: var(--radius-full);
+  border-radius: var(--radius-lg);
 }
 
 /* ── CTA Box (Upload Banner) ── */
 .ctaBox {
   background: linear-gradient(135deg, var(--clr-primary-dark) 0%, var(--clr-primary) 60%, #2563eb 100%);
-  border-radius: var(--radius-2xl);
+  border-radius: var(--radius-lg);
   padding: var(--space-lg) var(--space-xl);
   color: #ffffff;
   position: relative;
@@ -336,7 +342,7 @@
   border: 1px solid rgba(255,255,255,0.25);
   color: #ffffff;
   padding: var(--space-sm) var(--space-md);
-  border-radius: var(--radius-lg);
+  border-radius: var(--rad);
   font-size: var(--fs-sm);
   font-weight: 700;
   cursor: pointer;
@@ -361,7 +367,7 @@
 .marketTrendCard {
   background: var(--clr-card-bg);
   border: 1px solid var(--clr-border);
-  border-radius: var(--radius-xl);
+  border-radius: var(--radius-lg);
   padding: var(--space-md);
   box-shadow: var(--shadow-sm);
 }
