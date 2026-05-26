@@ -293,7 +293,7 @@ export default function WithdrawPage() {
 
                 {/* ── Amount Input ── */}
                 <div className={styles.formCard}>
-                  <label className={styles.formLabel}>JUMLAH PENARIKAN</label>
+                  <label className={styles.formLabel}>Jumlah Penarikan</label>
                   <div className={styles.amountInputWrap}>
                     <span className={styles.currencyPrefix}>Rp</span>
                     <input

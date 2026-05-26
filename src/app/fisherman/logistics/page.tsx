@@ -146,7 +146,7 @@ export default function LogisticsPage() {
                 {/* Active Shipments Box */}
                 <div className={styles.sectionBox}>
                   <div className={styles.sectionTitleWrap}>
-                    <Truck size={20} color="#0f172a" />
+                    <Truck size={20} color="var(--clr-primary)" />
                     <h2 className={styles.sectionTitle}>Pengiriman Aktif</h2>
                   </div>
 

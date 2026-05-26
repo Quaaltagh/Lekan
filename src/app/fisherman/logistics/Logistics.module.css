@@ -7,7 +7,6 @@
   display: flex;
   min-height: 100vh;
   background-color: var(--clr-white);
-  justify-content: start;
 }
 
 .mainWrapper {
@@ -19,17 +18,22 @@
 }
 
 .main {
-  width: 80rem;
-  display: flex;
-  flex-direction: column;
-  margin-left: auto;
-  margin-right: auto;
-  padding: 32px 64px;
+   padding-left: 37px;
+  padding-right: 15px;
+  padding-bottom: 45px;
+  padding-top: 45px;
+  max-width: var(--content-max-w, 1200px);
+  width: 100%;
+  margin: 0 auto;
 }
 
 /* ── Header (sama dengan settings .titleSection) ── */
 .headerContainer {
-  margin-bottom: 2rem;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  /* gap: var(--space-md); */
+  margin-bottom: var(--space-xl);
 }
 
 .pageTitle {
@@ -66,19 +70,17 @@
 
 /* ── Section card (sama persis dengan settings .settingsCard) ── */
 .sectionBox {
-  background: var(--clr-white);
-  border-radius: var(--rad);
-  border: 1px solid var(--clr-border);
-  padding: 2rem;
-  box-shadow: var(--shadow-lg);
+  /* background: var(--clr-border-light); */
+  border-radius: var(--radius-lg);
+  /* padding: var(--space-lg); */
 }
 
 /* ── Section title row (mirip settings .iconWrap) ── */
 .sectionTitleWrap {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  margin-bottom: var(--space-lg);
+  gap: var(--space-sm);
+  margin-bottom: var(--space-md);
 }
 
 /* Icon box (sama dengan settings .iconContainer) */
@@ -95,10 +97,11 @@
 }
 
 .sectionTitle {
-  font-size: var(--fs-base);
-  font-weight: var(--fw-title);
-  color: var(--clr-foreground);
+  font-size: var(--fs-lg); /* Diperbesar dari base */
+  font-weight: 700; /* Diturunkan dari 800 agar lebih elegan */
+  color: var(--clr-primary);
   margin: 0;
+  /* letter-spacing: -0.01em; */
 }
 
 /* ── Empty state ── */
