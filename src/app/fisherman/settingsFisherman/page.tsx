@@ -314,7 +314,7 @@ export default function SettingsPage() {
             </SettingsSection>
 
             {/* ── Bank ── */}
-            <SettingsSection
+            {/* <SettingsSection
               icon={Landmark}
               title="Detail Bank"
               description="Atur rekening bank untuk menerima hasil pembayaran lelang."
@@ -347,7 +347,7 @@ export default function SettingsPage() {
                   />
                 </div>
               </div>
-            </SettingsSection>
+            </SettingsSection> */}
 
             {/* ── Security ── */}
             <SettingsSection icon={Lock} title="Keamanan" description="Klik tombol di bawah jika ingin mengganti password akun Anda.">

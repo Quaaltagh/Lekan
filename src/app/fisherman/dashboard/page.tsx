@@ -28,73 +28,97 @@ function AuctionItem({ auction }: { auction: Auction }) {
   const currentPrice = auction.current_bid ?? auction.start_price;
 
   return (
+
     <div className={styles.auctionItem}>
-      <div className={styles.imagePlaceholder}>
-        {auction.image_url ? (
-          <img src={auction.image_url} alt={auction.name} />
-        ) : (
-          <Fish size={32} color="#94a3b8" />
-        )}
-      </div>
+  <div className={styles.imagePlaceholder}>
+    {auction.image_url ? (
+      <img src={auction.image_url} alt={auction.name} />
+    ) : (
+      <Fish size={32} color="#94a3b8" />
+    )}
+  </div>
 
-      <div style={{ flex: 1 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
-          <h3 style={{ fontSize: '1.125rem', fontWeight: 'bold' }}>
-            {auction.name}
-            {auction.grade && (
-              <span style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: 'normal', marginLeft: '6px' }}>
-                Grade {auction.grade}
-              </span>
-            )}
-          </h3>
-          <span style={{ color: status.color, fontSize: '0.75rem', fontWeight: 'bold' }}>
-            ● {status.label}
+  <div className={styles.auctionContent}>
+    <div className={styles.auctionItemHeader}>
+      <h3 className={styles.auctionTitle}>
+        {auction.name}
+
+        {auction.grade && (
+          <span className={styles.gradeText}>
+            Grade {auction.grade}
           </span>
-        </div>
+        )}
+      </h3>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1rem', marginBottom: '1rem' }}>
-          <div>
-            <p style={{ fontSize: '0.75rem', color: '#94a3b8' }}>Bid Saat Ini</p>
-            <p style={{ fontWeight: 'bold', color: '#1e40af' }}>
-              {currentPrice.toLocaleString('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 })}
-            </p>
-          </div>
-          <div>
-            <p style={{ fontSize: '0.75rem', color: '#94a3b8' }}>Berat</p>
-            <p style={{ fontWeight: 'bold' }}>{auction.weight_kg} kg</p>
-          </div>
-          <div>
-            <p style={{ fontSize: '0.75rem', color: '#94a3b8' }}>BERAKHIR</p>
-            <p style={{ fontSize: '0.8rem', color: 'var(--clr-primary)' }}>
-              {new Date(auction.ends_at).toLocaleDateString('id-ID', {
-                day: 'numeric', month: 'short', year: 'numeric',
-                hour: '2-digit', minute: '2-digit',
-              })}
-            </p>
-          </div>
-          {auction.species && (
-            <div>
-              <p style={{ fontSize: '0.75rem', color: '#94a3b8' }}>SPESIES</p>
-              <p style={{ fontSize: '0.8rem', fontWeight: '500' }}>{auction.species}</p>
-            </div>
-          )}
-        </div>
-
-        <div style={{ display: 'flex', gap: '0.75rem' }}>
-          <button 
-            onClick={() => router.push(`/fisherman/enchantedAuctionHistory/${auction.id}`)}
-            style={{ flex: 1, padding: '0.5rem', borderRadius: '0.5rem', border: '1px solid #e2e8f0', background: '#f8fafc', color: '#1e293b', cursor: 'pointer' }}
-          >
-            Detail
-          </button>
-          {auction.status === 'active' && (
-            <button style={{ flex: 1, padding: '0.5rem', borderRadius: 'var(--rad)', background: '#1e40af', color: 'white', border: 'none', cursor: 'pointer' }}>
-              Tingkatkan
-            </button>
-          )}
-        </div>
-      </div>
+      <span
+        className={styles.statusText}
+        style={{ color: status.color }}
+      >
+        ● {status.label}
+      </span>
     </div>
+
+    <div className={styles.auctionInfoGrid}>
+      <div>
+        <p className={styles.infoLabel}>Bid Saat Ini</p>
+
+        <p className={styles.bidPrice}>
+          {currentPrice.toLocaleString('id-ID', {
+            style: 'currency',
+            currency: 'IDR',
+            maximumFractionDigits: 0,
+          })}
+        </p>
+      </div>
+
+      <div>
+        <p className={styles.infoLabel}>Berat</p>
+        <p className={styles.infoValue}>
+          {auction.weight_kg} kg
+        </p>
+      </div>
+
+      <div>
+        <p className={styles.infoLabel}>BERAKHIR</p>
+
+        <p className={styles.endDate}>
+          {new Date(auction.ends_at).toLocaleDateString('id-ID', {
+            day: 'numeric',
+            month: 'short',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+          })}
+        </p>
+      </div>
+
+      {auction.species && (
+        <div>
+          <p className={styles.infoLabel}>SPESIES</p>
+
+          <p className={styles.speciesText}>
+            {auction.species}
+          </p>
+        </div>
+      )}
+    </div>
+
+    <div className={styles.buttonGroup}>
+      <button
+        onClick={() => router.push(`/fisherman/enchantedAuctionHistory/${auction.id}`)}
+        className={styles.detailButton}
+      >
+        Detail
+      </button>
+
+      {/* {auction.status === 'active' && (
+        <button className={styles.upgradeButton}>
+          Tingkatkan
+        </button>
+      )} */}
+    </div>
+  </div>
+</div>
   );
 }
 
@@ -162,8 +186,9 @@ export default function FishermanDashboard() {
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem' }}>
                   <div style={{ backgroundColor: '#eff6ff', color: '#2563eb', padding: '0.75rem', borderRadius: 'var(--radius-lg)' }}>
                     <Activity size={20} />
-                    {activeCount > 0 && <span className={styles.badgeLive}>SEDANG</span>}
+                    
                   </div>
+                  {activeCount > 0 && <span className={styles.badgeLive}>Sedang Aktif</span>}
                 </div>
                 <p style={{ fontSize: '0.875rem', color: '#64748b' }}>Lelang Aktif</p>
                 <h3 style={{ fontSize: 'var(--fs-xl)', fontWeight: 'var(--fw-title)' }}>
