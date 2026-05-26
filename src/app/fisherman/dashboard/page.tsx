@@ -65,7 +65,7 @@ function AuctionItem({ auction }: { auction: Auction }) {
           </div>
           <div>
             <p style={{ fontSize: '0.75rem', color: '#94a3b8' }}>BERAKHIR</p>
-            <p style={{ fontSize: '0.8rem', color: '#f97316' }}>
+            <p style={{ fontSize: '0.8rem', color: 'var(--clr-primary)' }}>
               {new Date(auction.ends_at).toLocaleDateString('id-ID', {
                 day: 'numeric', month: 'short', year: 'numeric',
                 hour: '2-digit', minute: '2-digit',
@@ -83,12 +83,12 @@ function AuctionItem({ auction }: { auction: Auction }) {
         <div style={{ display: 'flex', gap: '0.75rem' }}>
           <button 
             onClick={() => router.push(`/fisherman/AuctionDetail/${auction.id}`)}
-            style={{ flex: 1, padding: '0.5rem', borderRadius: '0.5rem', border: '1px solid #e2e8f0', background: '#f8fafc', color: '#1e293b', cursor: 'pointer' }}
+            style={{ flex: 1, padding: '0.5rem', borderRadius: 'var(--rad)', border: '1px solid #e2e8f0', background: '#f8fafc', color: '#1e293b', cursor: 'pointer' }}
           >
             Detail
           </button>
           {auction.status === 'active' && (
-            <button style={{ flex: 1, padding: '0.5rem', borderRadius: '0.5rem', background: '#1e40af', color: 'white', border: 'none', cursor: 'pointer' }}>
+            <button style={{ flex: 1, padding: '0.5rem', borderRadius: 'var(--rad)', background: '#1e40af', color: 'white', border: 'none', cursor: 'pointer' }}>
               Tingkatkan
             </button>
           )}
@@ -143,7 +143,8 @@ export default function FishermanDashboard() {
 
             {/* Stats Cards */}
             <div className={styles.cardGrid}>
-              <div className={styles.statCard}>
+              
+              {/* <div className={styles.statCard}>
                 <div className={styles.cardicon}>
                   <div style={{ backgroundColor: '#eff6ff', color: '#2563eb', padding: '0.75rem', borderRadius: '0.75rem' }}>
                     <Activity size={20} />
@@ -151,7 +152,21 @@ export default function FishermanDashboard() {
                   {activeCount > 0 && <span className={styles.badgeLive}>SEDANG</span>}
                 </div>
                 <p style={{ fontSize: '0.875rem', color: '#64748b' }}>Lelang Aktif</p>
-                <h3 style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>
+                <h3 style={{ fontSize: 'var(--fs-xl)', fontWeight: 'var(--fw-title)' }}>
+                  {loading ? '—' : activeCount}{' '}
+                  <span style={{ fontSize: '0.875rem', color: '#64748bbc', fontWeight: 'normal' }}>Lot</span>
+                </h3>
+              </div> */}
+
+              <div className={styles.statCard}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem' }}>
+                  <div style={{ backgroundColor: '#eff6ff', color: '#2563eb', padding: '0.75rem', borderRadius: 'var(--radius-lg)' }}>
+                    <Activity size={20} />
+                    {activeCount > 0 && <span className={styles.badgeLive}>SEDANG</span>}
+                  </div>
+                </div>
+                <p style={{ fontSize: '0.875rem', color: '#64748b' }}>Lelang Aktif</p>
+                <h3 style={{ fontSize: 'var(--fs-xl)', fontWeight: 'var(--fw-title)' }}>
                   {loading ? '—' : activeCount}{' '}
                   <span style={{ fontSize: '0.875rem', color: '#64748bbc', fontWeight: 'normal' }}>Lot</span>
                 </h3>
@@ -159,24 +174,24 @@ export default function FishermanDashboard() {
 
               <div className={styles.statCard}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem' }}>
-                  <div style={{ backgroundColor: '#effff1', color: '#0f911e', padding: '0.75rem', borderRadius: '0.75rem' }}>
+                  <div style={{ backgroundColor: '#effff1', color: '#0f911e', padding: '0.75rem', borderRadius: 'var(--radius-lg)' }}>
                     <Wallet size={20} />
                   </div>
                 </div>
                 <p style={{ fontSize: '0.875rem', color: '#64748b' }}>Total Pendapatan</p>
-                <h3 style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>
+                <h3 style={{ fontSize: 'var(--fs-xl)', fontWeight: 'var(--fw-title)' }}>
                   {loading ? '—' : formatRp(totalEarnings)}
                 </h3>
               </div>
 
               <div className={styles.statCard}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem' }}>
-                  <div style={{ backgroundColor: '#fff7ef', color: '#91430f', padding: '0.75rem', borderRadius: '0.75rem' }}>
+                  <div style={{ backgroundColor: '#fff7ef', color: '#91430f', padding: '0.75rem', borderRadius: 'var(--radius-lg)' }}>
                     <Ellipsis size={20} />
                   </div>
                 </div>
                 <p style={{ fontSize: '0.875rem', color: '#64748b' }}>Menunggu Pembayaran</p>
-                <h3 style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>
+                <h3 style={{ fontSize: 'var(--fs-xl)', fontWeight: 'var(--fw-title)' }}>
                   {loading ? '—' : formatRp(pendingTotal)}
                 </h3>
               </div>
