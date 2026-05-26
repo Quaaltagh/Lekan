@@ -195,7 +195,7 @@ export default function FishermanAuctionDetailPage() {
 
             <div className={styles.header}>
               <button onClick={() => router.back()} className={styles.backLink}>
-                <ArrowLeft size={18} /> Kembali ke Status Lelang
+                <ArrowLeft size={18} /> Kembali 
               </button>
               <h1 className={styles.pageTitle}>Detail Pemesanan & Logistik</h1>
               <p className={styles.pageSubtitle}>Lacak status pengiriman tangkapan Anda secara real-time.</p>

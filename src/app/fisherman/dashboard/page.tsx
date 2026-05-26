@@ -82,8 +82,8 @@ function AuctionItem({ auction }: { auction: Auction }) {
 
         <div style={{ display: 'flex', gap: '0.75rem' }}>
           <button 
-            onClick={() => router.push(`/fisherman/AuctionDetail/${auction.id}`)}
-            style={{ flex: 1, padding: '0.5rem', borderRadius: 'var(--rad)', border: '1px solid #e2e8f0', background: '#f8fafc', color: '#1e293b', cursor: 'pointer' }}
+            onClick={() => router.push(`/fisherman/enchantedAuctionHistory/${auction.id}`)}
+            style={{ flex: 1, padding: '0.5rem', borderRadius: '0.5rem', border: '1px solid #e2e8f0', background: '#f8fafc', color: '#1e293b', cursor: 'pointer' }}
           >
             Detail
           </button>
