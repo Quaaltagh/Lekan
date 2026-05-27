@@ -1,6 +1,6 @@
 'use client';
 import React, { useState, useEffect, useCallback } from 'react';
-import { TrendingUp, Clock, Loader2, Fish, ArrowRight } from 'lucide-react';
+import { TrendingUp, Clock, Loader2, Fish, ArrowRight, Truck } from 'lucide-react';
 import SideFisherman from '../../components/sideFisherman';
 import NavbarFisherman from '../../components/NavbarFisherman';
 import styles from './BiddingStatus.module.css';
@@ -20,6 +20,7 @@ interface ActiveAuction {
   status: string;
   grade?: string;
   species?: string;
+  logistics?: { status: string } | Array<{ status: string }>;
 }
 
 function formatCountdown(endsAt: string): string {
@@ -39,7 +40,8 @@ function getProgressPercent(endsAt: string): number {
   return Math.min(100, (diff / maxMs) * 100);
 }
 
-function AuctionCard({ auction }: { auction: ActiveAuction }) {
+// ─── PART 1: UI CARD KHUSUS UNTUK LELANG LIVE ───
+function LiveAuctionCard({ auction }: { auction: ActiveAuction }) {
   const router = useRouter();
   const [countdown, setCountdown] = useState(formatCountdown(auction.ends_at));
   const [progress, setProgress]   = useState(getProgressPercent(auction.ends_at));
@@ -71,9 +73,7 @@ function AuctionCard({ auction }: { auction: ActiveAuction }) {
 
         <div className={styles.wrapper}>
           <span className={`${styles.cardbadge} ${hasBid ? styles.winning : styles.losing}`}>
-            {hasBid
-              ? <><TrendingUp className={styles.icon} /> Ada Penawaran</>
-              : <><Clock className={styles.icon} /> Menunggu Bid</>}
+            {hasBid ? <><TrendingUp className={styles.icon} /> Ada Penawaran</> : <><Clock className={styles.icon} /> Menunggu Bid</>}
           </span>
         </div>
 
@@ -100,23 +100,13 @@ function AuctionCard({ auction }: { auction: ActiveAuction }) {
         <div className={styles.bid}>
           <div className={`${styles.contentcard} ${hasBid ? styles.cardNeutral : styles.cardLosing}`}>
             <div className={styles.bidcontent}>
-              <span className={`${styles.label} ${hasBid ? styles.cardNeutral : styles.cardLosing}`}>
-                Harga Awal
-              </span>
-              <span className={`${styles.value} ${hasBid ? styles.cardNeutral : styles.cardLosing}`}>
-                Rp {auction.start_price.toLocaleString('id-ID')}
-              </span>
+              <span className={`${styles.label} ${hasBid ? styles.cardNeutral : styles.cardLosing}`}>Harga Awal</span>
+              <span className={`${styles.value} ${hasBid ? styles.cardNeutral : styles.cardLosing}`}>Rp {auction.start_price.toLocaleString('id-ID')}</span>
             </div>
-
             <div className={styles.divider}></div>
-
             <div className={styles.bidcontent}>
-              <span className={`${styles.label} ${hasBid ? styles.labelNeutral : styles.labelLosing}`}>
-                Bid Tertinggi
-              </span>
-              <span className={`${styles.value} ${hasBid ? styles.valueYourWin : styles.valueYourLose}`}>
-                Rp {currentBid.toLocaleString('id-ID')}
-              </span>
+              <span className={`${styles.label} ${hasBid ? styles.labelNeutral : styles.labelLosing}`}>Bid Tertinggi</span>
+              <span className={`${styles.value} ${hasBid ? styles.valueYourWin : styles.valueYourLose}`}>Rp {currentBid.toLocaleString('id-ID')}</span>
             </div>
           </div>
         </div>
@@ -144,9 +134,84 @@ function AuctionCard({ auction }: { auction: ActiveAuction }) {
   );
 }
 
+// ─── PART 2: UI TABEL ROW KHUSUS UNTUK LOGISTIK/PENGIRIMAN ───
+function ShippingRowItem({ auction, token }: { auction: ActiveAuction; token: string }) {
+  const router = useRouter();
+  const [buyerName, setBuyerName] = useState('-');
+  const [buyerLoading, setBuyerLoading] = useState(true);
+
+  // Ambil data nama pembeli dari endpoint history detail
+  useEffect(() => {
+    if (!auction.id || !token) return;
+    fetch(`${API_URL}/api/history/detail/${auction.id}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then(res => res.ok ? res.json() : null)
+      .then(data => {
+        setBuyerName(data?.winner?.name || 'Tidak ada pemenang');
+      })
+      .catch(() => setBuyerName('-'))
+      .finally(() => setBuyerLoading(false));
+  }, [auction.id, token]);
+
+  const deliveryStatus = Array.isArray(auction.logistics)
+    ? auction.logistics[0]?.status
+    : auction.logistics?.status;
+
+  const isShipping = deliveryStatus === 'shipping' || deliveryStatus === 'on_progress';
+
+  return (
+    <div className={styles.itemRow}>
+      {/* Kolom Produk */}
+      <div className={styles.productCell}>
+        <div className={styles.imageMiniWrapper}>
+          {auction.image_url ? (
+            <img src={auction.image_url} alt={auction.name} className={styles.imageMini} />
+          ) : (
+            <Fish size={18} color="#94a3b8" />
+          )}
+        </div>
+        <div>
+          <h4 className={styles.cardtitle} style={{ fontSize: '14px' }}>{auction.name}</h4>
+          <p className={styles.cardmeta}>{auction.grade || 'STANDAR'} • {auction.weight_kg}KG</p>
+        </div>
+      </div>
+
+      {/* Kolom Pembeli */}
+      <div className={styles.textCell}>
+        {buyerLoading ? <Loader2 size={12} className="animate-spin" /> : buyerName}
+      </div>
+
+      {/* Kolom Status Logistik */}
+      <div>
+        <span className={`${styles.deliveryBadge} ${isShipping ? styles.statusShipping : styles.statusPending}`}>
+          <Truck size={12} /> {isShipping ? 'Dalam Perjalanan' : 'Menunggu Pengiriman'}
+        </span>
+      </div>
+
+      {/* Kolom Harga Akhir */}
+      <div className={styles.priceCell}>
+        Rp {(auction.current_bid || auction.start_price).toLocaleString('id-ID')}
+      </div>
+
+      {/* Kolom Aksi */}
+      <div className={styles.actionCell}>
+        <button 
+          onClick={() => router.push(`/fisherman/enchantedAuctionHistory/${auction.id}`)}
+          className={styles.btnAction}
+        >
+          Detail
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ─── MAIN PAGE COMPONENT ───
 export default function FishermanStatusPage() {
   const { user, token } = useAuth();
-  const [auctions, setAuctions] = useState<ActiveAuction[]>([]);
+  const [liveAuctions, setLiveAuctions] = useState<ActiveAuction[]>([]);
+  const [shippingAuctions, setShippingAuctions] = useState<ActiveAuction[]>([]);
   const [loading, setLoading]   = useState(true);
   const [fetchError, setFetchError] = useState('');
 
@@ -158,8 +223,23 @@ export default function FishermanStatusPage() {
       });
       if (!res.ok) throw new Error((await res.json()).error || 'Gagal memuat lelang.');
       const data: ActiveAuction[] = await res.json();
-      // Filter hanya yang aktif
-      setAuctions(data.filter(a => a.status === 'active'));
+      
+      // 1. Filter lelang aktif (Tetap pakai struktur Card)
+      const live = data.filter(item => item.status === 'active');
+      
+      // 2. Filter logistik jalan & Sembunyikan 'cancelled' (Masuk ke struktur Tabel)
+      const shipping = data.filter(item => {
+        if (item.status === 'active' || item.status === 'cancelled') return false;
+
+        const deliveryStatus = Array.isArray(item.logistics)
+          ? item.logistics[0]?.status
+          : item.logistics?.status;
+
+        return deliveryStatus !== 'delivered';
+      });
+
+      setLiveAuctions(live);
+      setShippingAuctions(shipping);
     } catch (err) {
       setFetchError(err instanceof Error ? err.message : 'Terjadi kesalahan.');
     } finally {
@@ -173,6 +253,8 @@ export default function FishermanStatusPage() {
     return () => clearInterval(interval);
   }, [fetchAuctions]);
 
+  const totalProses = liveAuctions.length + shippingAuctions.length;
+
   return (
     <div className={styles.all}>
       <SideFisherman />
@@ -182,41 +264,70 @@ export default function FishermanStatusPage() {
         <div className={styles.content}>
           <div className={styles.headerContainer}>
             <section className={styles.titleSection}>
-              <h1 className={styles.pageTitle}>Status Lelang</h1>
+              <h1 className={styles.pageTitle}>Status & Pantauan Lelang</h1>
               <p className={styles.pageSubtitle}>
-                Pantau lelang aktif milik Anda dan lihat penawaran yang masuk.
+                Pantau jalannya lelang aktif serta monitor pengiriman hasil laut yang berhasil terjual.
               </p>
             </section>
           </div>
 
-          <div className={styles.contentcontainer}>
-            <div className={styles.contentheader}>
-              <h2 className={styles.contenttitle}>Lelang Aktif Anda</h2>
-              <span className={styles.badge}>{auctions.length} Aktif</span>
+          {loading ? (
+            <div style={{ padding: '6rem 0', textAlign: 'center', color: '#94a3b8', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
+              <Loader2 size={32} className="animate-spin" />
+              Memuat data pantauan lelang...
             </div>
+          ) : fetchError ? (
+            <div style={{ padding: '3rem', textAlign: 'center', color: '#dc2626' }}>{fetchError}</div>
+          ) : totalProses === 0 ? (
+            <div className={styles.contentcontainer} style={{ padding: '4rem 1rem', textAlign: 'center', color: '#94a3b8', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.75rem' }}>
+              <Fish size={48} style={{ opacity: 0.3 }} />
+              <h3>Belum Ada Kegiatan Pantauan</h3>
+              <p>Tidak ada lelang aktif maupun proses pengiriman barang saat ini.</p>
+            </div>
+          ) : (
+            <>
+              {/* SECTION 1: LELANG LIVE (GRID MODEL CARD) */}
+              {liveAuctions.length > 0 && (
+                <div className={styles.contentcontainer} style={{ marginBottom: '2.5rem' }}>
+                  <div className={styles.contentheader}>
+                    <h2 className={styles.contenttitle}>Lelang Live Anda</h2>
+                    <span className={styles.badge} style={{ backgroundColor: '#ef4444', color: '#fff' }}>{liveAuctions.length} Live</span>
+                  </div>
+                  <div className={styles.grid}>
+                    {liveAuctions.map(auction => (
+                      <LiveAuctionCard key={auction.id} auction={auction} />
+                    ))}
+                  </div>
+                </div>
+              )}
 
-            {loading ? (
-              <div style={{ padding: '3rem', textAlign: 'center', color: '#94a3b8', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
-                <Loader2 size={28} className="animate-spin" />
-                Memuat lelang aktif...
-              </div>
-            ) : fetchError ? (
-              <div style={{ padding: '3rem', textAlign: 'center', color: '#dc2626' }}>
-                {fetchError}
-              </div>
-            ) : auctions.length === 0 ? (
-              <div style={{ padding: '3rem', textAlign: 'center', color: '#94a3b8', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.75rem' }}>
-                <Fish size={40} style={{ opacity: 0.3 }} />
-                <p>Tidak ada lelang aktif saat ini.</p>
-              </div>
-            ) : (
-              <div className={styles.grid}>
-                {auctions.map(auction => (
-                  <AuctionCard key={auction.id} auction={auction} />
-                ))}
-              </div>
-            )}
-          </div>
+              {/* SECTION 2: PROSES LOGISTIK (MODEL TABEL HORIZONTAL) */}
+              {shippingAuctions.length > 0 && (
+                <div className={styles.contentcontainer}>
+                  <div className={styles.contentheader}>
+                    <h2 className={styles.contenttitle}>Dalam Proses Pengiriman</h2>
+                    <span className={styles.badge} style={{ backgroundColor: '#2563eb', color: '#fff' }}>{shippingAuctions.length} Transaksi</span>
+                  </div>
+                  
+                  {/* Tampilan Tabel Ringkas */}
+                  <div className={styles.tableContainer}>
+                    <div className={styles.tableHeader}>
+                      <div>Spesies</div>
+                      <div>Pembeli</div>
+                      <div>Status Pengiriman</div>
+                      <div>Harga Akhir</div>
+                      <div></div>
+                    </div>
+                    <div>
+                      {shippingAuctions.map(auction => (
+                        <ShippingRowItem key={auction.id} auction={auction} token={token ?? ''} />
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </>
+          )}
         </div>
       </div>
     </div>
