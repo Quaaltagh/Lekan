@@ -49,7 +49,7 @@ function BidCard({ id, name, lot, weight, image, highestBid, yourBid, status, en
         <div className={styles.badgeWrapper}>
           <span className={styles.liveBadge}>
             <span className={styles.pulseDot}></span>
-            Live
+            Sedang Berlangsung
           </span>
         </div>
 
