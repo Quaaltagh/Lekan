@@ -1,13 +1,27 @@
-'use client';
-import React, { useState, useEffect, useCallback } from 'react';
-import { TrendingUp, Clock, Loader2, Fish, ArrowRight, Truck } from 'lucide-react';
-import SideFisherman from '../../components/sideFisherman';
-import NavbarFisherman from '../../components/NavbarFisherman';
-import styles from './BiddingStatus.module.css';
-import { useAuth } from '@/context/AuthContext';
-import { useRouter } from 'next/navigation';
+"use client";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+import { useEffect, useState, useCallback, useMemo } from "react";
+import styles from "./BiddingStatus.module.css";
+import SideFisherman from "../../components/sideFisherman";
+import NavbarFisherman from "../../components/NavbarFisherman";
+import { Search, Filter, ShieldCheck, Loader2, ArrowRight, ChevronLeft, ChevronRight, Clock, Calendar } from "lucide-react";
+import { auctionService, BiddingStatusResponse } from "@/services/auctionService";
+import { useAuth } from "@/context/AuthContext";
+import { useRouter } from 'next/navigation';
+import { useSellerAuctions } from '@/hooks/useSellerAuctions';
+
+import {
+  format,
+  startOfMonth, endOfMonth,
+  startOfWeek, endOfWeek,
+  eachDayOfInterval,
+  isSameMonth, isSameDay,
+  addMonths, subMonths,
+  isWithinInterval,
+  isBefore,
+  startOfDay, endOfDay,
+} from 'date-fns';
+import { id } from 'date-fns/locale';
 
 interface ActiveAuction {
   id: string;
@@ -20,8 +34,125 @@ interface ActiveAuction {
   status: string;
   grade?: string;
   species?: string;
-  logistics?: { status: string } | Array<{ status: string }>;
+  bidders_count: number;
 }
+
+// ─── Types ────────────────────────────────────────────────────────────────────
+interface DateRange {
+  start: Date | null;
+  end: Date | null;
+}
+
+// ─── CalendarPicker ───────────────────────────────────────────────────────────
+function CalendarPicker({ onSelect, dateRange, onClose }: {
+  onSelect: (range: DateRange) => void;
+  dateRange: DateRange;
+  onClose: () => void;
+}) {
+  const [currentMonth, setCurrentMonth] = useState(dateRange.start || new Date());
+  const [selectingStep, setSelectingStep] = useState<'START' | 'END'>(
+    dateRange.start ? 'END' : 'START'
+  );
+
+  const days = useMemo(() => {
+    const startIdx = startOfWeek(startOfMonth(currentMonth));
+    const endIdx = endOfWeek(endOfMonth(currentMonth));
+    return eachDayOfInterval({ start: startIdx, end: endIdx });
+  }, [currentMonth]);
+
+  const handleDateClick = (day: Date) => {
+    if (selectingStep === 'START' || !dateRange.start || isBefore(day, dateRange.start)) {
+      onSelect({ start: day, end: null });
+      setSelectingStep('END');
+    } else {
+      onSelect({ ...dateRange, end: day });
+      setSelectingStep('START');
+    }
+  };
+
+  return (
+    <div className={styles.calendarcontainer}>
+      <div className={styles.calendarheader}>
+        <h4 className={styles.calendartitle}>{format(currentMonth, 'MMMM yyyy', { locale: id })}</h4>
+        <div className={styles.calendarnav}>
+          <button onClick={() => setCurrentMonth(subMonths(currentMonth, 1))} className={styles.calendarnavButton}>
+            <ChevronLeft className={styles.calendarnavIcon} />
+          </button>
+          <button onClick={() => setCurrentMonth(addMonths(currentMonth, 1))} className={styles.calendarnavButton}>
+            <ChevronRight className={styles.calendarnavIcon} />
+          </button>
+        </div>
+      </div>
+
+      <div className={styles.calendardaysHeader}>
+        {['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'].map((d, i) => (
+          <div key={i} className={styles.calendardayLabel}>{d}</div>
+        ))}
+      </div>
+
+      <div className={styles.calendargrid}>
+        {days.map((day, i) => {
+          const isSelectedStart = dateRange.start && isSameDay(day, dateRange.start);
+          const isSelectedEnd = dateRange.end && isSameDay(day, dateRange.end);
+          const isInRange = dateRange.start && dateRange.end &&
+            isWithinInterval(day, { start: startOfDay(dateRange.start), end: endOfDay(dateRange.end) });
+          const isCurrentMonth = isSameMonth(day, currentMonth);
+
+          return (
+            <button
+              key={i}
+              onClick={() => handleDateClick(day)}
+              className={`
+                ${styles.calendarday}
+                ${!isCurrentMonth ? styles.calendardayOutside : styles.calendardayCurrent}
+                ${isInRange ? styles.calendardayInRange : ''}
+                ${isSelectedStart ? styles.calendardayStart : ''}
+                ${isSelectedEnd ? styles.calendardayEnd : ''}
+                ${isSelectedStart && dateRange.end ? styles.calendarroundRightNone : ''}
+                ${isSelectedEnd && dateRange.start ? styles.calendarroundLeftNone : ''}
+              `}
+            >
+              {format(day, 'd')}
+            </button>
+          );
+        })}
+      </div>
+
+      <div className={styles.calendarfooter}>
+        <button onClick={() => { onSelect({ start: null, end: null }); setSelectingStep('START'); }}
+          className={styles.calendarclearButton}>
+          Reset
+        </button>
+        <button onClick={onClose} className={styles.calendardoneButton}>
+          {dateRange.start && !dateRange.end ? 'Pilih Rentang' : 'Selesai'}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// Utility to format currency
+const formatCurrency = (amount: number) => {
+  return new Intl.NumberFormat("id-ID", {
+    style: "currency",
+    currency: "IDR",
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(amount);
+};
+
+// Utility to format time remaining
+const getEndsIn = (endsAt: string) => {
+  const diff = new Date(endsAt).getTime() - new Date().getTime();
+  if (diff <= 0) return "Sudah Berakhir";
+  const hours = Math.floor(diff / (1000 * 60 * 60));
+  const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+  
+  if (hours > 0) {
+    return `${hours}h ${minutes}m`;
+  }
+  return `${minutes}m`;
+};
 
 function formatCountdown(endsAt: string): string {
   const diff = new Date(endsAt).getTime() - Date.now();
@@ -40,8 +171,7 @@ function getProgressPercent(endsAt: string): number {
   return Math.min(100, (diff / maxMs) * 100);
 }
 
-// ─── PART 1: UI CARD KHUSUS UNTUK LELANG LIVE ───
-function LiveAuctionCard({ auction }: { auction: ActiveAuction }) {
+function AuctionCard({ auction }: { auction: ActiveAuction }) {
   const router = useRouter();
   const [countdown, setCountdown] = useState(formatCountdown(auction.ends_at));
   const [progress, setProgress]   = useState(getProgressPercent(auction.ends_at));
@@ -67,13 +197,7 @@ function LiveAuctionCard({ auction }: { auction: ActiveAuction }) {
         <div className={styles.badgeWrapper}>
           <span className={styles.liveBadge}>
             <span className={styles.pulseDot}></span>
-            Live
-          </span>
-        </div>
-
-        <div className={styles.wrapper}>
-          <span className={`${styles.cardbadge} ${hasBid ? styles.winning : styles.losing}`}>
-            {hasBid ? <><TrendingUp className={styles.icon} /> Ada Penawaran</> : <><Clock className={styles.icon} /> Menunggu Bid</>}
+            Sedang Berlangsung
           </span>
         </div>
 
@@ -98,15 +222,25 @@ function LiveAuctionCard({ auction }: { auction: ActiveAuction }) {
         </div>
 
         <div className={styles.bid}>
-          <div className={`${styles.contentcard} ${hasBid ? styles.cardNeutral : styles.cardLosing}`}>
+          <div className={`${styles.contentcard}`}>
             <div className={styles.bidcontent}>
-              <span className={`${styles.label} ${hasBid ? styles.cardNeutral : styles.cardLosing}`}>Harga Awal</span>
-              <span className={`${styles.value} ${hasBid ? styles.cardNeutral : styles.cardLosing}`}>Rp {auction.start_price.toLocaleString('id-ID')}</span>
+              <span className={`${styles.label}`}>
+                Penawar
+              </span>
+              <span className={`${styles.value} `}>
+                {auction.bidders_count} 
+              </span>
             </div>
+
             <div className={styles.divider}></div>
+
             <div className={styles.bidcontent}>
-              <span className={`${styles.label} ${hasBid ? styles.labelNeutral : styles.labelLosing}`}>Bid Tertinggi</span>
-              <span className={`${styles.value} ${hasBid ? styles.valueYourWin : styles.valueYourLose}`}>Rp {currentBid.toLocaleString('id-ID')}</span>
+              <span className={`${styles.label}`}>
+                Bid Tertinggi
+              </span>
+              <span className={`${styles.value}`}>
+                Rp {currentBid.toLocaleString('id-ID')}
+              </span>
             </div>
           </div>
         </div>
@@ -126,7 +260,7 @@ function LiveAuctionCard({ auction }: { auction: ActiveAuction }) {
             onClick={() => router.push(`/fisherman/enchantedAuctionHistory/${auction.id}`)}
             className={`${styles.button} ${hasBid ? styles.buttonWin : styles.buttonLose}`}
           >
-            Lihat Detail <ArrowRight size={14} />
+            Lihat Detail
           </button>
         </div>
       </div>
@@ -134,201 +268,257 @@ function LiveAuctionCard({ auction }: { auction: ActiveAuction }) {
   );
 }
 
-// ─── PART 2: UI TABEL ROW KHUSUS UNTUK LOGISTIK/PENGIRIMAN ───
-function ShippingRowItem({ auction, token }: { auction: ActiveAuction; token: string }) {
-  const router = useRouter();
-  const [buyerName, setBuyerName] = useState('-');
-  const [buyerLoading, setBuyerLoading] = useState(true);
-
-  // Ambil data nama pembeli dari endpoint history detail
-  useEffect(() => {
-    if (!auction.id || !token) return;
-    fetch(`${API_URL}/api/history/detail/${auction.id}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then(res => res.ok ? res.json() : null)
-      .then(data => {
-        setBuyerName(data?.winner?.name || 'Tidak ada pemenang');
-      })
-      .catch(() => setBuyerName('-'))
-      .finally(() => setBuyerLoading(false));
-  }, [auction.id, token]);
-
-  const deliveryStatus = Array.isArray(auction.logistics)
-    ? auction.logistics[0]?.status
-    : auction.logistics?.status;
-
-  const isShipping = deliveryStatus === 'shipping' || deliveryStatus === 'on_progress';
-
-  return (
-    <div className={styles.itemRow}>
-      {/* Kolom Produk */}
-      <div className={styles.productCell}>
-        <div className={styles.imageMiniWrapper}>
-          {auction.image_url ? (
-            <img src={auction.image_url} alt={auction.name} className={styles.imageMini} />
-          ) : (
-            <Fish size={18} color="#94a3b8" />
-          )}
-        </div>
-        <div>
-          <h4 className={styles.cardtitle} style={{ fontSize: '14px' }}>{auction.name}</h4>
-          <p className={styles.cardmeta}>{auction.grade || 'STANDAR'} • {auction.weight_kg}KG</p>
-        </div>
-      </div>
-
-      {/* Kolom Pembeli */}
-      <div className={styles.textCell}>
-        {buyerLoading ? <Loader2 size={12} className="animate-spin" /> : buyerName}
-      </div>
-
-      {/* Kolom Status Logistik */}
-      <div>
-        <span className={`${styles.deliveryBadge} ${isShipping ? styles.statusShipping : styles.statusPending}`}>
-          <Truck size={12} /> {isShipping ? 'Dalam Perjalanan' : 'Menunggu Pengiriman'}
-        </span>
-      </div>
-
-      {/* Kolom Harga Akhir */}
-      <div className={styles.priceCell}>
-        Rp {(auction.current_bid || auction.start_price).toLocaleString('id-ID')}
-      </div>
-
-      {/* Kolom Aksi */}
-      <div className={styles.actionCell}>
-        <button 
-          onClick={() => router.push(`/fisherman/enchantedAuctionHistory/${auction.id}`)}
-          className={styles.btnAction}
-        >
-          Detail
-        </button>
-      </div>
-    </div>
-  );
-}
-
-// ─── MAIN PAGE COMPONENT ───
-export default function FishermanStatusPage() {
+export default function BiddingStatusPage() {
   const { user, token } = useAuth();
-  const [liveAuctions, setLiveAuctions] = useState<ActiveAuction[]>([]);
-  const [shippingAuctions, setShippingAuctions] = useState<ActiveAuction[]>([]);
-  const [loading, setLoading]   = useState(true);
-  const [fetchError, setFetchError] = useState('');
+  const [data, setData] = useState<BiddingStatusResponse | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [dateRange, setDateRange] = useState<DateRange>({ start: null, end: null });
+  const [isDateDropdownOpen, setIsDateDropdownOpen] = useState(false);
+  const { auctions} = useSellerAuctions();
 
-  const fetchAuctions = useCallback(async () => {
+  const fetchStatus = useCallback(async () => {
     if (!user?.id || !token) return;
+    setLoading(true);
     try {
-      const res = await fetch(`${API_URL}/api/auctions/seller/${user.id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (!res.ok) throw new Error((await res.json()).error || 'Gagal memuat lelang.');
-      const data: ActiveAuction[] = await res.json();
-      
-      // 1. Filter lelang aktif (Tetap pakai struktur Card)
-      const live = data.filter(item => item.status === 'active');
-      
-      // 2. Filter logistik jalan & Sembunyikan 'cancelled' (Masuk ke struktur Tabel)
-      const shipping = data.filter(item => {
-        if (item.status === 'active' || item.status === 'cancelled') return false;
-
-        const deliveryStatus = Array.isArray(item.logistics)
-          ? item.logistics[0]?.status
-          : item.logistics?.status;
-
-        return deliveryStatus !== 'delivered';
-      });
-
-      setLiveAuctions(live);
-      setShippingAuctions(shipping);
-    } catch (err) {
-      setFetchError(err instanceof Error ? err.message : 'Terjadi kesalahan.');
+      const result = await auctionService.getBiddingStatus(user.id, token);
+      setData(result);
+      setError(null);
+    } catch (err: any) {
+      setError(err.message || "Gagal memuat status lelang");
     } finally {
       setLoading(false);
     }
   }, [user?.id, token]);
 
   useEffect(() => {
-    fetchAuctions();
-    const interval = setInterval(fetchAuctions, 30_000);
-    return () => clearInterval(interval);
-  }, [fetchAuctions]);
+    fetchStatus();
+  }, [fetchStatus]);
 
-  const totalProses = liveAuctions.length + shippingAuctions.length;
+  // Filter lelang berdasarkan pencarian (nama ikan/lelang)
+  const filteredActive = data?.active.filter((auction) => 
+    auction.name.toLowerCase().includes(searchQuery.toLowerCase())
+  ) || [];
+
+  // const filteredFinished = data?.finished.filter((auction) => 
+  //   auction.name.toLowerCase().includes(searchQuery.toLowerCase())
+  // ) || [];
+
+  
+
+  const filteredFinished = useMemo(() => {
+  return (
+    data?.finished.filter(item => {
+      const matchesSearch = searchQuery
+        ? item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          (item.species &&
+            item.species.toLowerCase().includes(searchQuery.toLowerCase()))
+        : true;
+
+      let matchesDate = true;
+
+      if (dateRange.start) {
+        const itemDate = new Date(item.ends_at);
+        const start = startOfDay(dateRange.start);
+
+        if (dateRange.end) {
+          matchesDate =
+            itemDate >= start &&
+            itemDate <= endOfDay(dateRange.end);
+        } else {
+          matchesDate = itemDate >= start;
+        }
+      }
+
+      return matchesSearch && matchesDate;
+    }) || []
+  );
+}, [data, searchQuery, dateRange]);
+  
+
+  // If user is not ready but it's initially loading
+  if (!user && !loading) {
+    return <div className={styles.errorState}>Silakan masuk untuk melihat halaman ini.</div>;
+  }
+
+  // calendar
+    
+
+    const getLabel = () => {
+        if (!dateRange.start) return 'Rentang Tanggal';
+        if (dateRange.end) return `${format(dateRange.start, 'dd MMM')} - ${format(dateRange.end, 'dd MMM yyyy')}`;
+        return format(dateRange.start, 'dd MMM yyyy');
+      };
+
+    
+    
 
   return (
-    <div className={styles.all}>
+    <div className={styles.layout}>
       <SideFisherman />
-      <div className={styles.container}>
+      <div className={styles.mainWrapper}>
         <NavbarFisherman />
-
-        <div className={styles.content}>
+        
+        <main className={styles.main}>
+          {/* Header Section */}
           <div className={styles.headerContainer}>
-            <section className={styles.titleSection}>
-              <h1 className={styles.pageTitle}>Status & Pantauan Lelang</h1>
+            <div>
+              <h1 className={styles.pageTitle}>Status Lelang</h1>
               <p className={styles.pageSubtitle}>
-                Pantau jalannya lelang aktif serta monitor pengiriman hasil laut yang berhasil terjual.
+                Pantau daftar aktif Anda dan tinjau lelang yang sudah selesai.
               </p>
-            </section>
+            </div>
+            
           </div>
 
-          {loading ? (
-            <div style={{ padding: '6rem 0', textAlign: 'center', color: '#94a3b8', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
-              <Loader2 size={32} className="animate-spin" />
-              Memuat data pantauan lelang...
+          {loading && (
+            <div className={styles.loadingState}>
+              <Loader2 size={32} className="animate-spin" style={{ margin: "0 auto 16px" }} />
+              Memuat lelang Anda...
             </div>
-          ) : fetchError ? (
-            <div style={{ padding: '3rem', textAlign: 'center', color: '#dc2626' }}>{fetchError}</div>
-          ) : totalProses === 0 ? (
-            <div className={styles.contentcontainer} style={{ padding: '4rem 1rem', textAlign: 'center', color: '#94a3b8', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.75rem' }}>
-              <Fish size={48} style={{ opacity: 0.3 }} />
-              <h3>Belum Ada Kegiatan Pantauan</h3>
-              <p>Tidak ada lelang aktif maupun proses pengiriman barang saat ini.</p>
+          )}
+
+          {error && (
+            <div className={styles.errorState}>
+              {error}
             </div>
-          ) : (
+          )}
+
+          {!loading && !error && data && (
             <>
-              {/* SECTION 1: LELANG LIVE (GRID MODEL CARD) */}
-              {liveAuctions.length > 0 && (
-                <div className={styles.contentcontainer} style={{ marginBottom: '2.5rem' }}>
-                  <div className={styles.contentheader}>
-                    <h2 className={styles.contenttitle}>Lelang Live Anda</h2>
-                    <span className={styles.badge} style={{ backgroundColor: '#ef4444', color: '#fff' }}>{liveAuctions.length} Live</span>
-                  </div>
-                  <div className={styles.grid}>
-                    {liveAuctions.map(auction => (
-                      <LiveAuctionCard key={auction.id} auction={auction} />
-                    ))}
-                  </div>
+              {/* Active Auctions Section */}
+              <div className={styles.sectionTitleWrap}>
+                <h2 className={styles.sectionTitle}>Lelang Aktif</h2>
+              </div>
+
+              {filteredActive.length === 0 ? (
+                <div className={styles.emptyState}>Tidak ada lelang aktif saat ini.</div>
+              ) : (
+                <div className={styles.activeAuctionsGrid}>
+                  {filteredActive.map((auction) => (
+
+                    <AuctionCard key={auction.id} auction={auction} />
+                  ))}
                 </div>
               )}
 
-              {/* SECTION 2: PROSES LOGISTIK (MODEL TABEL HORIZONTAL) */}
-              {shippingAuctions.length > 0 && (
-                <div className={styles.contentcontainer}>
-                  <div className={styles.contentheader}>
-                    <h2 className={styles.contenttitle}>Dalam Proses Pengiriman</h2>
-                    <span className={styles.badge} style={{ backgroundColor: '#2563eb', color: '#fff' }}>{shippingAuctions.length} Transaksi</span>
-                  </div>
-                  
-                  {/* Tampilan Tabel Ringkas */}
-                  <div className={styles.tableContainer}>
-                    <div className={styles.tableHeader}>
-                      <div>Spesies</div>
-                      <div>Pembeli</div>
-                      <div>Status Pengiriman</div>
-                      <div>Harga Akhir</div>
-                      <div></div>
+              {/* Finished Auctions Section */}
+              <div className={styles.sectionTitleWrap} style={{ marginTop: "40px" }}>
+                <h2 className={styles.sectionTitle}>Lelang Selesai</h2>
+
+                <div className={styles.controls}>
+                  <div className={styles.searchBar}>
+                    <div className={styles.searchInputWrap}>
+                      <Search size={16} className={styles.searchIcon} />
+                      <input 
+                        type="text" 
+                        placeholder="Cari lelang..." 
+                        className={styles.searchInput}
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                      />
                     </div>
-                    <div>
-                      {shippingAuctions.map(auction => (
-                        <ShippingRowItem key={auction.id} auction={auction} token={token ?? ''} />
+                  </div>
+                  <div className={styles.dropdownWrapper}>
+                    <button onClick={() => setIsDateDropdownOpen(!isDateDropdownOpen)} className={styles.filterButton}>
+                      {getLabel()}
+                      <Calendar className={styles.icon} />
+                    </button>
+
+                    {isDateDropdownOpen && (
+                      <>
+                        <div className={styles.overlay} onClick={() => setIsDateDropdownOpen(false)} />
+                        <CalendarPicker
+                          dateRange={dateRange}
+                          onSelect={setDateRange}
+                          onClose={() => { if (dateRange.start && dateRange.end) setIsDateDropdownOpen(false); }}
+                        />
+                      </>
+                    )}
+                  </div>
+                </div>
+                
+              </div>
+
+              {filteredFinished.length === 0 ? (
+                <div className={styles.emptyState}>Belum ada lelang selesai.</div>
+              ) : (
+                <div className={styles.finishedContainer}>
+                  <table className={styles.table}>
+                    <thead>
+                      <tr>
+                        <th>DETAIL IKAN</th>
+                        <th>TANGGAL TRANSAKSI</th>
+                        <th>BID AKHIR</th>
+                        <th>PENAWAR</th>
+                        <th>PEMENANG</th>
+                        <th style={{ textAlign: "right" }}></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {filteredFinished.map((auction) => (
+                        <tr key={auction.id}>
+                          <td>
+                            <div className={styles.fishDetailCell}>
+                              <img 
+                                src={auction.image_url || "/fish-placeholder.jpg"} 
+                                alt={auction.name} 
+                                className={styles.fishDetailImage}
+                                onError={(e) => {
+                                  (e.target as HTMLImageElement).src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="44" height="44"><rect width="100%" height="100%" fill="%230f172a"/></svg>';
+                                }}
+                              />
+                              <div>
+                                <h4 className={styles.fishDetailName}>{auction.name}</h4>
+                                <p className={styles.fishDetailWeight}>BERAT: {auction.weight_kg}KG</p>
+                              </div>
+                            </div>
+                          </td>
+                          <td>
+                            <div className={styles.dateBid}>
+                              {(() => {
+                                const date = new Date(auction.ends_at);
+
+                                const formatted = `${String(date.getDate()).padStart(2, '0')} ${date.toLocaleDateString('id-ID', {
+                                  month: 'long',
+                                  year: 'numeric',
+                                })}`;
+
+                                return formatted;
+                              })()}
+                            </div>
+                          </td>
+                          <td>
+                            <div className={styles.finalBidPrice}>
+                              {formatCurrency(auction.final_price || auction.current_bid || 0)}
+                            </div>
+                          </td>
+                          <td>
+                            <div className={styles.biddersCount}>
+                              {auction.bidders_count} Penawar
+                            </div>
+                          </td>
+                          <td>
+                            <div className={styles.winnerWrap}>
+                              {/* <ShieldCheck size={16} color="#94a3b8" /> */}
+                              {auction.winner_name || "Belum Ada Pemenang"}
+                            </div>
+                          </td>
+                          <td style={{ textAlign: "right" }}>
+                            <a href={`/fisherman/AuctionDetail/${auction.id}`} className={styles.actionLink}>
+                              Lihat Detail
+                            </a>
+                          </td>
+                        </tr>
                       ))}
-                    </div>
-                  </div>
+                    </tbody>
+                  </table>
                 </div>
               )}
             </>
           )}
-        </div>
+        </main>
       </div>
     </div>
   );
