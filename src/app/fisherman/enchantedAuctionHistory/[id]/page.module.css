@@ -29,33 +29,29 @@
 .header {
   display: flex;
   flex-direction: column;
-  gap: var(--space-xs);
+  /* gap: var(--space-xs); */
   margin-bottom: 2rem;
 }
 
-.backLink {
+.backLink{
   display: flex;
   align-items: center;
   gap: var(--space-xs);
-  align-self: flex-start;
   background: none;
   border: none;
-  color: var(--clr-text-muted);
-  font-weight: 500;
-  font-size: var(--fs-sm);
   cursor: pointer;
-  padding: 0;
-  margin-bottom: var(--space-sm);
-  transition: color 0.2s ease;
+  color: var(--clr-text-muted);
+  /* margin-bottom: var(--space-sm);; */
+  font-size: var(--fs-sm);
 }
 
-.backLink:hover {
+.backLink:hover{
   color: var(--clr-primary);
 }
 
 .pageTitle {
   font-size: var(--fs-tittle);
-  font-weight: 800;
+  font-weight: var(--fw-title);
   color: var(--clr-foreground);
 }
 
@@ -114,7 +110,7 @@
 .cardTitle {
   font-size: var(--fs-md);
   font-weight: var(--fw-h4);
-  color: var(--clr-primary);
+  color: var(--clr-foreground);
   /* margin: 0 0 1rem 0; */
 }
 
@@ -161,7 +157,7 @@
 }
 
 .title {
-  font-size: var(--fs-lg);
+  font-size: var(--fs-xl);
   font-weight: var(--fw-title);
   color: var(--clr-foreground);
 }
@@ -481,7 +477,7 @@
 /* ── Route ── */
 .routeContainer { display: flex; flex-direction: column; gap: 1rem; }
 .routeItem { display: flex; align-items: center; gap: 0.75rem; }
-.pickupIcon  { color: var(--clr-foreground); flex-shrink: 0; margin-top: 2px; }
+.pickupIcon  { color: var(--clr-success); flex-shrink: 0; margin-top: 2px; }
 .deliveryIcon { 
   color: #ea580c; 
   flex-shrink: 0; 

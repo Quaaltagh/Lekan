@@ -269,7 +269,12 @@ export default function AuctionHistoryDetailPage() {
                     <div className={styles.statIconWrap} style={{ background: '#f0fdf4' }}>
                       <Award size={20} color="#16a34a" />
                     </div>
-                    <span className={styles.statLabel}>Harga Final</span>
+                    <span className={styles.statLabel}>
+                      {auction.status === 'active'
+                        ? 'Harga Sekarang'
+                        : 'Harga Final'}
+
+                    </span>
                   </div>
                   
                   <span className={styles.statValue} style={{ color: '#16a34a' }}>{formatIDR(auction.final_price)}</span>
