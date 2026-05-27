@@ -83,8 +83,8 @@ export const getSellerLogistics = async (req: Request, res: Response): Promise<v
     // Self-healing: buat logistik yang belum ada
     for (const auction of doneAuctions || []) {
       if (!existingAuctionIds.has(auction.id)) {
-        const winnerId      = await getWinnerId(auction.id);
-        const buyerAddress  = await getAddress(winnerId);
+        const winnerId     = await getWinnerId(auction.id);
+        const buyerAddress = await getAddress(winnerId);
 
         await buildAndInsertLogistics({
           auctionId:       auction.id,
@@ -155,10 +155,38 @@ export const departShip = async (req: Request, res: Response): Promise<void> => 
 // ── PATCH /api/logistics/:id/arrived ─────────────────────────────────────────
 export const arrivedShip = async (req: Request, res: Response): Promise<void> => {
   const { id } = req.params;
-  const { data: logistics, error } = await getLogisticsWithBuyer(id);
+
+  // Ambil data lengkap termasuk estimated_arrival
+  const { data: logistics, error } = await supabase
+    .from('logistics')
+    .select('*, auctions(name)')
+    .eq('id', id)
+    .single();
 
   if (error || !logistics) { res.status(404).json({ error: 'Data logistik tidak ditemukan.' }); return; }
   if (logistics.status !== 'shipped') { res.status(400).json({ error: 'Status harus shipped sebelum bisa tiba.' }); return; }
+
+  // ── Validasi estimasi waktu tiba ──────────────────────────────────────────
+  if (logistics.estimated_arrival) {
+    const now       = new Date();
+    const estimated = new Date(logistics.estimated_arrival);
+    if (now < estimated) {
+      const diffMs    = estimated.getTime() - now.getTime();
+      const diffDays  = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+      const diffHours = Math.ceil((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+
+      const timeLabel = diffDays > 0
+        ? `${diffDays} hari ${diffHours} jam`
+        : `${diffHours} jam`;
+
+      res.status(400).json({
+        error: `Kapal belum bisa dikonfirmasi tiba. Estimasi tiba dalam ${timeLabel} lagi.`,
+        estimated_arrival: logistics.estimated_arrival,
+        can_confirm_at: logistics.estimated_arrival,
+      });
+      return;
+    }
+  }
 
   const { data: updated, error: updateError } = await supabase
     .from('logistics')

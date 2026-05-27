@@ -45,7 +45,6 @@ interface BuyerProfile {
   email?: string;
 }
 
-// Urutan status logistik
 const STATUS_ORDER: LogisticsData['status'][] = ['pending', 'shipped', 'arrived', 'delivered'];
 
 const formatDate = (dateStr: string) =>
@@ -78,15 +77,96 @@ const STEP_CONFIG = [
   },
 ];
 
+// ── Komponen countdown untuk tombol konfirmasi kapal tiba ────────────────────
+function ShippingCountdownButton({
+  estimatedArrival,
+  onConfirm,
+  isLoading,
+}: {
+  estimatedArrival: string;
+  onConfirm: () => void;
+  isLoading: boolean;
+}) {
+  const [timeLeft, setTimeLeft] = useState('');
+  const [canConfirm, setCanConfirm] = useState(false);
+
+  useEffect(() => {
+    const tick = () => {
+      const now  = new Date();
+      const eta  = new Date(estimatedArrival);
+      const diff = eta.getTime() - now.getTime();
+
+      if (diff <= 0) {
+        setCanConfirm(true);
+        setTimeLeft('');
+        return;
+      }
+
+      const days    = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours   = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+
+      if (days > 0) {
+        setTimeLeft(`${days} hari ${hours} jam ${minutes} menit lagi`);
+      } else if (hours > 0) {
+        setTimeLeft(`${hours} jam ${minutes} menit lagi`);
+      } else {
+        setTimeLeft(`${minutes} menit lagi`);
+      }
+
+      setCanConfirm(false);
+    };
+
+    tick();
+    const interval = setInterval(tick, 60_000);
+    return () => clearInterval(interval);
+  }, [estimatedArrival]);
+
+  const etaFormatted = new Date(estimatedArrival).toLocaleDateString('id-ID', {
+    day: 'numeric', month: 'long', year: 'numeric',
+  });
+
+  return (
+    <div>
+      {!canConfirm && (
+        <div className={styles.statusBoxInfo} style={{ marginBottom: '12px' }}>
+          <Clock size={18} />
+          <div>
+            <span>Estimasi tiba: <strong>{etaFormatted}</strong></span>
+            {timeLeft && (
+              <p style={{ margin: '2px 0 0', fontSize: '0.85rem', opacity: 0.8 }}>
+                Tombol akan aktif dalam {timeLeft}
+              </p>
+            )}
+          </div>
+        </div>
+      )}
+      <button
+        onClick={onConfirm}
+        disabled={!canConfirm || isLoading}
+        className={styles.secondaryActionBtn}
+        style={!canConfirm ? { opacity: 0.5, cursor: 'not-allowed' } : {}}
+      >
+        {isLoading
+          ? <Loader2 className="animate-spin" size={18} />
+          : canConfirm
+          ? 'Konfirmasi Kapal Tiba'
+          : 'Menunggu Estimasi Tiba...'}
+      </button>
+    </div>
+  );
+}
+
+// ── Main Page ────────────────────────────────────────────────────────────────
 export default function FishermanAuctionDetailPage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
   const { user, token, isLoading } = useAuth();
 
-  const [logistics, setLogistics]     = useState<LogisticsData | null>(null);
-  const [buyer, setBuyer]             = useState<BuyerProfile | null>(null);
-  const [loading, setLoading]         = useState(true);
-  const [error, setError]             = useState<string | null>(null);
+  const [logistics, setLogistics]         = useState<LogisticsData | null>(null);
+  const [buyer, setBuyer]                 = useState<BuyerProfile | null>(null);
+  const [loading, setLoading]             = useState(true);
+  const [error, setError]                 = useState<string | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
 
   const fetchDetails = useCallback(async () => {
@@ -180,7 +260,6 @@ export default function FishermanAuctionDetailPage() {
   const { auctions: auction, status } = logistics;
   const finalPrice = auction.final_price || 0;
 
-  // ── Derive timeline steps dari status real ──────────────────────────────
   const currentIdx = STATUS_ORDER.indexOf(status);
   const steps = STEP_CONFIG.map((step, idx) => ({
     ...step,
@@ -191,7 +270,7 @@ export default function FishermanAuctionDetailPage() {
   const tags = [
     'SUSTAINABLE',
     auction?.grade ? `GRADE ${auction.grade}` : 'SASHIMI GRADE',
-  ]; 
+  ];
 
   return (
     <div className={styles.layout}>
@@ -204,7 +283,7 @@ export default function FishermanAuctionDetailPage() {
 
             <div className={styles.header}>
               <button onClick={() => router.back()} className={styles.backLink}>
-                <ArrowLeft size={18} /> Kembali 
+                <ArrowLeft size={18} /> Kembali
               </button>
               <h1 className={styles.pageTitle}>Detail Pemesanan & Logistik</h1>
               <p className={styles.pageSubtitle}>Lacak status pengiriman tangkapan Anda secara real-time.</p>
@@ -225,53 +304,25 @@ export default function FishermanAuctionDetailPage() {
                     />
                   </div>
                   <div className={styles.headerContainer}>
-                      <div className={styles.titleWrapper}>
-                        <h1 className={styles.title}>{auction.name}</h1>
-                        <div className={styles.subtitle}>Ditambahkan {formatDate(auction.created_at)} • Berakhir {formatDate(auction.ends_at)}</div>
+                    <div className={styles.titleWrapper}>
+                      <h1 className={styles.title}>{auction.name}</h1>
+                      <div className={styles.subtitle}>
+                        Ditambahkan {formatDate(auction.created_at)} • Berakhir {formatDate(auction.ends_at)}
                       </div>
-                      <div className={styles.weightBox}>
-                        <span className={styles.weightLabel}>Berat</span>
-                        <span className={styles.weightValue}>
-                          {auction.weight_kg} <span className={styles.unit}>KG</span>
-                        </span>
-                      </div>
+                    </div>
+                    <div className={styles.weightBox}>
+                      <span className={styles.weightLabel}>Berat</span>
+                      <span className={styles.weightValue}>
+                        {auction.weight_kg} <span className={styles.unit}>KG</span>
+                      </span>
+                    </div>
                   </div>
-        
-                  {/* Tags */}
                   <div className={styles.tagContainer}>
                     {tags.map(tag => <span key={tag} className={styles.tag}>{tag}</span>)}
                   </div>
                 </div>
 
-                {/* Timeline — sekarang dinamis dari status DB */}
-                {/* <div className={styles.card}>
-                  <h3 className={styles.cardTitle}>Status Pelacakan Logistik</h3>
-                  <div className={styles.timeline}>
-                    {steps.map((step, idx) => {
-                      const { Icon } = step;
-                      return (
-                        <div
-                          key={step.key}
-                          className={`
-                            ${styles.timelineItem}
-                            ${step.isDone    ? styles.activeTimeline   : ''}
-                            ${step.isCurrent ? styles.currentTimeline  : ''}
-                          `}
-                        >
-                          <div className={styles.timelineIconWrapper}>
-                            <Icon size={20} />
-                            {idx < steps.length - 1 && <div className={styles.timelineLine} />}
-                          </div>
-                          <div className={styles.timelineContent}>
-                            <h4 className={styles.timelineLabel}>{step.label}</h4>
-                            <p className={styles.timelineDesc}>{step.desc}</p>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div> */}
-
+                {/* Timeline */}
                 <div className={styles.card}>
                   <h3 className={styles.cardTitle}>Status Logistik</h3>
                   <div className={styles.verticalTimeline}>
@@ -282,8 +333,8 @@ export default function FishermanAuctionDetailPage() {
                           key={step.key}
                           className={`
                             ${styles.timelineStep}
-                            ${step.isDone    ? styles.stepDone   : ''}
-                            ${step.isCurrent ? styles.stepCurrent  : ''}
+                            ${step.isDone    ? styles.stepDone    : ''}
+                            ${step.isCurrent ? styles.stepCurrent : ''}
                           `}
                         >
                           <div className={styles.stepIconWrapper}>
@@ -323,7 +374,9 @@ export default function FishermanAuctionDetailPage() {
                     <div className={styles.buyerinfo}>
                       <span className={styles.infoLabel}>Pemenang Lelang</span>
                       <h4 className={styles.buyerName}>{buyer?.full_name || 'Pembeli Terverifikasi'}</h4>
-                      <p className={styles.buyerContact}>{buyer?.phone ? `+62${buyer.phone}` : buyer?.email || 'Kontak tidak tersedia'}</p>
+                      <p className={styles.buyerContact}>
+                        {buyer?.phone ? `+62${buyer.phone}` : buyer?.email || 'Kontak tidak tersedia'}
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -344,7 +397,9 @@ export default function FishermanAuctionDetailPage() {
                       <Anchor className={styles.deliveryIcon} />
                       <div>
                         <span className={styles.routeLabel}>Tujuan</span>
-                        <p className={styles.routeAddress}>{logistics.delivery_address || logistics.destination || 'Pelabuhan Tujuan Buyer'}</p>
+                        <p className={styles.routeAddress}>
+                          {logistics.delivery_address || logistics.destination || 'Pelabuhan Tujuan Buyer'}
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -374,7 +429,10 @@ export default function FishermanAuctionDetailPage() {
                 </div>
 
                 {/* Kontrol Nelayan */}
-                <div className={styles.card} style={{ border: '1.5px solid var(--clr-primary-light)', background: 'var(--clr-primary-lightest)' }}>
+                <div
+                  className={styles.card}
+                  style={{ border: '1.5px solid var(--clr-primary-light)', background: 'var(--clr-primary-lightest)' }}
+                >
                   <h3 className={styles.cardTitle}>Kontrol Pengiriman Nelayan</h3>
                   <p className={styles.controlHint}>
                     Perbarui status perjalanan cargo ikan Anda agar pembeli dapat melacak pengiriman secara real-time.
@@ -393,15 +451,25 @@ export default function FishermanAuctionDetailPage() {
                   )}
 
                   {status === 'shipped' && (
-                    <button
-                      onClick={() => handleUpdateStatus('arrived')}
-                      disabled={actionLoading}
-                      className={styles.secondaryActionBtn}
-                    >
-                      {actionLoading
-                        ? <Loader2 className="animate-spin" size={18} />
-                        : 'Konfirmasi Kapal Tiba'}
-                    </button>
+                    logistics.estimated_arrival
+                      ? (
+                        <ShippingCountdownButton
+                          estimatedArrival={logistics.estimated_arrival}
+                          onConfirm={() => handleUpdateStatus('arrived')}
+                          isLoading={actionLoading}
+                        />
+                      ) : (
+                        // Fallback jika estimated_arrival tidak ada
+                        <button
+                          onClick={() => handleUpdateStatus('arrived')}
+                          disabled={actionLoading}
+                          className={styles.secondaryActionBtn}
+                        >
+                          {actionLoading
+                            ? <Loader2 className="animate-spin" size={18} />
+                            : 'Konfirmasi Kapal Tiba'}
+                        </button>
+                      )
                   )}
 
                   {status === 'arrived' && (
