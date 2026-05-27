@@ -1,7 +1,3 @@
-/* ═══════════════════════════════════════════════════════════════
-   Logistics.module.css — konsisten dengan settings.module.css
-═══════════════════════════════════════════════════════════════ */
-
 /* ── Layout (sama dengan settings) ── */
 .layout {
   display: flex;
@@ -18,10 +14,10 @@
 }
 
 .main {
-   padding-left: 37px;
-  padding-right: 15px;
+   padding-left: 24px;
+  padding-right: 24px;
   padding-bottom: 45px;
-  padding-top: 45px;
+  padding-top: 35px;
   max-width: var(--content-max-w, 1200px);
   width: 100%;
   margin: 0 auto;
@@ -51,27 +47,32 @@
 
 /* ── Two-col grid ── */
 .contentGrid {
-  display: grid;
-  grid-template-columns: 1fr 280px;
+  display: flex;
+  flex-direction: row;
+  /* grid-template-columns: 1fr 280px; */
   gap: var(--space-xl);
-  align-items: start;
+  width: 100%;
+  /* align-items: start; */
+  /* justify-content: space-between; */
 }
 
-@media (max-width: 900px) {
-  .contentGrid { grid-template-columns: 1fr; }
+/* @media (max-width: 900px) {
   .main { width: 100%; padding: 24px 24px; }
-}
+} */
 
 .leftCol {
   display: flex;
   flex-direction: column;
   gap: var(--space-lg);
+  width: 67.5%;
 }
 
 /* ── Section card (sama persis dengan settings .settingsCard) ── */
 .sectionBox {
   /* background: var(--clr-border-light); */
+  /* width: 108%; */
   border-radius: var(--radius-lg);
+  margin-bottom: 1rem;
   /* padding: var(--space-lg); */
 }
 
@@ -81,6 +82,7 @@
   align-items: center;
   gap: var(--space-sm);
   margin-bottom: var(--space-md);
+  justify-content: space-between;
 }
 
 /* Icon box (sama dengan settings .iconContainer) */
@@ -99,10 +101,27 @@
 .sectionTitle {
   font-size: var(--fs-lg); /* Diperbesar dari base */
   font-weight: 700; /* Diturunkan dari 800 agar lebih elegan */
-  color: var(--clr-primary);
+  color: var(--clr-foreground);
   margin: 0;
   /* letter-spacing: -0.01em; */
 }
+
+.viewAllBtn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  color: var(--clr-primary);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: opacity var(--transition-fast);
+}
+
+
+.viewAllBtn:hover { color: var(--clr-primary-hover); }
 
 /* ── Empty state ── */
 .emptyState {
@@ -118,12 +137,13 @@
 
 /* ── Shipment card (mirip settings card item) ── */
 .shipmentCard {
-  background: var(--clr-input);
+  background-color: var(--clr-white);
   border-radius: var(--rad);
   border: 1px solid var(--clr-border);
-  padding: var(--space-md);
+  padding: var(--space-lg);
   margin-bottom: var(--space-md);
   transition: box-shadow 0.2s, border-color 0.2s;
+   box-shadow: var(--shadow-sm);
 }
 
 .shipmentCard:last-child {
@@ -131,8 +151,8 @@
 }
 
 .shipmentCard:hover {
-  box-shadow: var(--shadow-lg);
-  border-color: #cbd5e1;
+  box-shadow: var(--shadow-md);
+  /* border-color: #cbd5e1; */
 }
 
 .shipmentHeader {
@@ -144,12 +164,12 @@
 }
 
 .fishMeta {
-  font-size: var(--fs-live);
+  font-size: var(--fs-xs);
   font-weight: var(--fw-h4);
   color: var(--clr-text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  margin-bottom: 4px;
+  /* text-transform: uppercase; */
+  /* letter-spacing: 0.05em; */
+  /* margin-top: 2px; */
 }
 
 .destination {
@@ -170,7 +190,7 @@
 
 .estArrival {
   font-size: var(--fs-sm);
-  color: var(--clr-text-muted);
+  color: var(--clr-primary);
   font-weight: 500;
 }
 
@@ -186,7 +206,7 @@
 }
 
 .trackLink:hover {
-  opacity: 0.75;
+ color: var(--clr-primary-hover);
 }
 
 /* ── Status badges (warna sama, radius pakai var) ── */
@@ -209,8 +229,8 @@
   flex-shrink: 0;
 }
 
-.badgePending   { background: #fef3c7; color: #b45309; }
-.badgePending .badgeDot   { background: #f59e0b; }
+.badgePending   { background: var(--clr-warning-light); color: var(--clr-warning); }
+.badgePending .badgeDot   { background: var(--clr-warning) }
 
 .badgeShipped   { background: #eff6ff; color: var(--clr-primary); }
 .badgeShipped .badgeDot   { background: var(--clr-primary); }
@@ -218,8 +238,8 @@
 .badgeArrived   { background: #ccfbf1; color: #0f766e; }
 .badgeArrived .badgeDot   { background: #14b8a6; }
 
-.badgeDelivered { background: #f0fdf4; color: #15803d; }
-.badgeDelivered .badgeDot { background: #22c55e; }
+.badgeDelivered { background: var(--clr-success-light); color: var(--clr-success); }
+.badgeDelivered .badgeDot { background: var(--clr-success); }
 
 /* ── History table (font & spacing konsisten dengan form settings) ── */
 .historyTable {
@@ -259,6 +279,10 @@
   color: var(--clr-foreground);
 }
 
+.rightCol{
+  width: 30%;
+}
+
 /* ── Partners box (sama style dengan sectionBox) ── */
 .partnersBox {
   background: var(--clr-white);
@@ -266,6 +290,7 @@
   border: 1px solid var(--clr-border);
   padding: 2rem;
   box-shadow: var(--shadow-lg);
+  /* width: 116%; */
 }
 
 /* ── Partner card (mirip prefcard di settings) ── */

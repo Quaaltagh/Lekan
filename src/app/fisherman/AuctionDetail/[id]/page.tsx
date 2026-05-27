@@ -20,6 +20,7 @@ interface AuctionData {
   seller_id: string;
   buyer_id?: string;
   ends_at: string;
+  created_at: string;
 }
 
 interface LogisticsData {
@@ -46,6 +47,9 @@ interface BuyerProfile {
 
 // Urutan status logistik
 const STATUS_ORDER: LogisticsData['status'][] = ['pending', 'shipped', 'arrived', 'delivered'];
+
+const formatDate = (dateStr: string) =>
+  new Date(dateStr).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
 
 const STEP_CONFIG = [
   {
@@ -184,6 +188,11 @@ export default function FishermanAuctionDetailPage() {
     isCurrent: idx === currentIdx,
   }));
 
+  const tags = [
+    'SUSTAINABLE',
+    auction?.grade ? `GRADE ${auction.grade}` : 'SASHIMI GRADE',
+  ]; 
+
   return (
     <div className={styles.layout}>
       <SideFisherman />
@@ -207,31 +216,35 @@ export default function FishermanAuctionDetailPage() {
               <div className={styles.leftCol}>
 
                 {/* Info Ikan */}
-                <div className={styles.card}>
-                  <div className={styles.cardHeaderRow}>
-                    <div className={styles.imageWrapper}>
-                      <img
-                        src={auction.image_url || 'https://darilaut.id/wp-content/uploads/2021/09/Tuna-3.jpg'}
-                        alt={auction.name}
-                        className={styles.fishImage}
-                      />
-                    </div>
-                    <div className={styles.fishMeta}>
-                      <span className={styles.badgeSelesai}>SELESAI</span>
-                      <h2 className={styles.fishName}>{auction.name}</h2>
-                      <div className={styles.tagGrid}>
-                        {auction.grade && <span className={styles.tag}>Grade {auction.grade}</span>}
-                        <span className={styles.tag}>{auction.weight_kg} KG</span>
-                      </div>
-                    </div>
+                <div className={styles.ikan}>
+                  <div className={styles.imageContainer}>
+                    <img
+                      src={auction.image_url || 'https://darilaut.id/wp-content/uploads/2021/09/Tuna-3.jpg'}
+                      alt={auction.name}
+                      className={styles.image}
+                    />
                   </div>
-                  <p className={styles.description}>
-                    Kargo ikan berkualitas tinggi Anda telah dilelang dengan sukses. Gunakan kontrol pengiriman di sebelah kanan untuk memperbarui status logistik perjalanan kapal dari dermaga asal ke pelabuhan tujuan pembeli.
-                  </p>
+                  <div className={styles.headerContainer}>
+                      <div className={styles.titleWrapper}>
+                        <h1 className={styles.title}>{auction.name}</h1>
+                        <div className={styles.subtitle}>Ditambahkan {formatDate(auction.created_at)} • Berakhir {formatDate(auction.ends_at)}</div>
+                      </div>
+                      <div className={styles.weightBox}>
+                        <span className={styles.weightLabel}>Berat</span>
+                        <span className={styles.weightValue}>
+                          {auction.weight_kg} <span className={styles.unit}>KG</span>
+                        </span>
+                      </div>
+                  </div>
+        
+                  {/* Tags */}
+                  <div className={styles.tagContainer}>
+                    {tags.map(tag => <span key={tag} className={styles.tag}>{tag}</span>)}
+                  </div>
                 </div>
 
                 {/* Timeline — sekarang dinamis dari status DB */}
-                <div className={styles.card}>
+                {/* <div className={styles.card}>
                   <h3 className={styles.cardTitle}>Status Pelacakan Logistik</h3>
                   <div className={styles.timeline}>
                     {steps.map((step, idx) => {
@@ -252,6 +265,34 @@ export default function FishermanAuctionDetailPage() {
                           <div className={styles.timelineContent}>
                             <h4 className={styles.timelineLabel}>{step.label}</h4>
                             <p className={styles.timelineDesc}>{step.desc}</p>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div> */}
+
+                <div className={styles.card}>
+                  <h3 className={styles.cardTitle}>Status Logistik</h3>
+                  <div className={styles.verticalTimeline}>
+                    {steps.map((step, idx) => {
+                      const { Icon } = step;
+                      return (
+                        <div
+                          key={step.key}
+                          className={`
+                            ${styles.timelineStep}
+                            ${step.isDone    ? styles.stepDone   : ''}
+                            ${step.isCurrent ? styles.stepCurrent  : ''}
+                          `}
+                        >
+                          <div className={styles.stepIconWrapper}>
+                            <Icon size={25} />
+                            {idx < steps.length - 1 && <div className={styles.verticalLine} />}
+                          </div>
+                          <div className={styles.stepContent}>
+                            <h4 className={styles.stepLabel}>{step.label}</h4>
+                            <p className={styles.stepDesc}>{step.desc}</p>
                           </div>
                         </div>
                       );
@@ -279,8 +320,8 @@ export default function FishermanAuctionDetailPage() {
 
                   <div className={styles.buyerInfoRow}>
                     <div className={styles.avatarCircle}><User size={20} /></div>
-                    <div>
-                      <span className={styles.infoLabel}>Pemenang Lelang (Pembeli)</span>
+                    <div className={styles.buyerinfo}>
+                      <span className={styles.infoLabel}>Pemenang Lelang</span>
                       <h4 className={styles.buyerName}>{buyer?.full_name || 'Pembeli Terverifikasi'}</h4>
                       <p className={styles.buyerContact}>{buyer?.phone ? `+62${buyer.phone}` : buyer?.email || 'Kontak tidak tersedia'}</p>
                     </div>
@@ -293,16 +334,16 @@ export default function FishermanAuctionDetailPage() {
 
                   <div className={styles.routeContainer}>
                     <div className={styles.routeItem}>
-                      <MapPin size={18} className={styles.pickupIcon} />
+                      <MapPin className={styles.pickupIcon} />
                       <div>
-                        <span className={styles.routeLabel}>Lokasi Penjemputan (Asal)</span>
+                        <span className={styles.routeLabel}>Asal</span>
                         <p className={styles.routeAddress}>{logistics.pickup_address || 'Dermaga Asal Nelayan'}</p>
                       </div>
                     </div>
                     <div className={styles.routeItem}>
-                      <Anchor size={18} className={styles.deliveryIcon} />
+                      <Anchor className={styles.deliveryIcon} />
                       <div>
-                        <span className={styles.routeLabel}>Pelabuhan Tujuan</span>
+                        <span className={styles.routeLabel}>Tujuan</span>
                         <p className={styles.routeAddress}>{logistics.delivery_address || logistics.destination || 'Pelabuhan Tujuan Buyer'}</p>
                       </div>
                     </div>
@@ -365,14 +406,14 @@ export default function FishermanAuctionDetailPage() {
 
                   {status === 'arrived' && (
                     <div className={styles.statusBoxInfo}>
-                      <Clock size={16} />
+                      <Clock size={20} />
                       <span>Menunggu konfirmasi penerimaan barang dari pembeli di pelabuhan tujuan.</span>
                     </div>
                   )}
 
                   {status === 'delivered' && (
                     <div className={styles.statusBoxSuccess}>
-                      <CheckCircle2 size={16} />
+                      <CheckCircle2 size={20} />
                       <span>Transaksi Selesai. Pengiriman telah dikonfirmasi oleh pembeli.</span>
                     </div>
                   )}

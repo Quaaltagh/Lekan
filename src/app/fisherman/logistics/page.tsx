@@ -4,9 +4,10 @@ import { useEffect, useState, useCallback } from "react";
 import styles from "./Logistics.module.css";
 import SideFisherman from "../../components/sideFisherman";
 import NavbarFisherman from "../../components/NavbarFisherman";
-import { Truck, Handshake, ArrowRight, Loader2 } from "lucide-react";
+import { Truck, Handshake, ArrowRight, Loader2, ChevronRight } from "lucide-react";
 import { logisticsService, LogisticsResponse, LogisticsShipment } from "@/services/logisticsService";
 import { useAuth } from "@/context/AuthContext";
+import { useRouter } from 'next/navigation';
 
 // Utility to format date nicely (e.g., "Oct 24, 2023")
 const formatDate = (dateString: string) => {
@@ -80,7 +81,7 @@ export default function LogisticsPage() {
         return (
           <div className={`${styles.badge} ${styles.badgeShipped}`}>
             <div className={styles.badgeDot}></div>
-            Dalam Perjalanan (OTW)
+            Dalam Perjalanan
           </div>
         );
       case 'arrived':
@@ -94,7 +95,7 @@ export default function LogisticsPage() {
         return (
           <div className={`${styles.badge} ${styles.badgeDelivered}`}>
             <div className={styles.badgeDot}></div>
-            Selesai / Terkirim
+            Terkirim
           </div>
         );
       default:
@@ -106,6 +107,8 @@ export default function LogisticsPage() {
         );
     }
   };
+
+  const router = useRouter();
 
   return (
     <div className={styles.layout}>
@@ -146,21 +149,25 @@ export default function LogisticsPage() {
                 {/* Active Shipments Box */}
                 <div className={styles.sectionBox}>
                   <div className={styles.sectionTitleWrap}>
-                    <Truck size={20} color="var(--clr-primary)" />
+                    {/* <Truck size={20} color="var(--clr-primary)" /> */}
                     <h2 className={styles.sectionTitle}>Pengiriman Aktif</h2>
+                    <button className={styles.viewAllBtn} onClick={() => router.push(`/fisherman/logistics/Detail`)}>
+                    Lihat Semua <ChevronRight size={14} />
+                  </button>
                   </div>
 
                   {data.active.length === 0 ? (
                     <div className={styles.emptyState}>Tidak ada pengiriman aktif saat ini.</div>
                   ) : (
-                    data.active.map((shipment) => (
+                    data.active.slice(0,3).map((shipment) => (
                       <div key={shipment.id} className={styles.shipmentCard}>
                         <div className={styles.shipmentHeader}>
                           <div>
+                            
+                            <h3 className={styles.destination}>{shipment.auctions?.name || 'Item Tidak Diketahui'} • {shipment.auctions?.weight_kg || 0}KG</h3>
                             <div className={styles.fishMeta}>
-                              {shipment.auctions?.name || 'Item Tidak Diketahui'} • {shipment.auctions?.weight_kg || 0}KG
+                              {shipment.destination || 'Lokasi Tidak Diketahui'}
                             </div>
-                            <h3 className={styles.destination}>{shipment.destination || 'Lokasi Tidak Diketahui'}</h3>
                           </div>
                           {renderStatusBadge(shipment.status)}
                         </div>
@@ -182,6 +189,10 @@ export default function LogisticsPage() {
                 <div className={styles.sectionBox}>
                   <div className={styles.sectionTitleWrap}>
                     <h2 className={styles.sectionTitle}>Riwayat Pengiriman</h2>
+
+                      <button className={styles.viewAllBtn} onClick={() => router.push(`/fisherman/logistics/History`)}>
+                      Lihat Semua <ChevronRight size={14} />
+                    </button>
                   </div>
 
                   {data.history.length === 0 ? (
@@ -198,7 +209,7 @@ export default function LogisticsPage() {
                         </tr>
                       </thead>
                       <tbody>
-                        {data.history.map((shipment) => (
+                        {data.history.slice(0,5).map((shipment) => (
                           <tr key={shipment.id}>
                             <td>{formatDate(shipment.created_at)}</td>
                             <td className={styles.historyDest}>{shipment.destination || 'Unknown'}</td>
@@ -222,7 +233,7 @@ export default function LogisticsPage() {
               <div className={styles.rightCol}>
                 <div className={styles.partnersBox}>
                   <div className={styles.sectionTitleWrap}>
-                    <Handshake size={20} color="#0f172a" />
+                    {/* <Handshake size={20} color="#0f172a" /> */}
                     <h2 className={styles.sectionTitle}>Mitra Logistik</h2>
                   </div>
 
