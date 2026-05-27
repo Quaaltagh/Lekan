@@ -70,7 +70,12 @@ export const getAuctionsBySeller = async (req: Request, res: Response): Promise<
 
   const { data, error } = await supabase
     .from('auctions')
-    .select('*')
+    .select(`
+      *,
+      logistics (
+        status
+      )
+    `)
     .eq('seller_id', sellerId)
     .order('created_at', { ascending: false });
 

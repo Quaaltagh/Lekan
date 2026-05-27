@@ -205,7 +205,9 @@ export const getAuctionHistoryDetail = async (req: Request, res: Response): Prom
   // ── 3. Determine winner ────────────────────────────────────────────────
   const topBid = shapedBids[0] ?? null;
   let winner = null;
-  if (topBid && ['done', 'cancelled'].includes(auction.status) === false || auction.status === 'done') {
+
+  // Perhatikan tambahan tanda kurung di sekitar pengecekan status lelang
+  if (topBid && (!['done', 'cancelled'].includes(auction.status) || auction.status === 'done')) {
     const { data: winnerProfile } = await supabase
       .from('profiles')
       .select('id, full_name, phone, verified')
