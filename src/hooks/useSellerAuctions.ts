@@ -20,6 +20,9 @@ export interface Auction {
   image_url?: string;
   created_at: string;
   updated_at: string;
+  logistics?: {
+    status: string;
+  }
 }
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';

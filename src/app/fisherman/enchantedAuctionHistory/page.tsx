@@ -1,11 +1,12 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import styles from './page.module.css';
 import SideFisherman from '../../components/sideFisherman';
 import NavbarFisherman from '../../components/NavbarFisherman';
-import { Fish, Search, ChevronLeft, ChevronRight, Calendar } from 'lucide-react';
+import { Fish, Search, ChevronLeft, ChevronRight, Calendar, Loader2 } from 'lucide-react';
 import { useSellerAuctions } from '@/hooks/useSellerAuctions';
+import { useAuth } from '@/context/AuthContext';
 import Link from 'next/link';
 
 import {
@@ -21,15 +22,16 @@ import {
 } from 'date-fns';
 import { id } from 'date-fns/locale';
 
-// ─── Fallback image ────────────────────────────────────────────────────────────
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
 function safeSrc(url?: string | null): string | undefined {
   return url && url.trim() !== '' ? url : undefined;
 }
 
-// ─── Types ────────────────────────────────────────────────────────────────────
 interface DateRange {
   start: Date | null;
-  end: Date | null;
+  end:   Date | null;
 }
 
 // ─── CalendarPicker ───────────────────────────────────────────────────────────
@@ -45,7 +47,7 @@ function CalendarPicker({ onSelect, dateRange, onClose }: {
 
   const days = useMemo(() => {
     const startIdx = startOfWeek(startOfMonth(currentMonth));
-    const endIdx = endOfWeek(endOfMonth(currentMonth));
+    const endIdx   = endOfWeek(endOfMonth(currentMonth));
     return eachDayOfInterval({ start: startIdx, end: endIdx });
   }, [currentMonth]);
 
@@ -82,7 +84,7 @@ function CalendarPicker({ onSelect, dateRange, onClose }: {
       <div className={styles.calendargrid}>
         {days.map((day, i) => {
           const isSelectedStart = dateRange.start && isSameDay(day, dateRange.start);
-          const isSelectedEnd = dateRange.end && isSameDay(day, dateRange.end);
+          const isSelectedEnd   = dateRange.end   && isSameDay(day, dateRange.end);
           const isInRange = dateRange.start && dateRange.end &&
             isWithinInterval(day, { start: startOfDay(dateRange.start), end: endOfDay(dateRange.end) });
           const isCurrentMonth = isSameMonth(day, currentMonth);
@@ -94,11 +96,11 @@ function CalendarPicker({ onSelect, dateRange, onClose }: {
               className={`
                 ${styles.calendarday}
                 ${!isCurrentMonth ? styles.calendardayOutside : styles.calendardayCurrent}
-                ${isInRange ? styles.calendardayInRange : ''}
-                ${isSelectedStart ? styles.calendardayStart : ''}
-                ${isSelectedEnd ? styles.calendardayEnd : ''}
-                ${isSelectedStart && dateRange.end ? styles.calendarroundRightNone : ''}
-                ${isSelectedEnd && dateRange.start ? styles.calendarroundLeftNone : ''}
+                ${isInRange         ? styles.calendardayInRange    : ''}
+                ${isSelectedStart   ? styles.calendardayStart      : ''}
+                ${isSelectedEnd     ? styles.calendardayEnd        : ''}
+                ${isSelectedStart && dateRange.end   ? styles.calendarroundRightNone : ''}
+                ${isSelectedEnd   && dateRange.start ? styles.calendarroundLeftNone  : ''}
               `}
             >
               {format(day, 'd')}
@@ -108,8 +110,10 @@ function CalendarPicker({ onSelect, dateRange, onClose }: {
       </div>
 
       <div className={styles.calendarfooter}>
-        <button onClick={() => { onSelect({ start: null, end: null }); setSelectingStep('START'); }}
-          className={styles.calendarclearButton}>
+        <button
+          onClick={() => { onSelect({ start: null, end: null }); setSelectingStep('START'); }}
+          className={styles.calendarclearButton}
+        >
           Reset
         </button>
         <button onClick={onClose} className={styles.calendardoneButton}>
@@ -120,25 +124,56 @@ function CalendarPicker({ onSelect, dateRange, onClose }: {
   );
 }
 
-// ─── TransactionItem ──────────────────────────────────────────────────────────
-function TransactionItem({ item }: any) {
+// ─── TransactionItem — fetch buyer name dari /api/history/detail/:auctionId ──
+function TransactionItem({ item, token }: { item: any; token: string }) {
   const imgSrc = safeSrc(item.image_url);
-  const date = new Date(item.ends_at);
 
+  const date = new Date(item.ends_at);
   const formatted = `${String(date.getDate()).padStart(2, '0')} ${date.toLocaleDateString('id-ID', {
-    month: 'long',
-    year: 'numeric'
+    month: 'long', year: 'numeric',
   })}`;
+
+  // ── Fetch buyer name ────────────────────────────────────────────────────
+  const [buyerName, setBuyerName] = useState<string>('-');
+  const [buyerLoading, setBuyerLoading] = useState(true);
+
+  useEffect(() => {
+    if (!item.id || !token) return;
+
+    // Hanya fetch untuk auction yang sudah done (ada pemenangnya)
+    if (item.status !== 'done') {
+      setBuyerName('-');
+      setBuyerLoading(false);
+      return;
+    }
+
+    fetch(`${API_URL}/api/history/detail/${item.id}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then(res => res.ok ? res.json() : null)
+      .then(data => {
+        if (data?.winner?.name) {
+          setBuyerName(data.winner.name);
+        } else {
+          setBuyerName('Tidak ada pemenang');
+        }
+      })
+      .catch(() => setBuyerName('-'))
+      .finally(() => setBuyerLoading(false));
+  }, [item.id, item.status, token]);
+
+  const displayPrice = item.status === 'done'
+    ? (item.final_price ?? item.current_bid ?? item.start_price)
+    : (item.current_bid ?? item.start_price);
+
   return (
     <div className={styles.itemrow}>
       {/* Ikan */}
       <div className={styles.itemproduct}>
         <div className={styles.itemimageWrapper}>
-          {imgSrc ? (
-              <img src={imgSrc} alt={item.name} />
-            ) : (
-              <Fish size={24} color="#94a3b8" />
-            )}
+          {imgSrc
+            ? <img src={imgSrc} alt={item.name} />
+            : <Fish size={24} color="#94a3b8" />}
         </div>
         <div>
           <h4 className={styles.itemname}>{item.name}</h4>
@@ -151,23 +186,21 @@ function TransactionItem({ item }: any) {
       {/* Tanggal */}
       <div className={styles.itemtext}>{formatted}</div>
 
-      {/* Pembeli */}
-      <div className={styles.itemtext}>Pembeli Pasar</div>
-
-      {/* Price */}
-      <div className={styles.itempriceWrapper}>
-        {item.current_bid
-          ?  <span className= {styles.itemprice}>
-          Rp {item.current_bid.toLocaleString('id-ID')}
-        </span>
-          : 
-          <span className= {styles.itemprice}>
-          Rp ${item.start_price.toLocaleString('id-ID')}
-        </span>
-}
+      {/* Pembeli — dari backend */}
+      <div className={styles.itemtext}>
+        {buyerLoading
+          ? <Loader2 size={14} className="animate-spin" style={{ color: '#94a3b8' }} />
+          : <span style={{ fontWeight: buyerName !== '-' ? 600 : 400 }}>{buyerName}</span>}
       </div>
 
-      {/* Action — FIX: pakai Link bukan button biasa */}
+      {/* Harga */}
+      <div className={styles.itempriceWrapper}>
+        <span className={styles.itemprice}>
+          Rp {displayPrice?.toLocaleString('id-ID') ?? '-'}
+        </span>
+      </div>
+
+      {/* Aksi */}
       <div className={styles.itemactions}>
         <Link href={`/fisherman/enchantedAuctionHistory/${item.id}`} className={styles.itembutton}>
           Lihat Detail
@@ -180,13 +213,26 @@ function TransactionItem({ item }: any) {
 // ─── Main Page ────────────────────────────────────────────────────────────────
 export default function AuctionHistory() {
   const { auctions, loading, error } = useSellerAuctions();
+  const { token } = useAuth();
 
-  const [searchQuery, setSearchQuery] = useState('');
-  const [dateRange, setDateRange] = useState<DateRange>({ start: null, end: null });
+  const [searchQuery,        setSearchQuery]        = useState('');
+  const [dateRange,          setDateRange]          = useState<DateRange>({ start: null, end: null });
   const [isDateDropdownOpen, setIsDateDropdownOpen] = useState(false);
 
+  // Filter hanya yang sudah done atau cancelled (history)
   const historyAuctions = useMemo(() => {
     return auctions.filter(item => {
+
+      // Tampilkan semua status kecuali active
+      if (item.status === 'active') return false;
+
+      const deliveryStatus = Array.isArray(item.logistics) 
+        ? item.logistics[0]?.status 
+        : item.logistics?.status;
+
+      // 2. Cek apakah statusnya 'delivered'
+      if (item.status === 'done' && deliveryStatus !== 'delivered') return false;
+
       const matchesSearch = searchQuery
         ? item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
           (item.species && item.species.toLowerCase().includes(searchQuery.toLowerCase()))
@@ -209,7 +255,7 @@ export default function AuctionHistory() {
 
   const getLabel = () => {
     if (!dateRange.start) return 'Rentang Tanggal';
-    if (dateRange.end) return `${format(dateRange.start, 'dd MMM')} - ${format(dateRange.end, 'dd MMM yyyy')}`;
+    if (dateRange.end)    return `${format(dateRange.start, 'dd MMM')} - ${format(dateRange.end, 'dd MMM yyyy')}`;
     return format(dateRange.start, 'dd MMM yyyy');
   };
 
@@ -226,7 +272,10 @@ export default function AuctionHistory() {
           </section>
 
           {error && (
-            <div style={{ background: '#fef2f2', color: '#dc2626', padding: '1rem', borderRadius: '0.75rem', marginBottom: '1rem' }}>
+            <div style={{
+              background: '#fef2f2', color: '#dc2626',
+              padding: '1rem', borderRadius: '0.75rem', marginBottom: '1rem',
+            }}>
               {error}
             </div>
           )}
@@ -246,7 +295,10 @@ export default function AuctionHistory() {
 
             <div className={styles.controls}>
               <div className={styles.dropdownWrapper}>
-                <button onClick={() => setIsDateDropdownOpen(!isDateDropdownOpen)} className={styles.filterButton}>
+                <button
+                  onClick={() => setIsDateDropdownOpen(!isDateDropdownOpen)}
+                  className={styles.filterButton}
+                >
                   {getLabel()}
                   <Calendar className={styles.icon} />
                 </button>
@@ -265,33 +317,36 @@ export default function AuctionHistory() {
             </div>
           </div>
 
+          {/* Table */}
           <div className={styles.cardcontainer}>
-          <div className={styles.cardheader}>
-            <div className={styles.cardheaderText}>Spesies Ikan</div>
-            <div className={styles.cardheaderText}>Tanggal Transaksi</div>
-            <div className={styles.cardheaderText}>Pembeli</div>
-            <div className={styles.cardheaderText}>Harga Akhir</div>
-          </div>
+            <div className={styles.cardheader}>
+              <div className={styles.cardheaderText}>Spesies Ikan</div>
+              <div className={styles.cardheaderText}>Tanggal Transaksi</div>
+              <div className={styles.cardheaderText}>Pembeli</div>
+              <div className={styles.cardheaderText}>Harga Akhir</div>
+              <div className={styles.cardheaderText}></div>
+            </div>
 
-          <div>
-             {loading ? (
-                <div style={{ padding: '3rem', textAlign: 'center', color: '#94a3b8' }}>
+            <div>
+              {loading ? (
+                <div style={{ padding: '3rem', textAlign: 'center', color: '#94a3b8', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem' }}>
+                  <Loader2 size={20} className="animate-spin" />
                   Memuat histori lelang...
                 </div>
-                ) : historyAuctions.length === 0 ? (
-                  <div className={styles.emptyState}>
-                    <h3 className={styles.emptytitle}>Tidak ada hasil ditemukan</h3>
-                    <p className={styles.emptydescription}>
-                      Coba sesuaikan pencarian atau filter Anda untuk menemukan apa yang Anda cari.
-                    </p>
-                  </div>
-                ) : (
-                  historyAuctions.map(item => (
-                    <TransactionItem key={item.id} item={item} />
-                  ))
-                )}
+              ) : historyAuctions.length === 0 ? (
+                <div className={styles.emptyState}>
+                  <h3 className={styles.emptytitle}>Tidak ada hasil ditemukan</h3>
+                  <p className={styles.emptydescription}>
+                    Coba sesuaikan pencarian atau filter Anda untuk menemukan apa yang Anda cari.
+                  </p>
+                </div>
+              ) : (
+                historyAuctions.map(item => (
+                  <TransactionItem key={item.id} item={item} token={token ?? ''} />
+                ))
+              )}
+            </div>
           </div>
-        </div>
 
         </div>
       </div>
