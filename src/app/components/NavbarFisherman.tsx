@@ -1,6 +1,6 @@
 'use client';
 import styles from './NavbarFisherman.module.css';
-import { Bell, Wallet, LogOut, ChevronDown, Settings, BanknoteIcon, Loader2 } from 'lucide-react';
+import { Bell, Wallet, LogOut, ChevronDown, Settings, BanknoteIcon, Loader2, Menu } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import { useState, useRef, useEffect, useCallback } from 'react';
@@ -56,7 +56,7 @@ function UserAvatar({ avatarUrl, name, email }: {
   );
 }
 
-export default function NavbarFisherman() {
+export default function NavbarFisherman({setSidebarOpen}: {setSidebarOpen: (value: boolean) => void;}) {
   const { user, token, logout } = useAuth();
   const router = useRouter();
 
@@ -137,6 +137,13 @@ export default function NavbarFisherman() {
 
   return (
     <header className={styles.header}>
+      <button
+        className={styles.mobileMenuButton}
+        onClick={() => setSidebarOpen(true)}
+      >
+        <Menu size={22} />
+      </button>
+
       <div className={styles.navRight}>
 
         {/* Bell + unread badge */}

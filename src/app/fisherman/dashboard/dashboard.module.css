@@ -7,6 +7,7 @@
 .container {
   display: flex;
   height: 100vh;
+  min-height: 100vh;
   background-color: var(--clr-white);
   color: var(--clr-foreground);
 }
@@ -28,6 +29,10 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-xl);
+}
+
+.dashboardContent {
+  flex: 1;
 }
 
 /* ── Page Header ── */
@@ -81,6 +86,7 @@
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: var(--space-lg);
+  margin-bottom: 2rem;
 }
 
 @media (max-width: 900px) {
@@ -433,7 +439,7 @@
   color: var(--clr-text-muted);
 }
 
-/* ── Header sticky (opsional, kalau ada search bar di atas) ── */
+/* ── Header sticky ── */
 .header {
   background: var(--clr-card-bg);
   border-bottom: 1px solid var(--clr-border);
@@ -478,9 +484,6 @@
   box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.10);
   background: var(--clr-card-bg);
 }
-
-
-
 
 .auctionContent {
   flex: 1;
@@ -569,4 +572,157 @@
   color: white;
   border: none;
   cursor: pointer;
+}
+/* ─────────────────────────────────────────
+   MOBILE RESPONSIVE
+───────────────────────────────────────── */
+@media (max-width: 768px) {
+
+  /* Layout utama */
+  .container {
+    display: flex;
+    min-height: 100vh;
+    height: auto;
+    background-color: var(--clr-white);
+    color: var(--clr-foreground);
+  }
+
+  .mainContent {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    min-width: 0;
+  }
+
+  /* Padding halaman */
+  .dashboardPadding {
+    padding: 1rem;
+    padding-top: 1.25rem;
+    gap: 1rem;
+  }
+
+  .dashboardContent {
+    width: 100%;
+  }
+
+  /* Card stats */
+  .cardGrid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .statCard {
+    width: 100%;
+    padding: 1rem;
+  }
+
+  /* Header section */
+  .auctionHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+    margin-top: 1rem;
+  }
+
+  .auctionHeaderTitle {
+    font-size: 1.1rem;
+  }
+
+  .auctionHeaderSubtitle {
+    font-size: 0.85rem;
+  }
+
+  /* Auction card */
+  .auctionItem {
+    flex-direction: column; 
+    align-items: stretch;
+    width: 100%;
+    overflow: hidden;
+    gap: 1rem;
+    padding: 1rem;
+    width: 100%;
+  }
+
+  /* Image */
+  .imagePlaceholder {
+    max-width: 100%;  
+    height: 200px;
+    border-radius: 1rem;
+  }
+
+  .imagePlaceholder img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+  }
+
+  /* Content */
+  .auctionContent {
+    width: 100%;
+  }
+
+  /* Header item */
+  .auctionItemHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .auctionTitle,
+  .bidPrice,
+  .endDate,
+  .speciesText {
+    overflow-wrap: break-word;
+  }
+
+  .auctionTitle {
+    font-size: 1rem;
+    line-height: 1.4;
+    word-break: break-word;
+  }
+
+  .gradeText {
+    display: block;
+    margin-left: 0;
+    margin-top: 0.25rem;
+  }
+
+  .statusText {
+    font-size: 0.75rem;
+  }
+
+  /* Grid info */
+  .auctionInfoGrid {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+  }
+
+  .infoLabel {
+    font-size: 0.7rem;
+  }
+
+  .bidPrice {
+    font-size: 0.95rem;
+  }
+
+  .endDate,
+  .speciesText,
+  .infoValue {
+    font-size: 0.85rem;
+  }
+
+  /* Button */
+  .buttonGroup {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .detailButton,
+  .upgradeButton {
+    width: 100%;
+    padding: 0.75rem;
+    font-size: 0.9rem;
+  }
 }

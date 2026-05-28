@@ -4,7 +4,13 @@ import { LayoutDashboard, Upload, History, Activity, Settings, Bell, Wallet, Sea
 import Link from 'next/link';
 import { usePathname } from "next/navigation";
 
-export default function SideFisherman() {
+export default function SideFisherman({
+  sidebarOpen,
+  setSidebarOpen,
+}: {
+  sidebarOpen: boolean;
+  setSidebarOpen: (value: boolean) => void;
+}) {
   const pathname = usePathname();
 
   const navItems = [
@@ -17,8 +23,19 @@ export default function SideFisherman() {
   ];
 
   return (
-
-    <aside className={styles.sidebar}>
+      <>
+      {sidebarOpen && (
+        <div
+          className={styles.overlay}
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+   
+      <aside
+        className={`${styles.sidebar} ${
+          sidebarOpen ? styles.sidebarOpen : ''
+        }`}
+      >
         <div>
           <div className={styles.sidebarHeader}>
             <div className={styles.logo}>
@@ -49,5 +66,6 @@ export default function SideFisherman() {
           </nav>
         </div>
       </aside>
+    </>
   );
 }

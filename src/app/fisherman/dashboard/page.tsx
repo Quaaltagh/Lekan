@@ -1,5 +1,5 @@
 'use client';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState} from 'react';
 import { Activity, Wallet, Ellipsis, Fish, Link } from 'lucide-react';
 import SideFisherman from '../../components/sideFisherman';
 import NavbarFisherman from '../../components/NavbarFisherman';
@@ -139,6 +139,7 @@ function AuctionSkeleton() {
 export default function FishermanDashboard() {
   const { user } = useAuth();
   const router = useRouter();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const { auctions, loading, error } = useSellerAuctions();
 
   useEffect(() => {
@@ -157,18 +158,21 @@ export default function FishermanDashboard() {
 
   return (
     <div className={styles.container}>
-      <SideFisherman />
+    {/* Sidebar biasanya otomatis hilang/sembunyi di HP lewat CSS */}
+    <SideFisherman
+      sidebarOpen={sidebarOpen}
+      setSidebarOpen={setSidebarOpen}
+    />
 
-      <main className={styles.mainContent}>
-        <NavbarFisherman />
+    <main className={styles.mainContent}>
+      <NavbarFisherman setSidebarOpen={setSidebarOpen}/>
 
-        <div className={styles.dashboardPadding}>
-          <div style={{ flex: 1 }}>
+      <div className={styles.dashboardPadding}>
+        {/* BUNGKUS DENGAN CLASS CSS, JANGAN INLINE STYLE flex: 1 */}
+        <div className={styles.dashboardContent}>
 
-            {/* Stats Cards */}
-            <div className={styles.cardGrid}>
-              
-              {/* <div className={styles.statCard}>
+          {/* Stats Cards */}
+          {/* <div className={styles.statCard}>
                 <div className={styles.cardicon}>
                   <div style={{ backgroundColor: '#eff6ff', color: '#2563eb', padding: '0.75rem', borderRadius: '0.75rem' }}>
                     <Activity size={20} />
@@ -182,77 +186,77 @@ export default function FishermanDashboard() {
                 </h3>
               </div> */}
 
-              <div className={styles.statCard}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem' }}>
-                  <div style={{ backgroundColor: '#eff6ff', color: '#2563eb', padding: '0.75rem', borderRadius: 'var(--radius-lg)' }}>
-                    <Activity size={20} />
-                    
-                  </div>
-                  {activeCount > 0 && <span className={styles.badgeLive}>Sedang Aktif</span>}
-                </div>
-                <p style={{ fontSize: '0.875rem', color: '#64748b' }}>Lelang Aktif</p>
-                <h3 style={{ fontSize: 'var(--fs-xl)', fontWeight: 'var(--fw-title)' }}>
-                  {loading ? '—' : activeCount}{' '}
-                  <span style={{ fontSize: '0.875rem', color: '#64748bbc', fontWeight: 'normal' }}>Lot</span>
-                </h3>
-              </div>
 
-              <div className={styles.statCard}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem' }}>
-                  <div style={{ backgroundColor: '#effff1', color: '#0f911e', padding: '0.75rem', borderRadius: 'var(--radius-lg)' }}>
-                    <Wallet size={20} />
-                  </div>
+          <div className={styles.cardGrid}>
+            <div className={styles.statCard}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem' }}>
+                <div style={{ backgroundColor: '#eff6ff', color: '#2563eb', padding: '0.75rem', borderRadius: 'var(--radius-lg)' }}>
+                  <Activity size={20} />
                 </div>
-                <p style={{ fontSize: '0.875rem', color: '#64748b' }}>Total Pendapatan</p>
-                <h3 style={{ fontSize: 'var(--fs-xl)', fontWeight: 'var(--fw-title)' }}>
-                  {loading ? '—' : formatRp(totalEarnings)}
-                </h3>
+                {activeCount > 0 && <span className={styles.badgeLive}>Sedang Aktif</span>}
               </div>
-
-              <div className={styles.statCard}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem' }}>
-                  <div style={{ backgroundColor: '#fff7ef', color: '#91430f', padding: '0.75rem', borderRadius: 'var(--radius-lg)' }}>
-                    <Ellipsis size={20} />
-                  </div>
-                </div>
-                <p style={{ fontSize: '0.875rem', color: '#64748b' }}>Menunggu Pembayaran</p>
-                <h3 style={{ fontSize: 'var(--fs-xl)', fontWeight: 'var(--fw-title)' }}>
-                  {loading ? '—' : formatRp(pendingTotal)}
-                </h3>
-              </div>
+              <p style={{ fontSize: '0.875rem', color: '#64748b' }}>Lelang Aktif</p>
+              <h3 style={{ fontSize: 'var(--fs-xl)', fontWeight: 'var(--fw-title)' }}>
+                {loading ? '—' : activeCount}{' '}
+                <span style={{ fontSize: '0.875rem', color: '#64748bbc', fontWeight: 'normal' }}>Lot</span>
+              </h3>
             </div>
 
-            {/* List Header */}
-            <div className={styles.auctionHeader}>
-              <div>
-                <h2 className={styles.auctionHeaderTitle}>Daftar Lelang Terkini</h2>
-                <p className={styles.auctionHeaderSubtitle}>Monitor hasil tangkapan Anda secara real-time.</p>
+            <div className={styles.statCard}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem' }}>
+                <div style={{ backgroundColor: '#effff1', color: '#0f911e', padding: '0.75rem', borderRadius: 'var(--radius-lg)' }}>
+                  <Wallet size={20} />
+                </div>
               </div>
-              <a href="/fisherman/enchantedAuctionHistory" className={styles.viewAllLink}>Lihat Semua →</a>
+              <p style={{ fontSize: '0.875rem', color: '#64748b' }}>Total Pendapatan</p>
+              <h3 style={{ fontSize: 'var(--fs-xl)', fontWeight: 'var(--fw-title)' }}>
+                {loading ? '—' : formatRp(totalEarnings)}
+              </h3>
             </div>
 
-            {error && (
-              <div style={{ background: '#fef2f2', border: '1px solid #fecaca', color: '#dc2626', padding: '0.75rem 1rem', borderRadius: '0.75rem', fontSize: '0.875rem', marginBottom: '1rem' }}>
-                {error}
+            <div className={styles.statCard}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem' }}>
+                <div style={{ backgroundColor: '#fff7ef', color: '#91430f', padding: '0.75rem', borderRadius: 'var(--radius-lg)' }}>
+                  <Ellipsis size={20} />
+                </div>
               </div>
-            )}
-
-            {loading ? (
-              <><AuctionSkeleton /><AuctionSkeleton /></>
-            ) : recentAuctions.length === 0 ? (
-              <div style={{ textAlign: 'center', padding: '3rem', background: '#f8fafc', borderRadius: '1rem', border: '1px dashed #e2e8f0' }}>
-                <Fish size={40} color="#cbd5e1" style={{ margin: '0 auto 1rem' }} />
-                <p style={{ color: '#64748b', fontWeight: '500' }}>Belum ada lelang</p>
-                <p style={{ color: '#94a3b8', fontSize: '0.875rem' }}>Mulai buat lelang pertama Anda</p>
-              </div>
-            ) : (
-              recentAuctions.map(auction => (
-                <AuctionItem key={auction.id} auction={auction} />
-              ))
-            )}
+              <p style={{ fontSize: '0.875rem', color: '#64748b' }}>Menunggu Pembayaran</p>
+              <h3 style={{ fontSize: 'var(--fs-xl)', fontWeight: 'var(--fw-title)' }}>
+                {loading ? '—' : formatRp(pendingTotal)}
+              </h3>
+            </div>
           </div>
 
-          {/* Sidebar Kanan */}
+          {/* List Header */}
+          <div className={styles.auctionHeader}>
+            <div>
+              <h2 className={styles.auctionHeaderTitle}>Daftar Lelang Terkini</h2>
+              <p className={styles.auctionHeaderSubtitle}>Monitor hasil tangkapan Anda secara real-time.</p>
+            </div>
+            <a href="/fisherman/enchantedAuctionHistory" className={styles.viewAllLink}>Lihat Semua →</a>
+          </div>
+
+          {error && (
+            <div style={{ background: '#fef2f2', border: '1px solid #fecaca', color: '#dc2626', padding: '0.75rem 1rem', borderRadius: '0.75rem', fontSize: '0.875rem', marginBottom: '1rem' }}>
+              {error}
+            </div>
+          )}
+
+          {loading ? (
+            <><AuctionSkeleton /><AuctionSkeleton /></>
+          ) : recentAuctions.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '3rem', background: '#f8fafc', borderRadius: '1rem', border: '1px dashed #e2e8f0' }}>
+              <Fish size={40} color="#cbd5e1" style={{ margin: '0 auto 1rem' }} />
+              <p style={{ color: '#64748b', fontWeight: '500' }}>Belum ada lelang</p>
+              <p style={{ color: '#94a3b8', fontSize: '0.875rem' }}>Mulai buat lelang pertama Anda</p>
+            </div>
+          ) : (
+            recentAuctions.map(auction => (
+              <AuctionItem key={auction.id} auction={auction} />
+            ))
+          )}
+        </div>
+        {/* Sidebar Kanan */}
           {/* <div style={{ width: '20rem' }}>
             <div className={styles.ctaBox}>
               <h3 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '0.5rem', color: 'white' }}>Siap Melantai di Bursa?</h3>
@@ -265,8 +269,8 @@ export default function FishermanDashboard() {
               </button>
             </div> */}
           {/* </div> */}
-        </div>
-      </main>
-    </div>
+      </div>
+    </main>
+  </div>
   );
 }
