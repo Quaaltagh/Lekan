@@ -573,6 +573,28 @@
   border: none;
   cursor: pointer;
 }
+
+.statIcon{
+  padding: 0.75rem;
+  border-radius: var(--radius-lg);
+}
+
+.statWrap{
+  margin-bottom: var(--space-md);
+  display: flex;
+  justify-content: space-between;
+}
+
+.stath3{
+  font-size: var(--fs-xl);
+  font-weight: var(--fw-title);
+}
+
+.statmeta{
+  font-size: var(--fs-sm);
+  color: var(--clr-text-muted);
+}
+
 /* ─────────────────────────────────────────
    MOBILE RESPONSIVE
 ───────────────────────────────────────── */
@@ -606,31 +628,72 @@
   }
 
   /* Card stats */
-  .cardGrid {
+  /* .cardGrid {
     grid-template-columns: 1fr;
     gap: 1rem;
     margin-bottom: 1rem;
+  } */
+
+  .cardGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-sm);
+    margin-bottom: var(--space-sm);
+  }
+
+  .cardGrid > .statCard:last-child {
+    grid-column: 1 / -1;
   }
 
   .statCard {
-    width: 100%;
-    padding: 1rem;
+    padding: var(--space-md);
+    gap: 1px;
+  }
+
+  .statIcon{
+    padding: var(--space-sm);
+  }
+
+  .statWrap{
+    margin-bottom: var(--space-xs);
+    justify-content: flex-start;
+    gap: var(--space-xs);
+  }
+
+  .stath3{
+    font-size: var(--fs-md);
+  }
+
+  .statmeta{
+    font-size: var(--fs-xs);
+  }
+
+  .badgeLive{
+    padding: 5px 5px;
+    font-size: var(--fs-live);
   }
 
   /* Header section */
   .auctionHeader {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.75rem;
-    margin-top: 1rem;
+    flex-direction: row;
+    align-items: center;
+    gap: var(--space-xs);
+    margin-top: var(--space-lg);
+    margin-bottom: var(--space-md);
   }
 
   .auctionHeaderTitle {
-    font-size: 1.1rem;
+    font-size: var(--fs-base);
   }
 
   .auctionHeaderSubtitle {
-    font-size: 0.85rem;
+    font-size: var(--fs-xs);
+    text-wrap: pretty;
+  }
+
+  .viewAllLink{
+    font-size: var(--fs-sm);
+    text-wrap: nowrap;
+    flex-shrink: 0;
   }
 
   /* Auction card */
@@ -646,9 +709,8 @@
 
   /* Image */
   .imagePlaceholder {
-    max-width: 100%;  
-    height: 200px;
-    border-radius: 1rem;
+    width: 100%;  
+    height: 150px;
   }
 
   .imagePlaceholder img {
@@ -665,9 +727,10 @@
 
   /* Header item */
   .auctionItemHeader {
-    flex-direction: column;
+    flex-direction: row;
     align-items: flex-start;
     gap: 0.5rem;
+    margin-bottom: var(--space-sm);
   }
 
   .auctionTitle,
@@ -678,19 +741,22 @@
   }
 
   .auctionTitle {
-    font-size: 1rem;
+    font-size: var(--fs-base);
     line-height: 1.4;
     word-break: break-word;
+    text-wrap: pretty;
   }
 
   .gradeText {
     display: block;
     margin-left: 0;
-    margin-top: 0.25rem;
+    /* margin-top: 0.25rem; */
+    text-wrap: pretty;
   }
 
   .statusText {
-    font-size: 0.75rem;
+    font-size: var(--fs-xs);
+    text-wrap: nowrap;
   }
 
   /* Grid info */
