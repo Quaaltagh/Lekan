@@ -7,25 +7,26 @@ import {
   markAllAsRead,
   deleteNotification,
 } from '../controller/notificationController';
+import { authenticate, requireRole } from '../middleware/authmiddleware';
 
 const router = Router();
 
 // GET  /api/notifications/:userId
-router.get('/:userId', getNotificationsByUser);
+router.get('/:userId', authenticate, getNotificationsByUser);
 
 // GET  /api/notifications/:userId/unread-count
-router.get('/:userId/unread-count', getUnreadCount);
+router.get('/:userId/unread-count', authenticate, getUnreadCount);
 
 // POST /api/notifications
-router.post('/', createNotification);
+router.post('/', authenticate, createNotification);
 
 // PATCH /api/notifications/:userId/mark-all-read
-router.patch('/:userId/mark-all-read', markAllAsRead);
+router.patch('/:userId/mark-all-read', authenticate, markAllAsRead);
 
 // PATCH /api/notifications/:userId/:id/read
-router.patch('/:userId/:id/read', markAsRead);
+router.patch('/:userId/:id/read', authenticate, markAsRead);
 
 // DELETE /api/notifications/:userId/:id
-router.delete('/:userId/:id', deleteNotification);
+router.delete('/:userId/:id', authenticate, deleteNotification);
 
 export default router;

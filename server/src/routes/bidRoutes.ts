@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { getBidsByAuction, submitBid } from '../controller/bidController';
 import { getActiveBidsCount } from '../controller/Walletcontroller';
+import { authenticate, requireRole } from '../middleware/authmiddleware';
 
 const router = Router();
 
@@ -11,6 +12,6 @@ router.get('/user/:userId/active', getActiveBidsCount);
 router.get('/:auctionId', getBidsByAuction);
 
 // POST /api/bids/:auctionId
-router.post('/:auctionId', submitBid);
+router.post('/:auctionId',authenticate, requireRole('pembeli'), submitBid);
 
 export default router;

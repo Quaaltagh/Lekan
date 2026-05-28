@@ -11,6 +11,8 @@ import {
   completeAuction,
 } from '../controller/auctionController';
 
+import { authenticate, requireRole } from '../middleware/authmiddleware';
+
 const router = Router();
 
 // ── Buyer routes ──────────────────────────────────────────────────────────────
@@ -25,19 +27,19 @@ router.get('/:id', getAuctionById);
 
 // ── Seller routes ─────────────────────────────────────────────────────────────
 // GET    /api/auctions/seller/:sellerId
-router.get('/seller/:sellerId', getAuctionsBySeller);
+router.get('/seller/:sellerId', authenticate, requireRole('nelayan'), getAuctionsBySeller);
 
 // GET  /api/auctions/seller/:sellerId/bidding-status
-router.get('/seller/:sellerId/bidding-status', getSellerBiddingStatus);
+router.get('/seller/:sellerId/bidding-status', authenticate, requireRole('nelayan'), getSellerBiddingStatus);
 
 // POST /api/auctions/seller/:sellerId
-router.post('/seller/:sellerId', createAuction);
+router.post('/seller/:sellerId', authenticate, requireRole('nelayan'), createAuction);
 
 // PUT    /api/auctions/seller/:sellerId/:id
-router.put('/seller/:sellerId/:id', updateAuction);
+router.put('/seller/:sellerId/:id', authenticate, requireRole('nelayan'), updateAuction);
 
 // DELETE /api/auctions/seller/:sellerId/:id
-router.delete('/seller/:sellerId/:id', deleteAuction);
+router.delete('/seller/:sellerId/:id', authenticate, requireRole('nelayan'), deleteAuction);
 
 router.patch('/:id/complete', completeAuction);
 export default router;
