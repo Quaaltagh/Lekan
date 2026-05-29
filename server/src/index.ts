@@ -13,6 +13,7 @@ import statusLelangRoutes from './routes/statusLelangRoutes';
 import profileRoutes from './routes/profileRoutes';
 import notificationRoutes from './routes/notificationRoutes';
 import invoiceRoutes from './routes/invoiceRoutes';
+import { authenticate, requireRole } from './middleware/authmiddleware';
 
 dotenv.config();
 
@@ -27,26 +28,34 @@ app.use(cors({
 app.use(express.json({ limit: '15mb' }));
 app.use(express.urlencoded({ extended: true, limit: '15mb' }));
 
-// ✅ HARUS di sini — sebelum semua routes agar berlaku untuk setiap request
 app.use((_req, res, next) => {
   res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');
   res.setHeader('Pragma', 'no-cache');
   next();
 });
 
-app.use("/api/auth", authRoutes);
-app.use("/api/auctions", auctionRoutes);
-app.use("/api/bids", bidRoutes);
-app.use("/api/wallet", walletRoutes);
-app.use("/api/logistics", logisticsRoutes);
-app.use('/api/deposit', depositRoutes);
-app.use('/api/history', historyRoutes);
-app.use('/api/status-lelang', statusLelangRoutes);
-app.use('/api/profile', profileRoutes);
-app.use('/api/notifications', notificationRoutes);
-app.use('/api/invoice', invoiceRoutes)
+// ── Public ────────────────────────────────────────────────────────────────────
+app.use("/api/auth",      authRoutes);   // login & register tidak butuh token
+app.use("/api/auctions",  auctionRoutes); // GET browse = public, POST/PUT/DELETE dihandle di routes
+app.use("/api/bids",      bidRoutes);    // GET bid list = public, POST dihandle di routes
 
-// Health check
+// ── Khusus pembeli ────────────────────────────────────────────────────────────
+app.use('/api/deposit',       authenticate, requireRole('pembeli'), depositRoutes);
+app.use('/api/status-lelang', authenticate, requireRole('pembeli'), statusLelangRoutes);
+
+// ── Khusus nelayan ────────────────────────────────────────────────────────────
+// logistics punya endpoint campuran (nelayan: depart/arrived, pembeli: delivered)
+// requireRole per-endpoint sudah ada di logisticsRoutes.ts
+
+// ── Butuh login, bebas role ───────────────────────────────────────────────────
+app.use("/api/wallet",        authenticate, walletRoutes);
+app.use("/api/logistics",     authenticate, logisticsRoutes);
+app.use('/api/history',       authenticate, historyRoutes);
+app.use('/api/profile',       authenticate, profileRoutes);
+app.use('/api/notifications', authenticate, notificationRoutes);
+app.use('/api/invoice',       authenticate, invoiceRoutes);
+
+// ── Health check ──────────────────────────────────────────────────────────────
 app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok', message: 'LEKAN API is running' });
 });
