@@ -11,58 +11,49 @@ export interface Notification {
   updated_at: string;
 }
 
-// Helper — ambil token dari localStorage
-const authHeaders = (): HeadersInit => {
-  const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
-  return {
-    'Content-Type': 'application/json',
-    ...(token ? { Authorization: `Bearer ${token}` } : {}),
-  };
-};
+const authHeaders = (token: string): HeadersInit => ({
+  'Content-Type': 'application/json',
+  Authorization: `Bearer ${token}`,
+});
 
-// GET all notifications for a user
-export const getNotifications = async (userId: string): Promise<Notification[]> => {
+export const getNotifications = async (userId: string, token: string): Promise<Notification[]> => {
   const res = await fetch(`${BASE_URL}/notifications/${userId}`, {
-    headers: authHeaders(),
+    headers: authHeaders(token),
   });
   if (!res.ok) throw new Error('Gagal mengambil notifikasi.');
   return res.json();
 };
 
-// GET unread count
-export const getUnreadCount = async (userId: string): Promise<number> => {
+export const getUnreadCount = async (userId: string, token: string): Promise<number> => {
   const res = await fetch(`${BASE_URL}/notifications/${userId}/unread-count`, {
-    headers: authHeaders(),
+    headers: authHeaders(token),
   });
   if (!res.ok) throw new Error('Gagal mengambil jumlah notifikasi belum dibaca.');
   const data = await res.json();
   return data.unread_count;
 };
 
-// PATCH mark single notification as read
-export const markAsRead = async (userId: string, notifId: string): Promise<Notification> => {
+export const markAsRead = async (userId: string, notifId: string, token: string): Promise<Notification> => {
   const res = await fetch(`${BASE_URL}/notifications/${userId}/${notifId}/read`, {
     method: 'PATCH',
-    headers: authHeaders(),
+    headers: authHeaders(token),
   });
   if (!res.ok) throw new Error('Gagal menandai notifikasi.');
   return res.json();
 };
 
-// PATCH mark all as read
-export const markAllAsRead = async (userId: string): Promise<void> => {
+export const markAllAsRead = async (userId: string, token: string): Promise<void> => {
   const res = await fetch(`${BASE_URL}/notifications/${userId}/mark-all-read`, {
     method: 'PATCH',
-    headers: authHeaders(),
+    headers: authHeaders(token),
   });
   if (!res.ok) throw new Error('Gagal menandai semua notifikasi.');
 };
 
-// DELETE a notification
-export const deleteNotification = async (userId: string, notifId: string): Promise<void> => {
+export const deleteNotification = async (userId: string, notifId: string, token: string): Promise<void> => {
   const res = await fetch(`${BASE_URL}/notifications/${userId}/${notifId}`, {
     method: 'DELETE',
-    headers: authHeaders(),
+    headers: authHeaders(token),
   });
   if (!res.ok) throw new Error('Gagal menghapus notifikasi.');
 };
