@@ -1,10 +1,11 @@
 import { Router } from 'express';
 import { createDeposit, manualConfirmDeposit, getDepositStatus } from '../controller/depositController';
+import { authenticate, requireRole } from '../middleware/authmiddleware';
 
 const router = Router();
 
 // POST /api/deposit/:userId
-router.post('/:userId', createDeposit);
+router.post('/:userId', authenticate, requireRole('pembeli'), createDeposit);
 
 // POST /api/deposit/:userId/confirm/:txId  ← dev/test only
 router.post('/:userId/confirm/:txId', manualConfirmDeposit);
