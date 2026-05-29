@@ -1,5 +1,6 @@
 'use client'
 import { Clock, MapPin } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import styles from './AuctionCard.module.css';
 
@@ -26,6 +27,21 @@ export default function AuctionCard({
   highestBid,
   timeLeft
 }: AuctionCardProps) {
+  const [isMobile, setIsMobile] = useState(false);
+    
+  // detect mobile
+  useEffect(() => {
+    const checkScreen = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+
+    checkScreen();
+
+    window.addEventListener('resize', checkScreen);
+
+    return () => window.removeEventListener('resize', checkScreen);
+  }, []);
+
   return (
     <div className={styles.card}>
       <div className={styles.header}>
@@ -41,7 +57,8 @@ export default function AuctionCard({
         <img src={image} alt={name} className={styles.image} />
 
         <div className={styles.timeBox}>
-          <Clock size={14} />
+          {isMobile ? (<Clock size={12} />): (<Clock size={14} />)}
+          
           {timeLeft}
         </div>
       </div>
@@ -78,11 +95,11 @@ export default function AuctionCard({
         
 
         <div className={styles.priceRow}>
-          <div>
+          <div className={styles.pricekiri}>
             <p className={styles.priceLabel}>Harga Dasar</p>
             <div className={styles.price}>Rp {startingPrice}</div>
           </div>
-          <div>
+          <div className={styles.pricekanan}>
             <p className={styles.priceLabel}>Bid Tertinggi</p>
             <div className={styles.price}>Rp {highestBid}</div>
           </div>
