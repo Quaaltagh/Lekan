@@ -17,7 +17,7 @@ const STATUS_CONFIG: Record<AuctionStatus, { label: string; color: string }> = {
 };
 
 function formatRp(value: number) {
-  if (value >= 1_000_000) return `Rp ${(value / 1_000_000).toFixed(1)}M`;
+  // if (value >= 1_000_000) return `Rp ${(value / 1_000_000).toFixed(1)}M`;
   return `Rp ${value.toLocaleString('id-ID')}`;
 }
 
@@ -189,39 +189,39 @@ export default function FishermanDashboard() {
 
           <div className={styles.cardGrid}>
             <div className={styles.statCard}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem' }}>
-                <div style={{ backgroundColor: '#eff6ff', color: '#2563eb', padding: '0.75rem', borderRadius: 'var(--radius-lg)' }}>
+              <div className={styles.statWrap}>
+                <div style={{ backgroundColor: '#eff6ff', color: '#2563eb' }} className={styles.statIcon}>
                   <Activity size={20} />
                 </div>
                 {activeCount > 0 && <span className={styles.badgeLive}>Sedang Aktif</span>}
               </div>
-              <p style={{ fontSize: '0.875rem', color: '#64748b' }}>Lelang Aktif</p>
-              <h3 style={{ fontSize: 'var(--fs-xl)', fontWeight: 'var(--fw-title)' }}>
+              <p className={styles.statmeta}>Lelang Aktif</p>
+              <h3 className={styles.stath3}>
                 {loading ? '—' : activeCount}{' '}
                 <span style={{ fontSize: '0.875rem', color: '#64748bbc', fontWeight: 'normal' }}>Lot</span>
               </h3>
             </div>
 
             <div className={styles.statCard}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem' }}>
-                <div style={{ backgroundColor: '#effff1', color: '#0f911e', padding: '0.75rem', borderRadius: 'var(--radius-lg)' }}>
+              <div className={styles.statWrap}>
+                <div style={{ backgroundColor: '#effff1', color: '#0f911e'}} className={styles.statIcon}>
                   <Wallet size={20} />
                 </div>
               </div>
-              <p style={{ fontSize: '0.875rem', color: '#64748b' }}>Total Pendapatan</p>
-              <h3 style={{ fontSize: 'var(--fs-xl)', fontWeight: 'var(--fw-title)' }}>
+              <p className={styles.statmeta}>Total Pendapatan</p>
+              <h3 className={styles.stath3}>
                 {loading ? '—' : formatRp(totalEarnings)}
               </h3>
             </div>
 
             <div className={styles.statCard}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem' }}>
-                <div style={{ backgroundColor: '#fff7ef', color: '#91430f', padding: '0.75rem', borderRadius: 'var(--radius-lg)' }}>
+              <div className={styles.statWrap}>
+                <div style={{ backgroundColor: '#fff7ef', color: '#91430f' }} className={styles.statIcon}>
                   <Ellipsis size={20} />
                 </div>
               </div>
-              <p style={{ fontSize: '0.875rem', color: '#64748b' }}>Menunggu Pembayaran</p>
-              <h3 style={{ fontSize: 'var(--fs-xl)', fontWeight: 'var(--fw-title)' }}>
+              <p className={styles.statmeta}>Menunggu Pembayaran</p>
+              <h3 className={styles.stath3}>
                 {loading ? '—' : formatRp(pendingTotal)}
               </h3>
             </div>

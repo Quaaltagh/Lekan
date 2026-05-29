@@ -1,0 +1,252 @@
+/* ── Layout ── */
+.pageWrapper {
+  display: flex;
+  height: 100vh;
+  background: var(--clr-white);
+  overflow: hidden;
+}
+
+/* ── Kiri - Hero (Sama persis dengan Login/Regis) ── */
+.hero {
+  display: none;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: var(--space-xl);
+  background: linear-gradient(160deg, #1e293b 0%, var(--clr-primary) 100%);
+  color: var(--clr-white);
+  overflow: hidden;
+  position: relative;
+}
+
+@media (min-width: 768px) {
+  .hero {
+    display: flex;
+    width: 50%;
+  }
+}
+
+.heroDecor {
+  position: absolute;
+  width: 320px;
+  height: 320px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.04);
+  top: -80px;
+  right: -80px;
+}
+
+.heroDecor2 {
+  position: absolute;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.04);
+  bottom: 60px;
+  left: -60px;
+}
+
+.heroTop {
+  position: relative;
+  z-index: 1;
+}
+
+.heroLogo {
+  font-size: 2rem;
+  font-weight: var(--fw-title);
+  letter-spacing: 0.05em;
+  margin-bottom: var(--space-xs);
+  color: var(--clr-white);
+}
+
+.heroTagline {
+  font-size: var(--fs-base);
+  color: #94a3b8;
+  line-height: 1.6;
+}
+
+.heroBottom {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.heroFeature {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-md);
+}
+
+.heroFeatureIcon {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  padding: 8px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.heroFeatureTitle {
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--clr-white);
+  margin-bottom: 2px;
+}
+
+.heroFeatureDesc {
+  font-size: var(--fs-xs);
+  color: #94a3b8;
+  line-height: 1.5;
+}
+
+/* ── Kanan - Form Side ── */
+.formSide {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 24px;
+  overflow-y: auto;
+}
+
+@media (min-width: 768px) {
+  .formSide {
+    width: 50%;
+  }
+}
+
+.formCard {
+  width: 100%;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+/* ── Heading ── */
+.formHeading {
+  display: flex;
+  flex-direction: column;
+}
+
+.formTitle {
+  font-size: var(--fs-tittle);
+  font-weight: 700;
+  color: var(--clr-black);
+  margin: 0;
+}
+
+.formSubtitle {
+  font-size: var(--fs-sm);
+  color: #64748b;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* ── Fields & Form Groups ── */
+.fields {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.fieldGroup {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.fieldLabel {
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  color: #374151;
+  letter-spacing: 0.02em;
+}
+
+/* ── Inputs & Icons (Gaya Otentikasi Absolut) ── */
+.inputWrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.inputIcon {
+  position: absolute;
+  left: 12px;
+  color: #9ca3af;
+  display: flex;
+  align-items: center;
+  pointer-events: none;
+}
+
+.input {
+  width: 100%;
+  padding: 10px 12px 10px 38px;
+  border: 1.5px solid var(--clr-border);
+  border-radius: var(--rad);
+  background: #f9fafb;
+  font-size: 0.875rem;
+  color: #111827;
+  transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.input::placeholder {
+  color: #9ca3af;
+}
+
+.input:focus {
+  border-color: var(--clr-primary);
+  background: var(--clr-white);
+  box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.08);
+}
+
+/* Khusus Textarea Alamat */
+.textarea {
+  resize: vertical;
+  min-height: 85px;
+  padding-top: 10px;
+  line-height: 1.5;
+  font-family: inherit;
+}
+
+/* ── Error Box ── */
+.errorBox {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  background: #fef2f2;
+  border: 1.5px solid #fecaca;
+  color: #dc2626;
+  font-size: 0.8rem;
+  padding: 10px 12px;
+  border-radius: var(--rad);
+  line-height: 1.5;
+}
+
+/* ── Submit Button ── */
+.submitBtn {
+  width: 100%;
+  padding: 11px;
+  background: var(--clr-primary);
+  color: #ffffff;
+  border: none;
+  border-radius: var(--rad);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-h4);
+  cursor: pointer;
+  transition: background 0.2s, opacity 0.2s;
+  letter-spacing: 0.01em;
+}
+
+.submitBtn:hover:not(:disabled) {
+  background: var(--clr-primary-hover);
+}
+
+.submitBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

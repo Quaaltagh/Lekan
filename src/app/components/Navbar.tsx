@@ -142,6 +142,20 @@ export default function Navbar() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const router   = useRouter();
   const pathname = usePathname();
+  
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkScreen = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+
+    checkScreen();
+
+    window.addEventListener("resize", checkScreen);
+
+    return () => window.removeEventListener("resize", checkScreen);
+  }, []);
 
   const isNotification = pathname.startsWith('/notification');
   const isWallet       = pathname === '/buyer/Dompet';
@@ -187,7 +201,23 @@ export default function Navbar() {
       }
     };
     document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
+      return () => document.removeEventListener('mousedown', handler);
+    }, []);
+
+    useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+
+      if (!target.closest(`.${styles.profileWrapper}`)) {
+        setDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener("click", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("click", handleClickOutside);
+    };
   }, []);
 
   const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
@@ -302,10 +332,19 @@ export default function Navbar() {
         {user ? (
           <div
             className={styles.profileWrapper}
-            onMouseEnter={() => setDropdownOpen(true)}
-            onMouseLeave={() => setDropdownOpen(false)}
+            onMouseEnter={() => {
+              if (!isMobile) setDropdownOpen(true);
+            }}
+            onMouseLeave={() => {
+              if (!isMobile) setDropdownOpen(false);
+            }}
           >
-            <button className={styles.profileButton}>
+            <button className={styles.profileButton}
+            onClick={() => {
+              if (isMobile) {
+                setDropdownOpen(true);
+              }
+            }}>
               <div className={styles.avatar}>
                 <UserAvatar
                   avatarUrl={avatarUrl}

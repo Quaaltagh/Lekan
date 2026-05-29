@@ -3,9 +3,11 @@
   border-radius: var(--radius-lg);
   overflow: hidden;
   border: 1px solid #f3f4f6;
-  box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+  box-shadow: var(--shadow-md);
   display: flex;
   flex-direction: column;
+  width: calc(25% - 0.8rem);
+  min-width: 17rem;
 }
 
 .header {
@@ -140,6 +142,7 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
+  gap: 2px
 }
 
 .priceLabel{
@@ -164,9 +167,68 @@
   text-transform: uppercase;
   margin-top: 1rem;
   cursor: pointer;
-  font-size: 16px;
+  font-size: var(--fs-base);
 }
 
 .button:hover {
   background: var(--clr-primary-hover);
+}
+
+.pricekanan{
+  text-align: right;
+}
+
+@media (max-width: 768px) {
+  .header{
+    height: 8rem;
+  }
+  
+  .timeBox{
+    padding: 5px 8px;
+  }
+
+  .content{
+    padding: .55rem;
+  }
+
+  .card{
+    min-width: 100%;
+  }
+
+  .title{
+    font-size: var(--fs-base);
+    text-wrap: pretty;
+  }
+
+  .metaRow{
+    margin-top: .3rem;
+    margin-bottom: .3rem;
+  }
+
+  .priceRow{
+    flex-direction: column;
+    align-items: flex-start;
+    gap: .3rem;
+  }
+
+  .priceLabel{
+    font-size: var(--fs-live);
+  }
+
+  .price{
+    font-size: var(--fs-sm);
+  }
+
+  .pricekanan{
+    text-align: left;
+  }
+
+  .button{
+    margin-top: .5rem;
+    font-size: var(--fs-sm);
+  }
+
+  .metaBoxBlue{
+    padding: 3px 5px;
+  }
 }

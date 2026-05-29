@@ -11,7 +11,7 @@
    agar konten tidak tertutup.
 */
 .mainContent {
-  width: 80rem;
+  width: 80%;
   display: flex;
   flex-direction: column;
   margin-left: auto; 
@@ -246,7 +246,7 @@
 
 .txTitle {
   font-weight: 600;
-  font-size: 15px;
+  font-size: var(--fs-base);
   color: var(--clr-foreground);
   margin: 0;
 }
@@ -259,11 +259,13 @@
 
 .txAmountContainer {
   text-align: right;
+  width: 40%;
+  overflow: hidden;
 }
 
 .txAmount {
   font-weight: 700;
-  font-size: 16px;
+  font-size: var(--fs-base);
   margin: 0;
 }
 
@@ -286,4 +288,41 @@
   .mainContent {
     padding: 80px 24px 40px 24px;
   }
+}
+
+@media (max-width: 768px) {
+  .mainContent{
+    padding: 16px;
+    width: 100%;
+    gap: .5rem;
+  }
+
+  .header{
+    margin-bottom: 10px;
+  }
+
+  .cardGrid{
+    margin-bottom: .5rem;
+  }
+
+  .txTitle{
+    font-size: var(--fs-sm);
+  }
+
+  .txIcon{
+    margin-right: 10px;
+    width: 24px;
+  }
+
+  .transactionItem{
+    padding: 8px 10px;
+  }
+
+  .spendingFooter{
+    padding-top: 10px;
+  }
+  .spentAmount{
+    padding: 6px 0 4px;
+  }
+
 }
