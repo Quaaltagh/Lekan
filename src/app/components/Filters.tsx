@@ -119,7 +119,7 @@ export default function Filters({ onApply }: FiltersProps) {
               onClick={() => setStatus('active')}
               className={status === 'active' ? styles.activeBtn : styles.inactiveBtn}
             >
-              Sedang Berlangsung
+              Berlangsung
             </button>
             <button
               onClick={() => setStatus('done')}

@@ -120,8 +120,8 @@ body {
   background-color: var(--clr-background);
   color: var(--clr-foreground);
   font-size: var(--fs-base);
-  line-height: 1.6;
-  word-wrap: break-word;
+  /* line-height: 1.6; */
+  word-wrap: pretty;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }

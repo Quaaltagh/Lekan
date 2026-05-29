@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import Navbar from '@/app/components/Navbar';
 import Filter from '@/app/components/Filters';
+import FilterMobile from '@/app/components/FiltersMobile';
 import AuctionCard from '@/app/components/AuctionCard';
 import styles from './page.module.css';
 import '@/app/globals.css';
@@ -27,8 +28,22 @@ function AuctionCardSkeleton() {
 export default function BrowseAuctions() {
   const [filters, setFilters] = useState<AuctionFilters>({ sort: 'newest' });
   const [countdowns, setCountdowns] = useState<Record<string, string>>({});
-
+  const [isMobile, setIsMobile] = useState(false);
+  
   const { auctions, loading, error, refetch } = useBuyerAuctions(filters);
+
+  // detect mobile
+  useEffect(() => {
+    const checkScreen = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+
+    checkScreen();
+
+    window.addEventListener('resize', checkScreen);
+
+    return () => window.removeEventListener('resize', checkScreen);
+  }, []);
 
   // Countdown timer update tiap detik
   useEffect(() => {
@@ -65,9 +80,16 @@ export default function BrowseAuctions() {
             </div>
 
           {/* Filter — semua apply sekaligus saat klik Apply */}
-          <Filter
-            onApply={(f) => setFilters({ ...f, sort: f.sort || 'newest' })}
-          />
+          {/* Filter */}
+          {isMobile ? (
+            <FilterMobile
+              onApply={(f) => setFilters({ ...f, sort: f.sort || 'newest' })}
+            />
+          ) : (
+            <Filter
+              onApply={(f) => setFilters({ ...f, sort: f.sort || 'newest' })}
+            />
+          )}
 
           {error && (
             <div style={{ textAlign: 'center', padding: '1rem', color: '#dc2626', fontSize: '0.875rem' }}>
@@ -83,8 +105,8 @@ export default function BrowseAuctions() {
               Array.from({ length: 8 }).map((_, i) => <AuctionCardSkeleton key={i} />)
             ) : mappedAuctions.length === 0 ? (
               <div style={{ gridColumn: '1/-1', textAlign: 'center', padding: '4rem', color: '#94a3b8' }}>
-                <p style={{ fontSize: '1.125rem', fontWeight: '500' }}>Tidak ada lelang ditemukan</p>
-                <p style={{ fontSize: '0.875rem', marginTop: '0.5rem' }}>Coba ubah filter atau cari kata lain</p>
+                <p className={styles.kosongT}>Tidak ada lelang ditemukan</p>
+                <p className={styles.kosongP}>Coba ubah filter atau cari kata lain</p>
               </div>
             ) : (
               mappedAuctions.map(auction => (

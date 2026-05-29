@@ -6,6 +6,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  width: 100%;
 }
 
 .navLeft {
@@ -460,4 +461,15 @@
   align-items: center;
   gap: 0.75rem;
   padding: 0.75rem 1rem;
+}
+
+@media (max-width: 768px) {
+  .header{
+    padding: 4px 24px;
+    width: 100%;
+  }
+
+  .logoimages{
+    height: 1.5rem;
+  }
 }
