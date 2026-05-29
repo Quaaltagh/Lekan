@@ -16,7 +16,7 @@
 }
 
 .mainContainer {
-  width: 80rem;
+  width: 80%;
   display: flex;
   flex-direction: column;
   margin-left: auto; 
@@ -35,11 +35,11 @@
 
 .header{
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   justify-content: space-between;
   width: 100%;
   height: fit-content;
-  align-items: center;
+  align-items: start;
 }
 
 .notiTitle {
@@ -63,7 +63,7 @@
 .viewAll {
   color: var(--clr-primary);
   text-decoration: none;
-  font-size: 14px;
+  font-size: var(--fs-sm);
   font-weight: 600;
 }
 
@@ -126,6 +126,8 @@
 
 .txAmountContainer {
   text-align: right;
+  width: 40%;
+  overflow: hidden;
 }
 
 .txAmount {
@@ -145,11 +147,55 @@
   font-weight: 500;
 }
 
+.backLink{
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--clr-text-muted);
+  font-size: var(--fs-sm);
+}
+
+.backLink:hover{
+  color: var(--clr-primary);
+}
+
 @media (max-width: 900px) {
   .cardGrid {
     grid-template-columns: 1fr;
   }
   .mainContent {
     padding: 80px 24px 40px 24px;
+  }
+}
+
+@media (max-width: 768px) {
+  .mainContainer{
+    padding: 16px;
+    width: 100%;
+    gap: .5rem;
+  }
+
+  .header{
+    margin-bottom: 10px;
+  }
+
+  .viewAll{
+    font-size: var(--fs-xs);
+  }
+
+  .transactionItem{
+    padding: 8px 10px;
+  }
+
+  .txTitle{
+    font-size: var(--fs-sm);
+  }
+
+  .txIcon{
+    margin-right: 10px;
+    width: 24px;
   }
 }
