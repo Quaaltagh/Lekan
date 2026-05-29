@@ -17,6 +17,7 @@ export interface BuyerAuction {
   ends_at: string;
   image_url?: string;
   created_at: string;
+  origin?: string; // ← tambah ini
 }
 
 export interface AuctionFilters {
@@ -48,7 +49,14 @@ export function useBuyerAuctions(filters: AuctionFilters = {}) {
 
       const res = await fetch(`${API_URL}/api/auctions/buyer?${params.toString()}`);
       if (!res.ok) throw new Error('Gagal memuat lelang.');
-      const data: BuyerAuction[] = await res.json();
+      const raw = await res.json();
+
+      // Map origin dari response backend
+      const data: BuyerAuction[] = raw.map((a: any) => ({
+        ...a,
+        origin: a.origin ?? undefined,
+      }));
+
       setAuctions(data);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Terjadi kesalahan.');

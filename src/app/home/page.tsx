@@ -64,6 +64,7 @@ export default function BrowseAuctions() {
     image:         a.image_url || 'https://darilaut.id/wp-content/uploads/2021/09/Tuna-3.jpg',
     weight:        `${a.weight_kg}Kg`,
     grade:         a.grade || '-',
+    origin:        a.origin,
     startingPrice: formatRp(a.start_price),
     highestBid:    formatRp(a.current_bid ?? a.start_price),
     timeLeft:      countdowns[a.id] || '00:00:00',

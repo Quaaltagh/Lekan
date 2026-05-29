@@ -27,9 +27,8 @@ function NotificationCard({ type, title, description, created_at, is_read }: Not
     }
   };
 
-  // Format timestamp → relative time label
   const formatTime = (iso: string) => {
-    const diff = Date.now() - new Date(iso).getTime();
+    const diff  = Date.now() - new Date(iso).getTime();
     const mins  = Math.floor(diff / 60000);
     const hours = Math.floor(diff / 3600000);
     const days  = Math.floor(diff / 86400000);
@@ -40,9 +39,9 @@ function NotificationCard({ type, title, description, created_at, is_read }: Not
   };
 
   const getTime = (iso: string) => {
-    const diff = Date.now() - new Date(iso).getTime();
+    const diff  = Date.now() - new Date(iso).getTime();
     const hours = Math.floor(diff / 3600000);
-    return hours
+    return hours;
   };
 
   return (
@@ -80,24 +79,24 @@ function NotificationCard({ type, title, description, created_at, is_read }: Not
 }
 
 export default function Notifications({ onBack }: { onBack: () => void }) {
-  const { user } = useAuth();
+  const { user, token } = useAuth(); // ← tambah token
   const isSeller = user?.role === 'nelayan';
 
-  const [activeFilter, setActiveFilter]       = useState('Semua');
-  const [notifications, setNotifications]     = useState<Notification[]>([]);
-  const [isLoading, setIsLoading]             = useState(true);
-  const [error, setError]                     = useState('');
+  const [activeFilter, setActiveFilter]   = useState('Semua');
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [isLoading, setIsLoading]         = useState(true);
+  const [error, setError]                 = useState('');
 
   const filters = ['Semua', 'Transaksi', 'Lelang', 'Pembayaran', 'Sistem'];
 
-  // ── Fetch from backend on mount ──────────────────────────────────────────
+  // ── Fetch notifications ───────────────────────────────────────────────────
   useEffect(() => {
-    if (!user?.id) return;
+    if (!user?.id || !token) return; // ← guard token
 
     const fetchNotifications = async () => {
       try {
         setIsLoading(true);
-        const data = await getNotifications(user.id);
+        const data = await getNotifications(user.id, token); // ← pass token
         setNotifications(data);
       } catch (err) {
         setError('Gagal memuat notifikasi. Coba lagi.');
@@ -107,7 +106,7 @@ export default function Notifications({ onBack }: { onBack: () => void }) {
     };
 
     fetchNotifications();
-  }, [user?.id]);
+  }, [user?.id, token]); // ← tambah token sebagai dependency
 
   // ── Filter ────────────────────────────────────────────────────────────────
   const filteredNotifications = notifications.filter(notif => {
@@ -121,95 +120,94 @@ export default function Notifications({ onBack }: { onBack: () => void }) {
 
   // ── Mark all as read ──────────────────────────────────────────────────────
   const markAllAsRead = async () => {
-    if (!user?.id) return;
+    if (!user?.id || !token) return; // ← guard token
     try {
-      await apiMarkAllAsRead(user.id);
+      await apiMarkAllAsRead(user.id, token); // ← pass token
       setNotifications(prev => prev.map(n => ({ ...n, is_read: true })));
     } catch {
       setError('Gagal menandai notifikasi.');
     }
   };
 
-
   const content = (
-        <main className={styles.mainContainer}>
-          {/* Header */}
-          <div className={styles.header}>
-            <div className={styles.notiHeader}>
-              <div>
-                <h1 className={styles.notiTitle}>Notifikasi</h1>
-                <p className={styles.notiDescription}>
-                  Kelola pembaruan secara real-time dan aktivitas ledger Anda.
-                </p>
-              </div>
-            </div>
-            <button onClick={markAllAsRead} className={styles.markReadButton}>
-              Tandai semua sudah dibaca
-            </button>
+    <main className={styles.mainContainer}>
+      {/* Header */}
+      <div className={styles.header}>
+        <div className={styles.notiHeader}>
+          <div>
+            <h1 className={styles.notiTitle}>Notifikasi</h1>
+            <p className={styles.notiDescription}>
+              Kelola pembaruan secara real-time dan aktivitas ledger Anda.
+            </p>
           </div>
+        </div>
+        <button onClick={markAllAsRead} className={styles.markReadButton}>
+          Tandai semua sudah dibaca
+        </button>
+      </div>
 
-          {/* Filter */}
-          <div className={styles.filterContainer}>
-            {filters.map(filter => (
-              <button
-                key={filter}
-                onClick={() => setActiveFilter(filter)}
-                className={`${styles.filterButton} ${
-                  activeFilter === filter ? styles.filterActive : styles.filterInactive
-                }`}
-              >
-                {filter}
-              </button>
-            ))}
-          </div>
+      {/* Filter */}
+      <div className={styles.filterContainer}>
+        {filters.map(filter => (
+          <button
+            key={filter}
+            onClick={() => setActiveFilter(filter)}
+            className={`${styles.filterButton} ${
+              activeFilter === filter ? styles.filterActive : styles.filterInactive
+            }`}
+          >
+            {filter}
+          </button>
+        ))}
+      </div>
 
-          {/* Notification List */}
-          <div className={styles.notificationWrapper}>
-            {isLoading ? (
-              <p className={styles.emptyText}>Memuat notifikasi...</p>
-            ) : error ? (
-              <p className={styles.emptyText}>{error}</p>
+      {/* Notification List */}
+      <div className={styles.notificationWrapper}>
+        {isLoading ? (
+          <p className={styles.emptyText}>Memuat notifikasi...</p>
+        ) : error ? (
+          <p className={styles.emptyText}>{error}</p>
+        ) : (
+          <AnimatePresence mode="popLayout">
+            {filteredNotifications.length > 0 ? (
+              filteredNotifications.slice(0, 10).map(notif => (
+                <NotificationCard key={notif.id} {...notif} />
+              ))
             ) : (
-              <AnimatePresence mode="popLayout">
-                {filteredNotifications.length > 0 ? (
-                  filteredNotifications.slice(0, 10).map(notif => (
-                    <NotificationCard key={notif.id} {...notif} />
-                  ))
-                ) : (
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    className={styles.emptyState}
-                  >
-                    <p className={styles.emptyText}>
-                      Tidak ada notifikasi untuk {activeFilter}
-                    </p>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className={styles.emptyState}
+              >
+                <p className={styles.emptyText}>
+                  Tidak ada notifikasi untuk {activeFilter}
+                </p>
+              </motion.div>
             )}
-          </div>
-        </main>
-  )
+          </AnimatePresence>
+        )}
+      </div>
+    </main>
+  );
 
-  if(isSeller){
-    return(
+  if (isSeller) {
+    return (
       <div className={styles.all}>
         <SideFisherman />
-           <div className={styles.container}>
-            <SellerNavbar />
-            {content}
-          </div>
+        <div className={styles.container}>
+          <SellerNavbar />
+          {content}
+        </div>
       </div>
-    )
+    );
   }
 
   return (
     <div className={styles.all}>
       <div className={styles.container}>
-          <BuyerNavbar />
-          {content}
+        <BuyerNavbar />
+        {content}
       </div>
     </div>
   );
