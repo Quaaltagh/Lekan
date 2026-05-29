@@ -1,5 +1,5 @@
 'use client';
-import { Coins, Receipt, MoveDownLeft, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Coins, Receipt, MoveDownLeft, ChevronLeft, ChevronRight, ArrowLeft } from 'lucide-react';
 import { useState, useEffect, useCallback } from 'react';
 import styles from '@/app/buyer/transactionHistory/page.module.css';
 import Navbar from '@/app/components/Navbar';
@@ -97,6 +97,11 @@ export default function TransactionHistory() {
 
         {/* Header */}
         <div className={styles.header}>
+          <button onClick={() => router.back()}
+                        className={styles.backLink}
+                       >
+                        <ArrowLeft size={16} /> Kembali
+                      </button>
           <div className={styles.notiHeader}>
             <div>
               <h1 className={styles.notiTitle}>Riwayat Transaksi</h1>
@@ -104,9 +109,9 @@ export default function TransactionHistory() {
                 Kelola dana Anda dan lihat aktivitas keuangan terbaru.
               </p>
             </div>
-            <Link href="/buyer/Dompet" className={styles.viewAll}>
+            {/* <Link href="/buyer/Dompet" className={styles.viewAll}>
               ← Kembali ke halaman Dompet
-            </Link>
+            </Link> */}
           </div>
         </div>
 
