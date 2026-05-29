@@ -104,7 +104,7 @@ export default function BrowseAuctions() {
             {loading ? (
               Array.from({ length: 8 }).map((_, i) => <AuctionCardSkeleton key={i} />)
             ) : mappedAuctions.length === 0 ? (
-              <div style={{ gridColumn: '1/-1', textAlign: 'center', padding: '4rem', color: '#94a3b8' }}>
+              <div style={{ gridColumn: '1/-1', textAlign: 'center', padding: '4rem', color: '#94a3b8', width:'100%'}}>
                 <p className={styles.kosongT}>Tidak ada lelang ditemukan</p>
                 <p className={styles.kosongP}>Coba ubah filter atau cari kata lain</p>
               </div>
