@@ -7,7 +7,7 @@
 }
 
 .container {
-  width: 80rem;
+  width: 80%;
   display: flex;
   flex-direction: column;
   margin-left: auto; 
@@ -366,4 +366,86 @@
 
 .buttonLose:hover {
   background-color: #d1d5db;
+}
+
+@media (max-width: 768px) {
+  .container{
+    padding: 16px;
+    width: 100%;
+    gap: .5rem;
+  }
+
+  .header {
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+
+  .contentcontainer {
+    margin-bottom: 0;
+  }
+ 
+  .contentheader {
+    margin-bottom: 12px;
+  }
+ 
+  .contenttitle {
+    font-size: var(--fs-base);
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+ 
+  .card {
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    border: .5px solid var(--clr-border);
+  }
+
+  .imageContainer {
+    height: 140px;
+  }
+ 
+  /* ── Card body ── */
+  .cardcontainer {
+    padding: 12px;
+  }
+
+  .name {
+    margin-bottom: 8px;
+  }
+  
+
+  .contentcard {
+    padding: 4px 5px;
+  }
+
+ 
+  /* ── Timer ── */
+  .timercontainer {
+    padding-top: 10px;
+    gap: 8px;
+  }
+ 
+  .timerheader {
+    margin-bottom: 4px;
+  }
+ 
+  .timerlabel,
+  .time {
+    font-size: var(--fs-live);
+  }
+ 
+  .timerprogressBar {
+    height: 4px;
+  }
+ 
+  /* ── Button ── */
+  .button {
+    padding: 10px 0;
+    font-size: 12px;
+  }
 }
