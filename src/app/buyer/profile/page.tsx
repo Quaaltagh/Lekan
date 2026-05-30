@@ -58,6 +58,21 @@ export default function Profile() {
   const [saving,      setSaving]      = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const [isMobile, setIsMobile] = useState(false);
+   // detect mobile
+    useEffect(() => {
+      const checkScreen = () => {
+        setIsMobile(window.innerWidth <= 768);
+      };
+  
+      checkScreen();
+  
+      window.addEventListener('resize', checkScreen);
+  
+      return () => window.removeEventListener('resize', checkScreen);
+    }, []);
+  
+
   // ── Fetch profil saat mount ────────────────────────────────────────────
   useEffect(() => {
     if (!user?.id || !token) return;
@@ -357,7 +372,11 @@ export default function Profile() {
                     </div>
 
                     {/* Password baru */}
-                    <div className={styles.formGroup}>
+                    <div className={
+                      isMobile
+                        ? `${styles.formGroup} ${styles.fullWidth}`
+                        : styles.formGroup
+                    }>
                       <label>PASSWORD BARU</label>
                       <div className={styles.passwordWrapper}>
                         <input
@@ -374,7 +393,11 @@ export default function Profile() {
                     </div>
 
                     {/* Konfirmasi password baru */}
-                    <div className={styles.formGroup}>
+                    <div className={
+                        isMobile
+                          ? `${styles.formGroup} ${styles.fullWidth}`
+                          : styles.formGroup
+                      }>
                       <label>KONFIRMASI PASSWORD BARU</label>
                       <div className={styles.passwordWrapper}>
                         <input
