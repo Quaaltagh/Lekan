@@ -5,7 +5,7 @@
 }
 
 .mainContainer {
-  width: 80rem;
+  width: 80%;
   display: flex;
   flex-direction: column;
   margin-left: auto; 
@@ -184,6 +184,7 @@
   color: var(--clr-text-muted);
   text-align: justify;
   margin-bottom: var(--space-lg);
+  font-size: var(--fs-base);
 }
 
 /* bid */
@@ -793,4 +794,237 @@
 
 .iconcard:hover .text {
   color: var(--clr-foreground); /* blue-950 */
+}
+
+@media (max-width: 768px) {
+  .mainContainer {
+    padding: 16px 0;
+    width: 100%;
+    gap: .5rem;
+  }
+
+  .container {
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .imageContainer {
+    margin-bottom: 1rem;
+  }
+
+  .mainContent {
+    padding: 14px 14px 0;
+  }
+
+  .headerContainer {
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+
+  .weightBox {
+    padding: 6px 10px;
+    flex-shrink: 0;
+  }
+
+  .weightValue{
+    font-size: var(--fs-base);
+  }
+
+  .tagContainer {
+    gap: 6px;
+    margin-bottom: 10px;
+  }
+
+  .tag {
+    padding: 2px 6px;
+    letter-spacing: 0.06em;
+  }
+
+  .descriptionText{
+    margin-bottom: var(--space-md);
+    font-size: var(--fs-sm);
+  }
+
+  .bidheader {
+    margin-bottom: 8px;
+    padding-bottom: 8px;
+  }
+
+  .bidtableHeader {
+    padding: 6px 8px;
+    margin-bottom: 4px;
+  }
+
+  .row {
+    padding: 10px 8px;
+    gap: 0;
+  }
+
+  .highestBadge{
+    display: none;
+  }
+
+  .bidderInfo {
+    gap: 8px;
+  }
+
+  .rightwrapper {
+    width: 100%;
+    margin-top: 1.5rem;
+    gap: 10px;
+  }
+
+  .rightcard {
+    padding: 1rem;
+    gap: .5rem;
+    margin-top: 12px;
+  }
+
+  .rightlabel {
+    font-size: 10px;
+  }
+
+  .bidcurrency {
+    font-size: var(--fs-md);
+  }
+
+  .price{
+    font-size: var(--fs-xl);
+  }
+
+  .timerCard{
+    padding: .5rem;
+  }
+
+  .timerLabel {
+    font-size: 10px;
+  }
+ 
+  .timerValue,
+  .timerValueEnd {
+    font-size: var(--fs-base);
+  }
+
+  .timericonWrapper {
+    width: 36px;
+    height: 36px;
+  }
+
+  .inputlabel {
+    font-size: 10px;
+  }
+ 
+  .winput {
+    padding: 10px 12px 10px 3.2rem;
+    font-size: 1rem;
+    height: 42px;
+  }
+ 
+  .inputcurrency {
+    left: 1.2rem;
+    font-size: 0.875rem;
+  }
+ 
+  .hint {
+    font-size: 10px;
+  }
+ 
+  .bidBreakdown {
+    padding: 8px 10px;
+    border-radius: 8px;
+  }
+ 
+  .bidBreakdownLabel,
+  .bidBreakdownValue,
+  .bidBreakdownIncrease {
+    font-size: 11px;
+  }
+ 
+  .bidBreakdownTotalValue {
+    font-size: 13px;
+  }
+ 
+  /* ── Bid submit button ── */
+  .button {
+    padding: 12px 0;
+    font-size: 13px;
+    border-radius: 8px;
+  }
+ 
+  /* ── Wallet ── */
+  .balanceLabel,
+  .balanceValue {
+    font-size: 12px;
+  }
+ 
+  .depositButton {
+    padding: 9px 0;
+    font-size: 12px;
+    border-width: 1.5px;
+    border-radius: 8px;
+  }
+ 
+  .warningText {
+    font-size: 10px;
+  }
+ 
+  /* ── Seller card ── */
+  .sellercard {
+    padding: 12px;
+    border-radius: 12px;
+    box-shadow: none;
+    border: .5px solid var(--clr-border);
+  }
+ 
+  .selleravatarWrapper {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+  }
+ 
+  .sellerlabel {
+    font-size: 9px;
+  }
+ 
+  .sellername {
+    font-size: 12px;
+  }
+ 
+  .sellermeta {
+    font-size: 10px;
+  }
+ 
+  /* ── Trust badges ── */
+  .icongrid {
+    gap: 8px;
+  }
+ 
+  .iconcard {
+    padding: 10px 8px;
+    box-shadow: none;
+    border: .5px solid var(--clr-border);
+    border-radius: 10px;
+  }
+ 
+  .icon {
+    height: 18px;
+    width: 18px;
+    margin-bottom: 4px;
+  }
+ 
+  .text {
+    font-size: 10px;
+    line-height: 1.4;
+  }
+
+  .badgeWrapper{
+    top: .7rem;
+    left: .7rem;
+  }
+
+  .liveBadge{
+    width: fit-content;
+    text-wrap: nowrap;
+  }
+
 }
