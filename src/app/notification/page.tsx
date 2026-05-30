@@ -4,8 +4,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect } from 'react';
 import styles from './page.module.css';
 import BuyerNavbar from '@/app/components/Navbar';
-import SellerNavbar from '@/app/components/NavbarFisherman';
-import SideFisherman from '@/app/components/sideFisherman'
+import NavbarFisherman from '@/app/components/NavbarFisherman';
+import SideFisherman from '@/app/components/sideFisherman';
 import { useAuth } from '@/context/AuthContext';
 import {
   getNotifications,
@@ -81,6 +81,8 @@ function NotificationCard({ type, title, description, created_at, is_read }: Not
 export default function Notifications({ onBack }: { onBack: () => void }) {
   const { user, token } = useAuth(); // ← tambah token
   const isSeller = user?.role === 'nelayan';
+
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const [activeFilter, setActiveFilter]   = useState('Semua');
   const [notifications, setNotifications] = useState<Notification[]>([]);
@@ -194,9 +196,13 @@ export default function Notifications({ onBack }: { onBack: () => void }) {
   if (isSeller) {
     return (
       <div className={styles.all}>
-        <SideFisherman />
+        <SideFisherman
+          sidebarOpen={sidebarOpen}
+          setSidebarOpen={setSidebarOpen}
+        />
+        
         <div className={styles.container}>
-          <SellerNavbar />
+          <NavbarFisherman setSidebarOpen={setSidebarOpen}/>
           {content}
         </div>
       </div>
