@@ -7,7 +7,7 @@
 }
 
 .container {
-  width: 80rem;
+  width: 80%;
   display: flex;
   flex-direction: column;
   margin-left: auto; 
@@ -539,4 +539,177 @@
 .itembutton:hover {
   background: white;
   box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+@media (max-width: 768px) {
+  .container{
+    padding: 16px;
+    width: 100%;
+    gap: .5rem;
+  }
+
+  .titlecontainer { margin-bottom: 10px; }
+
+  .contentcontainer {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  .searchWrapper { width: 100%; }
+ 
+  .searchinput {
+    width: 100%;
+    height: 40px;
+    padding: 9px 12px 9px 36px;
+  }
+
+  .controls {
+    overflow-x: auto;
+    scrollbar-width: none;
+    gap: 6px;
+    flex-wrap: nowrap;
+    padding-bottom: 2px;
+  }
+ 
+  .controls::-webkit-scrollbar { display: none; }
+ 
+  .filterButton {
+    flex-shrink: 0;
+    padding: 6px 14px;
+    white-space: nowrap;
+  }
+
+  /* ── Calendar: full width, posisi fixed bawah ── */
+  .calendarcontainer {
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 80px;
+    top: auto;
+    right: auto;
+    width: calc(100vw - 28px);
+    max-width: 360px;
+    z-index: 50;
+  }
+
+   .cardheader { display: none; }
+
+  .itemrow {
+    display: flex;
+    grid-template-columns: unset;
+    padding: 12px;
+    border-bottom: .5px solid var(--clr-border);
+    margin-bottom: 8px;
+    flex-direction: row;
+    gap: .7rem;
+    width: 100%;
+  }
+
+  .itemproduct {
+    width: 100%;
+    gap: 10px;
+  }
+ 
+  .itemimageWrapper {
+    width: 90px;
+    height: 90px;
+    flex-shrink: 0;
+  }
+ 
+  .itemname {
+    font-size: var(--fs-base);
+    margin-bottom: 2px;
+  }
+ 
+  .itemmeta { font-size: var(--fs-xs)}
+
+  .itemtext {
+    font-size: 12px;
+    color: var(--clr-text-muted);
+  }
+ 
+  .itempriceWrapper {
+    margin-bottom: 4px;
+  }
+ 
+  .itemcurrency,
+  .itemprice { 
+    font-size: var(--fs-base);
+    font-weight: var(--fw-title);
+  }
+ 
+  /* Badge + action di bawah, satu baris */
+  .itemactions {
+    display: inline-flex;
+  }
+
+   .itemrow::after {
+    content: none;
+  }
+ 
+  /* Override: tampilkan info baris bawah rapi */
+  .itemrow > .itemactions:last-child {
+    margin-left: auto;
+  }
+ 
+  /* Buat bottom row flexbox */
+
+  /* Item button */
+  .itembutton {
+    font-size: 11px;
+    padding: 6px 12px;
+    border-radius: 7px;
+    background: #eff6ff;
+    border-color: #bfdbfe;
+    color: var(--clr-primary);
+  }
+ 
+  .itembadge {
+    font-size: 9px;
+    padding: 2px 8px;
+    border-radius: 20px;
+  }
+
+  .atas{
+    display: flex;
+    flex-direction: row;
+    align-items: start;
+    justify-content: space-between;
+    width: 100%;
+    margin-bottom: 10px;
+    gap: 2px;
+  }
+
+  .kanan{
+    width: 100%;
+  }
+
+  .itemactionsbutton{
+    display: flex;
+    align-items: center;
+    justify-items: center;
+    width: 100%;
+  }
+
+  .itembutton{
+    display: flex;
+    justify-content: center;
+    width: 100%;
+  }
+ 
+  /* ── cardcontainer: hapus min-height & border di mobile ── */
+  .cardcontainer {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    min-height: unset;
+  }
+ 
+  /* ── Empty state ── */
+  .emptyState { padding: 3rem 0; }
+  .emptytitle { font-size: 16px; }
+  .emptydescription { font-size: 11px; }
+
 }

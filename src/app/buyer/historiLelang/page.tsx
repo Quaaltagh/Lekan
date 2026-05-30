@@ -200,52 +200,123 @@ function HistoryRow({ id, name, image, vessel, seller, finalPrice, date, status 
     }
   };
 
+  const [isMobile, setIsMobile] = useState(false);
+      
+  // detect mobile
+  useEffect(() => {
+    const checkScreen = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+
+    checkScreen();
+
+    window.addEventListener('resize', checkScreen);
+
+    return () => window.removeEventListener('resize', checkScreen);
+  }, []);
+
   return (
-    <div className={styles.itemrow}>
-      {/* Product */}
-      <div className={styles.itemproduct}>
-        <div className={styles.itemimageWrapper}>
-          <img src={safeSrc(image)} className={styles.itemimage} alt={name} />
+    isMobile ? (
+      <div className={styles.itemrow}>
+        <div className={styles.kiri}>
+          <div className={styles.itemimageWrapper}>
+            <img src={safeSrc(image)} className={styles.itemimage} alt={name} />
+          </div>
         </div>
-        <div>
-          <h4 className={styles.itemname}>{name}</h4>
-          <p className={styles.itemmeta}>
-            <span>Pelabuhan {vessel}</span>
-            <span className={styles.itemseparator}>|</span>
-            <span>Penjual: {seller}</span>
-          </p>
+        <div className={styles.kanan}>
+          <div className={styles.atas}>
+          {/* Product */}
+          <div className={styles.itemproduct}>
+            
+            <div>
+              <h4 className={styles.itemname}>{name}</h4>
+              <p className={styles.itemmeta}>
+                Pelabuhan {vessel}
+              </p>
+
+              <p className={styles.itemmeta}>
+                Penjual: {seller}
+              </p>
+
+              <p className={styles.itemmeta}>
+                {date}
+              </p>
+            </div>
+          </div>
+
+          {/* Status */}
+          <div className={styles.itemactions}>
+            {getStatusBadge()}
+          </div>
+          </div>
+
+          {/* Price */}
+          <div className={styles.itempriceWrapper}>
+            <span className={`${styles.itemcurrency} ${status === 'Lost' ? styles.itempriceLost : ''}`}>Rp</span>
+            <span className={`${styles.itemprice} ${status === 'Lost' ? styles.itempriceLost : ''}`}>
+              {finalPrice}
+            </span>
+          </div>
+
+          
+
+          {/* Action — FIX: pakai Link bukan button biasa */}
+          <div className={styles.itemactionsbutton}>
+            <Link href={status === 'Won'?`/buyer/orderDetailWon/${id}` : `/buyer/auction/${id}`} className={styles.itembutton}>
+              Lihat Detail
+            </Link>
+          </div>
         </div>
       </div>
+    ): (
+      <div className={styles.itemrow}>
+        {/* Product */}
+        <div className={styles.itemproduct}>
+          <div className={styles.itemimageWrapper}>
+            <img src={safeSrc(image)} className={styles.itemimage} alt={name} />
+          </div>
+          <div>
+            <h4 className={styles.itemname}>{name}</h4>
+            <p className={styles.itemmeta}>
+              <span>Pelabuhan {vessel}</span>
+              <span className={styles.itemseparator}>|</span>
+              <span>Penjual: {seller}</span>
+            </p>
+          </div>
+        </div>
 
-      {/* Date */}
-      <div className={styles.itemtext}>{date}</div>
+        {/* Date */}
+        <div className={styles.itemtext}>{date}</div>
 
-      {/* Price */}
-      <div className={styles.itempriceWrapper}>
-        <span className={`${styles.itemcurrency} ${status === 'Lost' ? styles.itempriceLost : ''}`}>Rp</span>
-        <span className={`${styles.itemprice} ${status === 'Lost' ? styles.itempriceLost : ''}`}>
-          {finalPrice}
-        </span>
+        {/* Price */}
+        <div className={styles.itempriceWrapper}>
+          <span className={`${styles.itemcurrency} ${status === 'Lost' ? styles.itempriceLost : ''}`}>Rp</span>
+          <span className={`${styles.itemprice} ${status === 'Lost' ? styles.itempriceLost : ''}`}>
+            {finalPrice}
+          </span>
+        </div>
+
+        {/* Status */}
+        <div className={styles.itemactions}>
+          {getStatusBadge()}
+        </div>
+
+        {/* Action — FIX: pakai Link bukan button biasa */}
+        <div className={styles.itemactions}>
+          <Link href={status === 'Won'?`/buyer/orderDetailWon/${id}` : `/buyer/auction/${id}`} className={styles.itembutton}>
+            Lihat Detail
+          </Link>
+        </div>
       </div>
-
-      {/* Status */}
-      <div className={styles.itemactions}>
-        {getStatusBadge()}
-      </div>
-
-      {/* Action — FIX: pakai Link bukan button biasa */}
-      <div className={styles.itemactions}>
-        <Link href={status === 'Won'?`/buyer/orderDetailWon/${id}` : `/buyer/auction/${id}`} className={styles.itembutton}>
-          Lihat Detail
-        </Link>
-      </div>
-    </div>
+    )
   );
 }
 
 // ─── Main Page ────────────────────────────────────────────────────────────────
 export default function HistoriLelang() {
   const { user, token } = useAuth();
+
+  
 
   const [searchQuery,          setSearchQuery]          = useState('');
   const [statusFilter,         setStatusFilter]         = useState<'Semua' | 'Menang' | 'Kalah'>('Semua');
