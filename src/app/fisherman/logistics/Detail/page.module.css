@@ -15,7 +15,7 @@
 }
 
 .content {
-  width: 80rem;
+  width: 80%;
   display: flex;
   flex-direction: column;
   margin-left: auto; 
@@ -208,4 +208,35 @@
 
 .errorState {
   color: #dc2626;
+}
+
+@media (max-width: 768px) {
+  .content{
+    padding: 16px;
+    width: 100%;
+    gap: .5rem;
+  }
+
+  .notiHeader{
+    margin-bottom: 1rem;
+  }
+
+  .shipmentCard {
+    padding: 12px;
+    margin-bottom: var(--space-sm);
+  }
+
+  .shipmentHeader { margin-bottom: 8px; }
+  .shipmentFooter { padding-top: 8px; margin-top: 8px; }
+ 
+  .badge {padding: 3px 8px; border-radius: 20px; }
+  .badgeDot { width: 5px; height: 5px; }
+
+  .destination{
+    font-size: var(--fs-base);
+  }
+
+  .estArrival{
+    font-size: var(--fs-xs);
+  }
 }

@@ -15,7 +15,7 @@
 }
 
 .content {
-  width: 80rem;
+  width: 80%;
   display: flex;
   flex-direction: column;
   margin-left: auto; 
@@ -170,4 +170,79 @@
 
 .trackLink:hover {
  color: var(--clr-primary-hover);
+}
+
+
+@media (max-width: 768px) {
+  .content{
+    padding: 16px;
+    width: 100%;
+    gap: .5rem;
+  }
+
+  .notiHeader{
+    margin-bottom: 1rem;
+  }
+
+  .historyTable { display: none; }
+
+  .historyTable,
+  .historyTable thead,
+  .historyTable tbody,
+  .historyTable tr {
+    display: block;
+    width: 100%;
+  }
+
+  .historyTable thead { display: none; }
+
+  .historyTable tr {
+    background: var(--clr-white);
+    border: 1px solid var(--clr-border);
+    border-radius: var(--radius-lg);
+    padding: 10px 12px;
+    margin-bottom: var(--space-sm);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .historyTable tr:last-child { margin-bottom: 0; }
+  .historyTable tbody tr:hover td { background: transparent; }
+
+  .historyTable td {
+    padding: 0;
+    border: none;
+    display: inline;
+  }
+
+  .historyTable td:nth-child(1) { /* Tanggal */
+    font-size: var(--fs-live);
+    color: var(--clr-text-muted);
+    width: 100%;
+    display: block;
+    margin-bottom: 2px;
+  }
+
+  .historyTable td:nth-child(2) { /* Tujuan */
+    flex: 1;
+    display: block;
+  }
+ 
+  .historyTable td:nth-child(3) { /* Kargo */
+    font-size: var(--fs-live);
+    color: var(--clr-text-muted);
+    display: block;
+    width: 100%;
+    margin-bottom: 6px;
+  }
+ 
+  .historyTable td:nth-child(4), /* Status */
+  .historyTable td:nth-child(5)  /* Aksi */ {
+    display: inline-flex;
+    align-items: center;
+    margin-right: 8px;
+  }
+
 }

@@ -104,11 +104,16 @@ export default function LogisticsDetailPage(){
         );
     }
   };
+    const [sidebarOpen, setSidebarOpen] = useState(false);
+
     return(
         <div className={styles.all}>
-            <SideFisherman />
+            <SideFisherman
+                              sidebarOpen={sidebarOpen}
+                              setSidebarOpen={setSidebarOpen}
+                            />
             <div className={styles.container}>
-                <NavbarFisherman />
+                <NavbarFisherman setSidebarOpen={setSidebarOpen}/>
 
                 <div className={styles.content}>
                    
