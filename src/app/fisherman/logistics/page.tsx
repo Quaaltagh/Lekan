@@ -109,12 +109,18 @@ export default function LogisticsPage() {
   };
 
   const router = useRouter();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
 
   return (
     <div className={styles.layout}>
-      <SideFisherman />
+      <SideFisherman
+                  sidebarOpen={sidebarOpen}
+                  setSidebarOpen={setSidebarOpen}
+                />
       <div className={styles.mainWrapper}>
-        <NavbarFisherman />
+        <NavbarFisherman setSidebarOpen={setSidebarOpen}/>
+       
         
         <main className={styles.main}>
           {/* Header */}
@@ -236,18 +242,26 @@ export default function LogisticsPage() {
                     {/* <Handshake size={20} color="#0f172a" /> */}
                     <h2 className={styles.sectionTitle}>Mitra Logistik</h2>
                   </div>
+                  
+                  
 
+                 <div className={styles.partnerWrapper}>
                   {STATIC_PARTNERS.map(partner => (
-                    <div key={partner.id} className={styles.partnerCard}>
-                      <div className={styles.partnerIconWrap}>
-                        {partner.initials}
+                    
+                      <div key={partner.id} className={styles.partnerCard}>
+                        <div className={styles.partnerIconWrap}>
+                          {partner.initials}
+                        </div>
+                        <div className={styles.partnerInfo}>
+                          <h4>{partner.name}</h4>
+                          <p>{partner.desc}</p>
+                        </div>
                       </div>
-                      <div className={styles.partnerInfo}>
-                        <h4>{partner.name}</h4>
-                        <p>{partner.desc}</p>
-                      </div>
-                    </div>
+                   
                   ))}
+                 </div>
+
+                   
                   
                 </div>
               </div>
