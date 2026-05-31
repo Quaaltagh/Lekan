@@ -223,13 +223,18 @@ export default function FishermanAuctionDetailPage() {
     }
   };
 
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
   /* ── Loading ── */
   if (loading) {
     return (
       <div className={styles.layout}>
-        <SideFisherman />
-        <div className={styles.mainWrapper}>
-          <NavbarFisherman />
+      <SideFisherman
+                        sidebarOpen={sidebarOpen}
+                        setSidebarOpen={setSidebarOpen}
+                      />
+      <div className={styles.mainWrapper}>
+        <NavbarFisherman setSidebarOpen={setSidebarOpen}/>
           <div className={styles.loadingState}>
             <Loader2 size={36} className="animate-spin" style={{ color: 'var(--clr-primary)' }} />
             <p>Memuat detail pemesanan...</p>
@@ -242,10 +247,13 @@ export default function FishermanAuctionDetailPage() {
   /* ── Error ── */
   if (error || !logistics) {
     return (
-      <div className={styles.layout}>
-        <SideFisherman />
-        <div className={styles.mainWrapper}>
-          <NavbarFisherman />
+     <div className={styles.layout}>
+      <SideFisherman
+                        sidebarOpen={sidebarOpen}
+                        setSidebarOpen={setSidebarOpen}
+                      />
+      <div className={styles.mainWrapper}>
+        <NavbarFisherman setSidebarOpen={setSidebarOpen}/>
           <div className={styles.errorState}>
             <p className={styles.errorText}>{error || 'Detail pemesanan tidak ditemukan.'}</p>
             <button onClick={() => router.back()} className={styles.backBtn}>
@@ -271,12 +279,15 @@ export default function FishermanAuctionDetailPage() {
     'SUSTAINABLE',
     auction?.grade ? `GRADE ${auction.grade}` : 'SASHIMI GRADE',
   ];
-
+   
   return (
     <div className={styles.layout}>
-      <SideFisherman />
+      <SideFisherman
+                        sidebarOpen={sidebarOpen}
+                        setSidebarOpen={setSidebarOpen}
+                      />
       <div className={styles.mainWrapper}>
-        <NavbarFisherman />
+        <NavbarFisherman setSidebarOpen={setSidebarOpen}/>
 
         <main className={styles.main}>
           <div className={styles.container}>

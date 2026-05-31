@@ -5,13 +5,15 @@
 }
 
 .mainWrapper {
-  flex: 1;
-  display: flex;
+ display: flex;
   flex-direction: column;
+  flex: 1;
+  overflow: auto;
+  width: 100%;
 }
 
 .main {
-  width: 80rem;
+  width: 80%;
   display: flex;
   flex-direction: column;
   margin-left: auto; 
@@ -96,6 +98,15 @@
   gap: var(--space-sm);
   margin-bottom: var(--space-md);
   justify-content: space-between;
+}
+
+.sectionTitleWraphis {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-md);
+  justify-content: space-between;
+  margin-top: 40px;
 }
 
 .sectionTitle {
@@ -839,4 +850,145 @@
 .dropdownItemActive {
   background: #eff6ff;
   color: var(--clr-primary);
+}
+
+@media (max-width: 768px) {
+  .main{
+    padding: 16px;
+    width: 100%;
+    gap: .5rem;
+  }
+
+  .headercontainer{
+    margin-top: 1rem;
+    align-items: flex-end;
+    margin-bottom: 0;
+  }
+
+  
+
+  .imageContainer {
+    height: 140px;
+  }
+ 
+  /* ── Card body ── */
+  .cardcontainer {
+    padding: 12px;
+  }
+
+   .name {
+    margin-bottom: 8px;
+  }
+  
+
+  .contentcard {
+    padding: 4px 5px;
+  }
+
+  /* ── Timer ── */
+  .timercontainer {
+    padding-top: 10px;
+    gap: 8px;
+  }
+ 
+  .timerheader {
+    margin-bottom: 4px;
+  }
+ 
+  .timerlabel,
+  .time {
+    font-size: var(--fs-live);
+  }
+ 
+  .timerprogressBar {
+    height: 4px;
+  }
+ 
+  /* ── Button ── */
+  .button {
+    padding: 10px 0;
+    font-size: 12px;
+  }
+
+  .sectionTitleWrap, .sectionTitleWraphis {
+    margin-bottom: 0;
+    margin-top: 0;
+  }
+
+  .sectionTitleWraphis{
+    flex-direction: column;
+    align-items: start;
+  }
+
+  .finishedContainer {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+ 
+  .table {
+    min-width: 560px;
+    table-layout: fixed;
+  }
+
+  .filterButton {
+    flex-shrink: 0;
+    padding: 6px 14px;
+    white-space: nowrap;
+  }
+
+  .calendarcontainer {
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 80px;
+    top: auto;
+    right: auto;
+    width: calc(100vw - 28px);
+    max-width: 360px;
+    z-index: 50;
+  }
+
+  .table th,
+  .table td {
+    padding: var(--space-sm) var(--space-md);
+    width:  6rem;
+  }
+
+  table tr th:nth-child(1),
+table tr td:nth-child(1){
+  width: 10rem;
+}
+
+ table tr th:nth-child(2),
+table tr td:nth-child(2){
+  width: 8rem;
+}
+
+table tr th:nth-child(3),
+table tr td:nth-child(3){
+  width: 8rem;
+}
+
+ table tr th:nth-child(6),
+table tr td:nth-child(6){
+  width: 9rem;
+}
+
+  .fishDetailImage {
+    width: 36px;
+    height: 36px;
+  }
+
+  .biddersCount{
+    font-size: var(--fs-xs);
+  }
+
+  .fishDetailName{
+    font-size: var(--fs-sm);
+  }
+
+  .fishDetailWeight{
+    font-size: var(--fs-live);
+  }
+  
 }
