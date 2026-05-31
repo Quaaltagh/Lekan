@@ -6,7 +6,7 @@
 }
 
 .container {
-  width: 80rem;
+  width: 80%;
   display: flex;
   /* flex-direction: column; */
   margin-left: auto; 
@@ -369,4 +369,70 @@
   font-size: var(--fs-live);
   color: var(--clr-text-muted);
   margin: 0px 0 0 0;
+}
+
+@media (max-width: 768px) {
+  .container{
+    padding: 16px;
+    width: 100%;
+    gap: .5rem;
+    flex-direction: column;
+  }
+
+  .mainContent{
+    width: 100%;
+  }
+
+  .balanceValue{
+    font-size: 36px;
+  }
+
+  .customInputWrapper{
+    width: 100%;
+  }
+
+  .inputField{
+    width: 100%;
+  }
+
+  .amountGrid{
+    grid-template-columns: repeat(2,1fr);
+  }
+  
+  .stepSection{
+    margin-bottom: 20px;
+  }
+  .sidebar{
+    margin-top: 0;
+  }
+
+  .totalRow{
+    margin: 12px 0;
+    padding: 10px 0;
+  }
+
+  .summaryCard{
+    padding: var(--space-md);
+  }
+
+  .totalLabel{
+    text-wrap: nowrap;
+  }
+
+  .totalAmount{
+    font-size: 22px;
+  }
+
+  .methodCard{
+    padding: 8px;
+  }
+  .methodIcon{
+    padding: 4px 4px 2px;
+    margin-left: 0;
+    padding-right: 3px;
+  }
+
+  .methodGrid{
+    gap: var(--space-sm);
+  }
 }
