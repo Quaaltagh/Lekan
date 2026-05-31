@@ -75,11 +75,15 @@ export default function DompetPage() {
       .reduce((s: number, tx: Transaction) => s + tx.amount, 0) ?? 0;
   
   const router = useRouter();
+   const [sidebarOpen, setSidebarOpen] = useState(false);
   return (
     <div className={styles.layout}>
-      <SideFisherman />
+      <SideFisherman
+                  sidebarOpen={sidebarOpen}
+                  setSidebarOpen={setSidebarOpen}
+                />
       <div className={styles.mainWrapper}>
-        <NavbarFisherman />
+        <NavbarFisherman setSidebarOpen={setSidebarOpen}/>
         <main className={styles.main}>
           {/* Header */}
           <div className={styles.pageHeader}>
