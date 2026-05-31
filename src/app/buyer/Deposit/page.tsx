@@ -38,6 +38,22 @@ const DepositPage: React.FC = () => {
   const amount = custom ? parseInput(custom) : (preset ?? 0);
   const total  = amount > 0 ? amount + SERVICE_FEE : 0;
 
+  const [isMobile, setIsMobile] = useState(false);
+        
+    // detect mobile
+    useEffect(() => {
+      const checkScreen = () => {
+        setIsMobile(window.innerWidth <= 768);
+      };
+  
+      checkScreen();
+  
+      window.addEventListener('resize', checkScreen);
+  
+      return () => window.removeEventListener('resize', checkScreen);
+    }, []);
+  
+
   // ── Fetch wallet balance ──────────────────────────────────────────────────
   useEffect(() => {
     if (!user || !token) { router.push('/'); return; }
@@ -109,7 +125,7 @@ const DepositPage: React.FC = () => {
 
         <div className={styles.mainContent}>
           <button onClick={() => router.back()} className={styles.backLink}>
-                            <ArrowLeft size={18} /> Kembali ke Histori Lelang
+                            <ArrowLeft size={18} /> Kembali
                           </button>
           {/* Balance Header */}
           <header className={styles.balanceHeader}>
@@ -209,14 +225,14 @@ const DepositPage: React.FC = () => {
             </div>
             <div className={styles.totalRow}>
               <div className={styles.totalLabel}>
-                <p>Total</p>
-                <p>Tagihan</p>
+                <p>Total Tagihan</p>
               </div>
               <p className={styles.totalAmount}>{total > 0 ? formatRupiah(total) : '—'}</p>
             </div>
 
             <div className={styles.infoBox}>
-              <div className={styles.infoIcon}><Info size={24} color="#000" /></div>
+              <div className={styles.infoIcon}> {isMobile ? (<Info size={20} />) : (<Info size={24} />)}
+                </div>
               <p>Deposit melalui Transfer Bank biasanya diproses dalam 2–5 menit setelah verifikasi.</p>
             </div>
 
@@ -237,7 +253,9 @@ const DepositPage: React.FC = () => {
             </button>
 
             <div className={styles.secureText}>
-              <div className={styles.secureIcon}><ShieldAlert size={24} color="#000" /></div>
+              <div className={styles.secureIcon}>
+                {isMobile ? (<ShieldAlert size={20} />) : (<ShieldAlert size={24} />)}
+                </div>
               <p>Dijamin oleh Sistem Pembayaran Maritime Exchange</p>
             </div>
           </div>
