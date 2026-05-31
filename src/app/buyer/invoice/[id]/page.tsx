@@ -70,20 +70,39 @@ export default function InvoicePage() {
 
   /* ─── Download PDF ─── */
   const handleDownloadPdf = async () => {
-    const element = printRef.current;
-    if (!element) return;
+  const element = printRef.current;
+  if (!element) return;
 
-    const canvas = await html2canvas(element, { scale: 2 });
-    const data   = canvas.toDataURL('image/png');
-    const pdf    = new jsPDF({ orientation: 'portrait', unit: 'px', format: 'a4' });
+  const canvas = await html2canvas(element, {
+    scale: 2,
+    useCORS: true,
+  });
 
-    const imgProperties = pdf.getImageProperties(data);
-    const pdfWidth      = pdf.internal.pageSize.getWidth();
-    const pdfHeight     = (imgProperties.height * pdfWidth) / imgProperties.width;
+  const imgData = canvas.toDataURL('image/png');
 
-    pdf.addImage(data, 'PNG', 0, 0, pdfWidth, pdfHeight);
-    pdf.save(`invoice-${invoice?.invoice_number ?? 'lekan'}.pdf`);
-  };
+  const pdf = new jsPDF('p', 'mm', 'a4');
+
+  const pageWidth = pdf.internal.pageSize.getWidth();
+  const pageHeight = pdf.internal.pageSize.getHeight();
+
+  const imgWidth = pageWidth;
+  const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+  let heightLeft = imgHeight;
+  let position = 0;
+
+  pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+  heightLeft -= pageHeight;
+
+  while (heightLeft > 0) {
+    position = heightLeft - imgHeight;
+    pdf.addPage();
+    pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+    heightLeft -= pageHeight;
+  }
+
+  pdf.save(`invoice-${invoice?.invoice_number}.pdf`);
+};
 
   /* ─── Derived values ─── */
   const perKg = invoice

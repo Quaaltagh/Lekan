@@ -5,8 +5,7 @@
 }
 
 .container {
-  max-width: 80rem;
-  width: 100%;
+  width: 80%;
   display: flex;
   flex-direction: column;
   margin-left: auto; 
@@ -89,7 +88,6 @@
   border-radius: var(--rad);
   box-shadow: var(--shadow-lg);
   border: 1px solid var(--clr-border);
-  overflow: hidden;
 }
 
 .topStrip {
@@ -530,4 +528,98 @@
   color: #475569;
   line-height: 1.5;
   margin: 0;
+}
+
+@media (max-width: 768px) {
+  .container{
+    padding: 16px;
+    width: 100%;
+    gap: .5rem;
+  }
+
+  .titlewrapper {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0;
+    gap: 8px;
+  }
+
+  .titleSection {
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+  }
+
+   .title { display: none; }
+
+  .downloadBtn {
+    padding: 7px 12px;
+  }
+
+  .content {
+    padding: 12px;
+    gap: 12px;
+  }
+
+  .metaWrapper {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 0;
+    gap: 8px;
+  }
+ 
+  .leftMeta { gap: 0; }
+ 
+  .paidBadge,
+  .unpaidBadge {
+    padding: 2px 8px;
+    margin-bottom: 6px;
+  }
+
+  .rightMeta { text-align: right; gap: 6px; }
+   .tablewrapper { margin-bottom: 0; }
+ 
+  .headerRow {
+    padding-bottom: 6px;
+    margin-bottom: 10px;
+  }
+
+  .itemRow {
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+  }
+ 
+  .tableleft { gap: 10px; flex: 1; min-width: 0; }
+ 
+  .imageBox { width: 52px; height: 52px; flex-shrink: 0; }
+ 
+  .itemsubtitle { line-height: 1.4; }
+ 
+  .tableright { text-align: right; flex-shrink: 0; }
+
+  .sumwrapper { margin-bottom: 0; }
+  .sumbox { width: 100%; }
+
+   .logisticsRow {
+    margin: 0;
+    padding: 8px 10px;
+    
+  }
+
+   .verifwrapper {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding-top: 10px;
+  }
+
+  .verificon { width: 16px; height: 16px; }
+  .qrIcon { width: 22px; height: 22px; }
+
+  .totalValue{
+    font-size: var(--fs-xl);
+  }
 }
