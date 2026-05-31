@@ -76,10 +76,7 @@
   grid-template-columns: 1fr 320px;
   gap: var(--space-2xl);
   align-items: start;
-}
-
-@media (max-width: 900px) {
-  .contentGrid { grid-template-columns: 1fr; }
+  width: 100%;
 }
 
 /* ── LEFT COLUMN ── */
@@ -98,6 +95,7 @@
   position: relative;
   overflow: hidden;
   box-shadow: var(--shadow-primary-lg);
+  width: 100%;
 }
 
 .balanceCard::before {
@@ -657,4 +655,50 @@
 .viewLedgerBtn:hover {
   background: var(--clr-primary-muted);
   border-color: var(--clr-primary-border);
+}
+
+@media (max-width: 768px) {
+  .main{
+    padding-left: 16px;
+    padding-right: 16px;
+    padding-top: 20px;
+    padding-bottom: 40px;
+  }
+
+  .contentGrid {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .leftCol,
+  .rightCol {
+    width: 100%;
+  }
+
+  .balanceCard {
+    padding: var(--space-md) var(--space-lg);
+    box-shadow: none;
+  }
+
+  .pageHeader{
+    margin-bottom: var(--space-md);
+  }
+
+  .ledgerBox{
+    padding: var(--space-sm) var(--space-md);
+  }
+
+  .balanceMeta {
+    gap: 8px;
+  }
+
+  .formCard{
+    padding: var(--space-md);
+  }
+
+  .bankSection{
+    margin-top: 0;
+  }
+
 }

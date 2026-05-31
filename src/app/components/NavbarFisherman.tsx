@@ -191,7 +191,7 @@ export default function NavbarFisherman({setSidebarOpen}: {setSidebarOpen: (valu
               </div>
               <hr className={styles.divider} />
               <button className={styles.dropdownItem} onClick={() => { setWalletOpen(false); router.push('/fisherman/withdraw'); }}>
-                <BanknoteIcon size={15} /> Tarik Dana (Withdraw)
+                <BanknoteIcon size={15} /> Tarik Dana
               </button>
               <button className={styles.dropdownItem} onClick={() => { setWalletOpen(false); router.push('/fisherman/walletPayment'); }}>
                 <Wallet size={15} /> Dompet

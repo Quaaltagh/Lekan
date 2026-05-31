@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import styles from "./DompetWithdraw.module.css";
 import SideFisherman from "../../components/sideFisherman";
 import NavbarFisherman from "../../components/NavbarFisherman";
+import { useRouter } from 'next/navigation';
 import {
   Shield,
   Clock,
@@ -67,6 +68,7 @@ function shortBank(desc?: string) {
 }
 
 export default function WithdrawPage() {
+    const router = useRouter();
   // ── Auth ───────────────────────────────────────────────────────────────
   const [userId, setUserId] = useState<string | null>(null);
   const [token, setToken] = useState<string | null>(null);
@@ -215,12 +217,17 @@ export default function WithdrawPage() {
     }
   };
 
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
   // ── Render ─────────────────────────────────────────────────────────────
   return (
     <div className={styles.layout}>
-      <SideFisherman />
+      <SideFisherman
+            sidebarOpen={sidebarOpen}
+            setSidebarOpen={setSidebarOpen}
+          />
       <div className={styles.mainWrapper}>
-        <NavbarFisherman />
+        <NavbarFisherman setSidebarOpen={setSidebarOpen}/>
         <main className={styles.main}>
 
           {/* ── Page Title ── */}
@@ -482,7 +489,7 @@ export default function WithdrawPage() {
                           </div>
                         );
                       })}
-                      <button className={styles.viewLedgerBtn}>
+                      <button className={styles.viewLedgerBtn} onClick={() => router.push(`/fisherman/transactionDetail`)}>
                         Lihat Semua Riwayat
                       </button>
                     </>
