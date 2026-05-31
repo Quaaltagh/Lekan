@@ -15,7 +15,7 @@
 }
 
 .content {
-  width: 80rem;
+  width: 80%;
   display: flex;
   flex-direction: column;
   margin-left: auto; 
@@ -398,6 +398,7 @@
   padding: 1rem;
   border-bottom: 1px solid #ebeced;
   transition: background-color 0.2s;
+
 }
 
 .itemrow:hover {
@@ -452,6 +453,7 @@
   font-size: var(--fs-sm);
   color: var(--clr-foreground);
   font-weight: var(--fw-h4);
+  margin-bottom: var(--space-sm);
 }
 
 .itempriceWrapper {
@@ -500,4 +502,172 @@
 .itembutton:hover {
   background: var(--clr-primary);
   color: var(--clr-white);
+}
+
+@media (max-width: 768px) {
+  .content{
+    padding: 16px;
+    width: 100%;
+    gap: .5rem;
+  }
+
+  .contentcontainer{
+    margin-top: 1rem;
+    align-items: flex-end;
+    margin-bottom: 0;
+  }
+
+  .searchWrapper { width: 100%; }
+
+  .searchinput {
+    width: 100%;
+    height: 40px;
+    padding: 9px 12px 9px 36px;
+  }
+
+  .controls {
+    overflow-x: auto;
+    scrollbar-width: none;
+    gap: 6px;
+    flex-wrap: nowrap;
+    padding-bottom: 2px;
+  }
+ 
+  .controls::-webkit-scrollbar { display: none; }
+ 
+  .filterButton {
+    flex-shrink: 0;
+    padding: 6px 14px;
+    white-space: nowrap;
+  }
+
+  .calendarcontainer {
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 80px;
+    top: auto;
+    right: auto;
+    width: calc(100vw - 28px);
+    max-width: 360px;
+    z-index: 50;
+  }
+
+   .cardheader { display: none; }
+
+  .itemrow {
+    display: flex;
+    grid-template-columns: unset;
+    padding: 12px;
+    border-bottom: .5px solid var(--clr-border);
+    margin-bottom: 8px;
+    flex-direction: row;
+    gap: 1rem;
+    width: 100%;
+  }
+
+  .atas{
+    display: flex;
+    flex-direction: row;
+    align-items: start;
+    justify-content: space-between;
+    width: 100%;
+    gap: 2px;
+    margin-bottom: 0px;
+  }
+
+  .kanan{
+    width: 100%;
+  }
+
+  .itemproduct {
+    width: 100%;
+    gap: 0px;
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+  }
+ 
+  .itemimageWrapper {
+    width: 90px;
+    height: 90px;
+    flex-shrink: 0;
+  }
+
+   .itemname {
+    font-size: var(--fs-base);
+    margin-bottom: 2px;
+  }
+ 
+  .itemmeta { font-size: var(--fs-xs)}
+
+ 
+  .itempriceWrapper {
+    margin-bottom: 4px;
+  }
+ 
+  .itemcurrency,
+  .itemprice { 
+    font-size: var(--fs-md);
+    font-weight: var(--fw-title);
+  }
+ 
+  /* Badge + action di bawah, satu baris */
+  .itemactions {
+    display: inline-flex;
+  }
+
+   .itemrow::after {
+    content: none;
+  }
+ 
+  /* Override: tampilkan info baris bawah rapi */
+  .itemrow > .itemactions:last-child {
+    margin-left: auto;
+  }
+ 
+  /* Buat bottom row flexbox */
+
+  /* Item button */
+  .itembutton {
+    font-size: 11px;
+    padding: 6px 12px;
+    border-radius: 7px;
+    background: #eff6ff;
+    border-color: #bfdbfe;
+    color: var(--clr-primary);
+  }
+ 
+  .itembadge {
+    font-size: 9px;
+    padding: 2px 8px;
+    border-radius: 20px;
+  }
+
+
+  .itemactionsbutton{
+    display: flex;
+    align-items: center;
+    justify-items: center;
+    width: 100%;
+  }
+
+  .itembutton{
+    display: flex;
+    justify-content: center;
+    width: 100%;
+  }
+ 
+  /* ── cardcontainer: hapus min-height & border di mobile ── */
+  .cardcontainer {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    min-height: unset;
+  }
+ 
+  /* ── Empty state ── */
+  .emptyState { padding: 3rem 0; }
+  .emptytitle { font-size: 16px; }
+  .emptydescription { font-size: 11px; }
 }

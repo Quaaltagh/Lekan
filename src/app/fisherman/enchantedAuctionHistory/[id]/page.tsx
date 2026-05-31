@@ -128,13 +128,20 @@ export default function AuctionHistoryDetailPage() {
     auction?.grade ? `GRADE ${auction.grade}` : 'SASHIMI GRADE',
   ]; 
 
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  
+
   /* ─── Loading ─── */
   if (loading) {
     return (
-      <div className={styles.all}>
-      <SideFisherman />
+       <div className={styles.all}>
+      <SideFisherman
+                  sidebarOpen={sidebarOpen}
+                  setSidebarOpen={setSidebarOpen}
+                />
       <div className={styles.container}>
-        <NavbarFisherman />
+        <NavbarFisherman setSidebarOpen={setSidebarOpen}/>
+
 
         <div className={styles.content}>
             <Loader2 size={36} className="animate-spin" style={{ color: 'var(--clr-primary)' }} />
@@ -156,10 +163,14 @@ export default function AuctionHistoryDetailPage() {
   /* ─── Error ─── */
   if (error || !auction) {
     return (
-      <div className={styles.all}>
-      <SideFisherman />
+       <div className={styles.all}>
+      <SideFisherman
+                  sidebarOpen={sidebarOpen}
+                  setSidebarOpen={setSidebarOpen}
+                />
       <div className={styles.container}>
-        <NavbarFisherman />
+        <NavbarFisherman setSidebarOpen={setSidebarOpen}/>
+
 
         <div className={styles.content}>
            <p className={styles.errorText}>{error || 'Detail lelang tidak ditemukan.'}</p>
@@ -202,12 +213,18 @@ export default function AuctionHistoryDetailPage() {
   };
   const statusInfo = statusLabel[auction.status] ?? { label: auction.status, cls: '' };
 
+  
+
   /* ─── Render ─── */
   return (
-     <div className={styles.all}>
-      <SideFisherman />
+      <div className={styles.all}>
+      <SideFisherman
+                  sidebarOpen={sidebarOpen}
+                  setSidebarOpen={setSidebarOpen}
+                />
       <div className={styles.container}>
-        <NavbarFisherman />
+        <NavbarFisherman setSidebarOpen={setSidebarOpen}/>
+
 
         <div className={styles.content}>
           <div className={styles.header}>
@@ -255,7 +272,7 @@ export default function AuctionHistoryDetailPage() {
 
               {/* Stats */}
               <div className={styles.statsGrid}>
-                <div className={styles.statCard}>
+                <div className={styles.statCard} style={{order: 1}}>
                   <div className= {styles.cardwrapper}>
                     <div className={styles.statIconWrap} style={{ background: '#eff6ff' }}>
                       <TrendingUp size={20} color="var(--clr-primary)" />
@@ -264,7 +281,7 @@ export default function AuctionHistoryDetailPage() {
                   </div>
                   <span className={styles.statValue}>{formatIDR(auction.start_price)}</span>
                 </div>
-                <div className={styles.statCard}>
+                <div className={styles.statCard} style={{order: 3}}>
                   <div className= {styles.cardwrapper}>
                     <div className={styles.statIconWrap} style={{ background: '#f0fdf4' }}>
                       <Award size={20} color="#16a34a" />
@@ -279,7 +296,7 @@ export default function AuctionHistoryDetailPage() {
                   
                   <span className={styles.statValue} style={{ color: '#16a34a' }}>{formatIDR(auction.final_price)}</span>
                 </div>
-                <div className={styles.statCard}>
+                <div className={styles.statCard} style={{order: 2}}>
                   <div className= {styles.cardwrapper}>
                     <div className={styles.statIconWrap} style={{ background: '#fff7ed' }}>
                       <DollarSign size={20} color="#ea580c" />
@@ -481,7 +498,7 @@ export default function AuctionHistoryDetailPage() {
 
                 {auction.escrow.is_released ? (
                   <div className={styles.statusBoxSuccess}>
-                    <CheckCircle2 className={styles.escrowIcon} />
+                    <CheckCircle2 className={styles.logisticIcon} />
                     <div>
                       <strong>Dana Telah Dirilis</strong>
                       <p>
@@ -492,7 +509,7 @@ export default function AuctionHistoryDetailPage() {
                   </div>
                 ) : (
                   <div className={styles.statusBoxEscrow}>
-                    <ShieldCheck className={styles.escrowIcon} />
+                    <ShieldCheck className={styles.logisticIcon} />
                     <div>
                       <strong>Dana Aman di Escrow</strong>
                       <p>

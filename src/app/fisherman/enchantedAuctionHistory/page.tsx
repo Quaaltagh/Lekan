@@ -166,8 +166,71 @@ function TransactionItem({ item, token }: { item: any; token: string }) {
     ? (item.final_price ?? item.current_bid ?? item.start_price)
     : (item.current_bid ?? item.start_price);
 
+  const [isMobile, setIsMobile] = useState(false);
+        
+    // detect mobile
+    useEffect(() => {
+      const checkScreen = () => {
+        setIsMobile(window.innerWidth <= 768);
+      };
+  
+      checkScreen();
+  
+      window.addEventListener('resize', checkScreen);
+  
+      return () => window.removeEventListener('resize', checkScreen);
+    }, []);
+
   return (
-    <div className={styles.itemrow}>
+    isMobile ? (
+      <div className={styles.itemrow}>
+        <div className={styles.kiri}>
+          <div className={styles.itemimageWrapper}>
+            {imgSrc
+            ? <img src={imgSrc} alt={item.name} />
+            : <Fish size={24} color="#94a3b8" />}
+          </div>
+        </div>
+        <div className={styles.kanan}>
+          <div className={styles.atas}>
+          {/* Product */}
+          <div className={styles.itemproduct}>
+            
+            
+              <h4 className={styles.itemname}>{item.name}</h4>
+              <p className={styles.itemmeta}>
+                {item.grade || 'STANDAR'} • {item.weight_kg}KG • {formatted}
+              </p>
+            
+          </div>
+
+          </div>
+
+          <div className={styles.itemtext}>
+        {buyerLoading
+          ? <Loader2 size={14} className="animate-spin" style={{ color: '#94a3b8' }} />
+          : <span style={{ fontWeight: 600 }}>{ buyerName !== '-' ? buyerName : 'Tidak Ada Pembeli'}</span>}
+      </div>
+
+          {/* Price */}
+          <div className={styles.itempriceWrapper}>
+            <span className={styles.itemprice}>
+              Rp {displayPrice?.toLocaleString('id-ID') ?? '-'}
+            </span>
+          </div>
+
+          
+
+          {/* Action — FIX: pakai Link bukan button biasa */}
+          <div className={styles.itemactions}>
+            <Link href={`/fisherman/enchantedAuctionHistory/${item.id}`} className={styles.itembutton}>
+              Lihat Detail
+            </Link>
+          </div>
+        </div>
+      </div>
+    ): (
+      <div className={styles.itemrow}>
       {/* Ikan */}
       <div className={styles.itemproduct}>
         <div className={styles.itemimageWrapper}>
@@ -207,6 +270,7 @@ function TransactionItem({ item, token }: { item: any; token: string }) {
         </Link>
       </div>
     </div>
+    )
   );
 }
 
@@ -258,12 +322,16 @@ export default function AuctionHistory() {
     if (dateRange.end)    return `${format(dateRange.start, 'dd MMM')} - ${format(dateRange.end, 'dd MMM yyyy')}`;
     return format(dateRange.start, 'dd MMM yyyy');
   };
+const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
     <div className={styles.all}>
-      <SideFisherman />
+      <SideFisherman
+                  sidebarOpen={sidebarOpen}
+                  setSidebarOpen={setSidebarOpen}
+                />
       <div className={styles.container}>
-        <NavbarFisherman />
+        <NavbarFisherman setSidebarOpen={setSidebarOpen}/>
 
         <div className={styles.content}>
           <section className={styles.titleSection}>
