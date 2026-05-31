@@ -108,17 +108,22 @@ export default function UploadAuction() {
     }
   };
 
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
   // ── Render ────────────────────────────────────────────────────────────────
   return (
      <div className={styles.all}>
-      <SideFisherman />
+      <SideFisherman
+                  sidebarOpen={sidebarOpen}
+                  setSidebarOpen={setSidebarOpen}
+                />
       <div className={styles.container}>
-        <NavbarFisherman />
+        <NavbarFisherman setSidebarOpen={setSidebarOpen}/>
 
         <div className={styles.content}>
           <section className={styles.titleSection}>
            <h1 className={styles.title}>Unggah Lelang</h1>
-            <p className={styles.description}>
+            <p className={styles.subtitle}>
               Daftarkan hasil tangkapan segar Anda ke pasar global. Pastikan semua detail akurat untuk menarik penawar bernilai tinggi.
             </p>
           </section>
@@ -314,7 +319,8 @@ export default function UploadAuction() {
             {/* ── Live Preview ── */}
             <div className={styles.previewcontainer}>
               <h4 className={styles.sectionTitle}>Pratinjau Pasar</h4>
-              <AuctionCard
+              <div className={styles.prevWrap}>
+                <AuctionCard
                 id="preview"
                 name={fishName || 'Nama Ikan'}
                 image={imagePreview || '/placeholder-fish.jpg'}
@@ -325,6 +331,8 @@ export default function UploadAuction() {
                 highestBid={price || '0'}
                 timeLeft={endsAtPreview()}
               />
+              </div>
+              
 
               {/* Pro Tip */}
               <div className={styles.protipcard}>
