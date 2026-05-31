@@ -203,12 +203,17 @@ export default function SettingsPage() {
     setShowPasswordSection(false);
   };
 
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
   // ── Loading ────────────────────────────────────────────────────────────────
   if (loading) return (
     <div className={styles.all}>
-        <SideFisherman />
+        <SideFisherman
+                    sidebarOpen={sidebarOpen}
+                    setSidebarOpen={setSidebarOpen}
+                  />
            <div className={styles.container}>
-            <NavbarFisherman />
+            <NavbarFisherman setSidebarOpen={setSidebarOpen}/>
             <div style={{ padding: '4rem', textAlign: 'center', color: '#94a3b8' }}>
            Memuat profil...
          </div>
@@ -223,9 +228,12 @@ export default function SettingsPage() {
 
   return(
    <div className={styles.all}>
-        <SideFisherman />
+        <SideFisherman
+                    sidebarOpen={sidebarOpen}
+                    setSidebarOpen={setSidebarOpen}
+                  />
            <div className={styles.container}>
-            <NavbarFisherman />
+            <NavbarFisherman setSidebarOpen={setSidebarOpen}/>
 
             {/* ── Success Popup ── */}
             {showSuccess && (
