@@ -353,12 +353,15 @@ export default function BiddingStatusPage() {
 
     
     
-
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   return (
     <div className={styles.layout}>
-      <SideFisherman />
+      <SideFisherman
+                        sidebarOpen={sidebarOpen}
+                        setSidebarOpen={setSidebarOpen}
+                      />
       <div className={styles.mainWrapper}>
-        <NavbarFisherman />
+        <NavbarFisherman setSidebarOpen={setSidebarOpen}/>
         
         <main className={styles.main}>
           {/* Header Section */}
@@ -404,7 +407,7 @@ export default function BiddingStatusPage() {
               )}
 
               {/* Finished Auctions Section */}
-              <div className={styles.sectionTitleWrap} style={{ marginTop: "40px" }}>
+              <div className={styles.sectionTitleWraphis}>
                 <h2 className={styles.sectionTitle}>Lelang Selesai</h2>
 
                 <div className={styles.controls}>
