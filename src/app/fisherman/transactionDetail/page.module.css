@@ -15,7 +15,7 @@
 }
 
 .content {
-  width: 80rem;
+  width: 80%;
   display: flex;
   flex-direction: column;
   margin-left: auto; 
@@ -28,9 +28,8 @@
 
 .notiHeader {
     width: 100%;
-    align-items: end    ;
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   justify-content: space-between;
   margin-bottom: 2rem;
 }
@@ -58,12 +57,20 @@
 }
 
 
-.viewAll {
-  color: var(--clr-primary);
-  text-decoration: none;
-  font-size: 14px;
-  font-weight: 600;
+.backLink{
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--clr-text-muted);
+  font-size: var(--fs-sm);
 }
+.backLink:hover{
+  color: var(--clr-primary);
+}
+
 
 
 /* ── Transaction List ── */
@@ -172,4 +179,21 @@
 .spinner {
   color: var(--clr-primary);
   animation: lekan-spin 1s linear infinite;
+}
+
+@media (max-width: 768px) {
+  .content{
+    padding: 16px;
+    width: 100%;
+    gap: .5rem;
+  }
+
+  .notiHeader{
+    margin-bottom: 1rem;
+  }
+
+  .txRow{
+    padding: var(--space-sm) var(--space-md);
+  }
+
 }

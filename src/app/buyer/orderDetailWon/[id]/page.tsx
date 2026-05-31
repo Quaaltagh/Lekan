@@ -218,7 +218,7 @@ export default function BuyerOrderDetailPage() {
 
             <div className={styles.header}>
               <button onClick={() => router.back()} className={styles.backLink}>
-                <ArrowLeft size={18} /> Kembali ke Histori Lelang
+                <ArrowLeft size={18} /> Kembali
               </button>
               <div className={styles.notiHeader}>
                 <h1 className={styles.pageTitle}>Lacak Pengiriman Kargo Ikan</h1>

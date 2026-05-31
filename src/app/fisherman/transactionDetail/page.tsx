@@ -1,10 +1,13 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
+import {
+  ArrowLeft} from 'lucide-react';
 import styles from './page.module.css';
 import SideFisherman from '../../components/sideFisherman';
 import NavbarFisherman from '../../components/NavbarFisherman';
 import Link from 'next/link';
+import { useParams, useRouter } from 'next/navigation';
 import {
   Wallet,
   ArrowDownToLine,
@@ -76,14 +79,32 @@ export default function TransactionDetail(){
           .reduce((s: number, tx: Transaction) => s + tx.amount, 0) ?? 0;
       
 
+    const [sidebarOpen, setSidebarOpen] = useState(false);
+      const router  = useRouter();
 
     return(
         <div className={styles.all}>
-            <SideFisherman />
+            <SideFisherman
+                        sidebarOpen={sidebarOpen}
+                        setSidebarOpen={setSidebarOpen}
+                      />
             <div className={styles.container}>
-                <NavbarFisherman />
+                <NavbarFisherman setSidebarOpen={setSidebarOpen}/>
 
                 <div className={styles.content}>
+                    
+                    <div className={styles.notiHeader}>
+                        <button onClick={() => router.back()} className={styles.backLink}>
+                                    <ArrowLeft size={16} /> Kembali
+                                  </button>
+                        <div>
+                        <h1 className={styles.notiTitle}>Riwayat Transaksi</h1>
+                        <p className={styles.notiDescription}>
+                            Kelola dana Anda dan lihat aktivitas keuangan terbaru.
+                        </p>
+                        </div>
+                        
+                    </div>
                     {/* Loading */}
                     {loading && (
                         <div
@@ -114,17 +135,6 @@ export default function TransactionDetail(){
                         {error}
                         </div>
                     )}
-                    <div className={styles.notiHeader}>
-                        <div>
-                        <h1 className={styles.notiTitle}>Riwayat Transaksi</h1>
-                        <p className={styles.notiDescription}>
-                            Kelola dana Anda dan lihat aktivitas keuangan terbaru.
-                        </p>
-                        </div>
-                        <Link href="/fisherman/walletPayment" className={styles.viewAll}>
-                        ← Kembali ke halaman Dompet
-                        </Link>
-                    </div>
                     <div className={styles.transactionList}>
                         {data && (
                             <>
