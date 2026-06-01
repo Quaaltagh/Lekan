@@ -8,7 +8,6 @@ import { useRouter, usePathname } from 'next/navigation';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
-// ─── Types ────────────────────────────────────────────────────────────────────
 interface SearchResult {
   id: string;
   name: string;
@@ -20,7 +19,6 @@ interface SearchResult {
   ends_at: string;
 }
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
 function formatRp(amount: number): string {
   if (amount >= 1_000_000) return `Rp ${(amount / 1_000_000).toFixed(1)}M`;
   if (amount >= 1_000)     return `Rp ${(amount / 1_000).toFixed(0)}K`;
@@ -43,14 +41,12 @@ function getInitials(name?: string, email?: string): string {
   return '?';
 }
 
-// ─── Avatar component ─────────────────────────────────────────────────────────
 function UserAvatar({ avatarUrl, name, email }: {
   avatarUrl: string | null;
   name?: string;
   email?: string;
 }) {
   const [imgError, setImgError] = useState(false);
-
   if (avatarUrl && !imgError) {
     return (
       <img
@@ -61,7 +57,6 @@ function UserAvatar({ avatarUrl, name, email }: {
       />
     );
   }
-
   return (
     <div className={styles.avatarFallback}>
       {getInitials(name, email)}
@@ -69,7 +64,6 @@ function UserAvatar({ avatarUrl, name, email }: {
   );
 }
 
-// ─── SearchDropdown component ─────────────────────────────────────────────────
 function SearchDropdown({ results, loading, query, onClose }: {
   results: SearchResult[];
   loading: boolean;
@@ -77,7 +71,6 @@ function SearchDropdown({ results, loading, query, onClose }: {
   onClose: () => void;
 }) {
   const router = useRouter();
-
   if (!query) return null;
 
   return (
@@ -98,7 +91,6 @@ function SearchDropdown({ results, loading, query, onClose }: {
             <span>Hasil pencarian</span>
             <span className={styles.searchDropdownCount}>{results.length} lelang</span>
           </div>
-
           {results.map(item => {
             const price = item.current_bid ?? item.start_price;
             return (
@@ -136,44 +128,35 @@ function SearchDropdown({ results, loading, query, onClose }: {
   );
 }
 
-// ─── Navbar ───────────────────────────────────────────────────────────────────
 export default function Navbar() {
   const { user, token, logout } = useAuth();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const router   = useRouter();
   const pathname = usePathname();
-  
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
     const checkScreen = () => {
-      setIsMobile(window.innerWidth <= 768);
+      const mobile = window.innerWidth <= 768;
+      setIsMobile(mobile);
     };
-
     checkScreen();
-
-    window.addEventListener("resize", checkScreen);
-
-    return () => window.removeEventListener("resize", checkScreen);
+    window.addEventListener('resize', checkScreen);
+    return () => window.removeEventListener('resize', checkScreen);
   }, []);
+
+  useEffect(() => {
+    setDropdownOpen(false);
+  }, [pathname]);
 
   const isNotification = pathname.startsWith('/notification');
   const isWallet       = pathname === '/buyer/Dompet';
 
-  // ── Avatar state ──────────────────────────────────────────────────────────
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!user?.id || !token) {
-      setAvatarUrl(null);
-      return;
-    }
-
-    if ((user as any).avatar_url) {
-      setAvatarUrl((user as any).avatar_url);
-      return;
-    }
-
+    if (!user?.id || !token) { setAvatarUrl(null); return; }
+    if ((user as any).avatar_url) { setAvatarUrl((user as any).avatar_url); return; }
     fetch(`${API_URL}/api/profile/${user.id}`, {
       headers: { Authorization: `Bearer ${token}` },
     })
@@ -186,55 +169,42 @@ export default function Navbar() {
     if (!user) setAvatarUrl(null);
   }, [user]);
 
-  // ── Search state ──────────────────────────────────────────────────────────
   const [searchQuery,   setSearchQuery]   = useState('');
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [searchLoading, setSearchLoading] = useState(false);
   const [searchOpen,    setSearchOpen]    = useState(false);
   const searchRef   = useRef<HTMLDivElement>(null);
+  const profileRef = useRef<HTMLDivElement>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
-      if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
-        setSearchOpen(false);
+      if (profileRef.current && !profileRef.current.contains(e.target as Node)) {
+        setDropdownOpen(false);
       }
     };
     document.addEventListener('mousedown', handler);
-      return () => document.removeEventListener('mousedown', handler);
-    }, []);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
 
-    useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
-
       if (!target.closest(`.${styles.profileWrapper}`)) {
         setDropdownOpen(false);
       }
     };
-
-    document.addEventListener("click", handleClickOutside);
-
-    return () => {
-      document.removeEventListener("click", handleClickOutside);
-    };
+    document.addEventListener('click', handler);
+    return () => document.removeEventListener('click', handler);
   }, []);
 
   const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value;
     setSearchQuery(val);
-
     if (debounceRef.current) clearTimeout(debounceRef.current);
-
-    if (!val.trim()) {
-      setSearchResults([]);
-      setSearchOpen(false);
-      return;
-    }
-
+    if (!val.trim()) { setSearchResults([]); setSearchOpen(false); return; }
     setSearchOpen(true);
     setSearchLoading(true);
-
     debounceRef.current = setTimeout(async () => {
       try {
         const res = await fetch(
@@ -267,148 +237,188 @@ export default function Navbar() {
   };
 
   return (
-    <header className={styles.header}>
-      {/* Kiri - Logo */}
-      <div className={styles.navLeft}>
-        <Link href="/">
-          <img src="/images/Lekan logo with tulisan.png" alt="LEKAN" className={styles.logoimages} />
-        </Link>
-      </div>
+    <>
+      <header className={styles.header}>
 
-      {/* Tengah - Search */}
-      <div className={styles.searchcontainer} ref={searchRef}>
-        <div className={styles.searchwrapper}>
-          <div className={styles.searchiconWrapper}>
-            <Search className={styles.searchicon} />
+        {/* Kiri - Logo */}
+        <div className={styles.navLeft}>
+          <Link href="/">
+            <img src="/images/Lekan logo with tulisan.png" alt="LEKAN" className={styles.logoimages} />
+          </Link>
+        </div>
+
+        {/* Tengah - Search (Desktop only, disembunyikan di mobile lewat CSS) */}
+        <div className={styles.searchcontainer} ref={searchRef}>
+          <div className={styles.searchwrapper}>
+            <div className={styles.searchiconWrapper}>
+              <Search className={styles.searchicon} />
+            </div>
+            <input
+              type="text"
+              className={styles.searchinput}
+              placeholder="Cari ikan..."
+              value={searchQuery}
+              onChange={handleSearchChange}
+              onKeyDown={handleKeyDown}
+              onFocus={() => { if (searchQuery.trim()) setSearchOpen(true); }}
+              autoComplete="off"
+            />
+            {searchQuery && (
+              <button className={styles.searchClear} onClick={clearSearch}>
+                <X size={14} />
+              </button>
+            )}
           </div>
-          <input
-            type="text"
-            className={styles.searchinput}
-            placeholder="Cari ikan..."
-            value={searchQuery}
-            onChange={handleSearchChange}
-            onKeyDown={handleKeyDown}
-            onFocus={() => { if (searchQuery.trim()) setSearchOpen(true); }}
-            autoComplete="off"
-          />
-          {searchQuery && (
-            <button className={styles.searchClear} onClick={clearSearch}>
-              <X size={14} />
-            </button>
+          {searchOpen && (
+            <SearchDropdown
+              results={searchResults}
+              loading={searchLoading}
+              query={searchQuery}
+              onClose={clearSearch}
+            />
           )}
         </div>
 
-        {searchOpen && (
-          <SearchDropdown
-            results={searchResults}
-            loading={searchLoading}
-            query={searchQuery}
-            onClose={clearSearch}
-          />
-        )}
-      </div>
+        {/* Kanan */}
+        <div className={styles.navRight}>
 
-      {/* Kanan - Actions */}
-      <div className={styles.navRight}>
-
-        {/* ✅ Bell & Wallet hanya tampil kalau user sudah login */}
-        {user && (
-          <>
-            <Link href="/notification">
-              <Bell
-                className={`${styles.icon} ${isNotification ? styles.iconActive : styles.iconInactive}`}
-                size={20}
-              />
-            </Link>
-            <Link href={isWallet ? '/buyer' : '/buyer/Dompet'}>
-              <Wallet
-                className={`${styles.icon} ${isWallet ? styles.iconActive : styles.iconInactive}`}
-                size={20}
-              />
-            </Link>
-          </>
-        )}
-
-        {user ? (
-          <div
-            className={styles.profileWrapper}
-            onMouseEnter={() => {
-              if (!isMobile) setDropdownOpen(true);
-            }}
-            onMouseLeave={() => {
-              if (!isMobile) setDropdownOpen(false);
-            }}
-          >
-            <button className={styles.profileButton}
-            onClick={() => {
-              if (isMobile) {
-                setDropdownOpen(true);
-              }
-            }}>
-              <div className={styles.avatar}>
-                <UserAvatar
-                  avatarUrl={avatarUrl}
-                  name={user.full_name}
-                  email={user.email}
+          {/* Bell & Wallet — desktop only */}
+          {user && (
+            <div className={styles.desktopIconsOnly}>
+              <Link href="/notification">
+                <Bell
+                  className={`${styles.icon} ${isNotification ? styles.iconActive : styles.iconInactive}`}
+                  size={20}
                 />
-              </div>
-              <div className={styles.profileInfo}>
-                <span className={styles.profileName}>
-                  {user.full_name || user.email.split('@')[0]}
-                </span>
-                <span className={styles.profileRole}>
-                  {user.role === 'pembeli' ? 'Pembeli' : 'Nelayan'}
-                </span>
-              </div>
-              <ChevronDown
-                size={14}
-                className={`${styles.chevron} ${dropdownOpen ? styles.chevronOpen : ''}`}
-                color="#94a3b8"
-              />
-            </button>
+              </Link>
+              <Link href={isWallet ? '/buyer' : '/buyer/Dompet'}>
+                <Wallet
+                  className={`${styles.icon} ${isWallet ? styles.iconActive : styles.iconInactive}`}
+                  size={20}
+                />
+              </Link>
+            </div>
+          )}
 
-            {dropdownOpen && (
-              <div className={styles.dropdown}>
-                <div className={styles.dropdownHeader}>
-                  <div className={styles.dropdownAvatar}>
-                    <UserAvatar
-                      avatarUrl={avatarUrl}
-                      name={user.full_name}
-                      email={user.email}
-                    />
-                  </div>
-                  <div>
-                    <p className={styles.dropdownName}>{user.full_name || '-'}</p>
-                    <p className={styles.dropdownEmail}>{user.email}</p>
-                  </div>
+          {/* Profile button — tampil di desktop DAN mobile */}
+          {user ? (
+            <div
+              className={styles.profileWrapper}
+            >
+              <button
+                className={styles.profileButton}
+                onClick={() => setDropdownOpen(prev => !prev)}
+              >
+                <div className={styles.avatar}>
+                  <UserAvatar avatarUrl={avatarUrl} name={user.full_name} email={user.email} />
                 </div>
-                <hr className={styles.dropdownDivider} />
-                <Link href="/buyer/profile" className={styles.dropdownItem}>Profil Saya</Link>
-                <Link href="/buyer/statusLelang/" className={styles.dropdownItem}>Status Lelang</Link>
-                <Link href="/buyer/historiLelang/" className={styles.dropdownItem}>Riwayat Lelang</Link>
-                <hr className={styles.dropdownDivider} />
-                <button
-                  className={`${styles.dropdownItem} ${styles.dropdownLogout}`}
-                  onClick={() => {
-                    logout();
-                    setDropdownOpen(false);
-                    router.push('/');
-                  }}
-                >
-                  <LogOut size={14} /> Keluar
-                </button>
+                <div className={styles.profileInfo}>
+                  <span className={styles.profileName}>
+                    {user.full_name || user.email.split('@')[0]}
+                  </span>
+                  <span className={styles.profileRole}>
+                    {user.role === 'pembeli' ? 'Pembeli' : 'Nelayan'}
+                  </span>
+                </div>
+                <ChevronDown
+                  size={14}
+                  className={`${styles.chevron} ${dropdownOpen ? styles.chevronOpen : ''}`}
+                  color="#94a3b8"
+                />
+              </button>
+
+              {dropdownOpen && (
+                <div className={styles.dropdown}>
+                  <div className={styles.dropdownHeader}>
+                    <div className={styles.dropdownAvatar}>
+                      <UserAvatar avatarUrl={avatarUrl} name={user.full_name} email={user.email} />
+                    </div>
+                    <div>
+                      <p className={styles.dropdownName}>{user.full_name || '-'}</p>
+                      <p className={styles.dropdownEmail}>{user.email}</p>
+                    </div>
+                  </div>
+                  <hr className={styles.dropdownDivider} />
+                  <Link href="/buyer/profile" className={styles.dropdownItem}>Profil Saya</Link>
+                  <Link href="/buyer/statusLelang/" className={styles.dropdownItem}>Status Lelang</Link>
+                  <Link href="/buyer/historiLelang/" className={styles.dropdownItem}>Riwayat Lelang</Link>
+                  <hr className={styles.dropdownDivider} />
+                  <button
+                    className={`${styles.dropdownItem} ${styles.dropdownLogout}`}
+                    onClick={() => {
+                      logout();
+                      setDropdownOpen(false);
+                      router.push('/');
+                    }}
+                  >
+                    <LogOut size={14} /> Keluar
+                  </button>
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className={styles.divauth}>
+              <Link href="/auth?mode=login" className={styles.auth}>Masuk</Link>
+              <span> | </span>
+              <Link href="/auth?mode=register" className={styles.auth}>Daftar</Link>
+            </div>
+          )}
+
+        </div>
+      </header>
+
+      {/* Sub-bar mobile: Search + Bell + Wallet */}
+      {isMobile && (
+        <div className={styles.mobileSubHeader}>
+          <div className={styles.mobileSearchWrapper} ref={searchRef}>
+            <div className={styles.searchwrapper}>
+              <div className={styles.searchiconWrapper}>
+                <Search className={styles.searchicon} />
               </div>
+              <input
+                type="text"
+                className={styles.searchinput}
+                placeholder="Cari lelang ikan..."
+                value={searchQuery}
+                onChange={handleSearchChange}
+                onKeyDown={handleKeyDown}
+                onFocus={() => { if (searchQuery.trim()) setSearchOpen(true); }}
+                autoComplete="off"
+              />
+              {searchQuery && (
+                <button className={styles.searchClear} onClick={clearSearch}>
+                  <X size={14} />
+                </button>
+              )}
+            </div>
+            {searchOpen && (
+              <SearchDropdown
+                results={searchResults}
+                loading={searchLoading}
+                query={searchQuery}
+                onClose={clearSearch}
+              />
             )}
           </div>
-        ) : (
-          // Tombol Masuk & Daftar — hanya tampil kalau belum login
-          <div className={styles.divauth}>
-            <Link href="/auth?mode=login" className={styles.auth}>Masuk</Link>
-            {' | '}
-            <Link href="/auth?mode=register" className={styles.auth}>Daftar</Link>
-          </div>
-        )}
-      </div>
-    </header>
+
+          {user && (
+            <div className={styles.mobileIconsWrapper}>
+              <Link href="/notification">
+                <Bell
+                  className={`${styles.icon} ${isNotification ? styles.iconActive : styles.iconInactive}`}
+                  size={22}
+                />
+              </Link>
+              <Link href={isWallet ? '/buyer' : '/buyer/Dompet'}>
+                <Wallet
+                  className={`${styles.icon} ${isWallet ? styles.iconActive : styles.iconInactive}`}
+                  size={22}
+                />
+              </Link>
+            </div>
+          )}
+        </div>
+      )}
+    </>
   );
 }

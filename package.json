@@ -8,6 +8,7 @@
     "start": "next start"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.106.2",
     "@tailwindcss/oxide-win32-x64-msvc": "^4.2.2",
     "date-fns": "^4.1.0",
     "framer-motion": "^12.38.0",

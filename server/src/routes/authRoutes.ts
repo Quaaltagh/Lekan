@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { login, register, logout, getProfileById, requestPasswordReset, resetPassword, verifyOtp } from '../controller/authController';
+import { login, register, logout, getProfileById, requestPasswordReset, resetPassword, verifyOtp, googleUpsert, completeProfile } from '../controller/authController';
 
 const router = Router();
 
@@ -23,5 +23,11 @@ router.post('/verify-otp', verifyOtp);
 
 // POST /api/auth/reset-password
 router.post('/reset-password', resetPassword);
+
+// POST /api/auth/google-upsert
+router.post('/google-upsert', googleUpsert);
+ 
+// POST /api/auth/complete-profile
+router.post('/complete-profile', completeProfile);
 
 export default router;

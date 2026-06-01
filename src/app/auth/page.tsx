@@ -4,12 +4,12 @@ import { User, Mail, Lock, Eye, EyeOff, Ship, ShoppingCart, AlertCircle } from '
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { UserRole } from '@/services/authService';
+import { supabase } from '../lib/supabase'; // ← tambahan untuk Google OAuth
 import styles from './page.module.css';
 import Link from 'next/link';
 
 type Mode = 'login' | 'register';
 
-// ── Password strength ─────────────────────────────────────────────────────────
 function getPasswordStrength(pw: string): { level: 0 | 1 | 2 | 3; label: string } {
   if (pw.length === 0) return { level: 0, label: '' };
   if (pw.length < 6)   return { level: 1, label: 'Terlalu pendek' };
@@ -17,7 +17,6 @@ function getPasswordStrength(pw: string): { level: 0 | 1 | 2 | 3; label: string 
   return { level: 3, label: 'Kuat' };
 }
 
-// ── PasswordStrengthBar ───────────────────────────────────────────────────────
 function PasswordStrengthBar({ password }: { password: string }) {
   const { level, label } = getPasswordStrength(password);
   if (!password) return null;
@@ -39,17 +38,17 @@ function PasswordStrengthBar({ password }: { password: string }) {
   );
 }
 
-// ── Main Page ─────────────────────────────────────────────────────────────────
 export default function AuthPage() {
   const router       = useRouter();
   const searchParams = useSearchParams();
   const { login, register } = useAuth();
 
-  const [mode, setMode]               = useState<Mode>('login');
-  const [role, setRole]               = useState<UserRole>('nelayan');
+  const [mode, setMode]                 = useState<Mode>('login');
+  const [role, setRole]                 = useState<UserRole>('nelayan');
   const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading]     = useState(false);
-  const [error, setError]             = useState('');
+  const [isLoading, setIsLoading]       = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false); // ← tambahan
+  const [error, setError]               = useState('');
 
   const [form, setForm] = useState({ full_name: '', email: '', password: '' });
 
@@ -66,7 +65,6 @@ export default function AuthPage() {
   const handleSubmit = async () => {
     setError('');
 
-    // Validasi minimal
     if (!form.email || !form.password) {
       setError('Email dan password wajib diisi.');
       return;
@@ -84,10 +82,11 @@ export default function AuthPage() {
     try {
       if (mode === 'login') {
         await login(form.email, form.password, role);
+        router.push(role === 'pembeli' ? '/' : '/fisherman/dashboard'); // login → dashboard
       } else {
         await register(form.email, form.password, role, form.full_name || undefined);
+        router.push('/auth/completeProfile'); // register → lengkapi profil
       }
-      router.push(role === 'pembeli' ? '/' : '/fisherman/dashboard');
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Terjadi kesalahan.');
     } finally {
@@ -95,14 +94,31 @@ export default function AuthPage() {
     }
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') handleSubmit();
+  // ── Google OAuth ────────────────────────────────────────────────────────────
+  const handleGoogleLogin = async () => {
+    setError('');
+    setIsGoogleLoading(true);
+
+    // Simpan role sebelum redirect — state React hilang saat redirect
+    sessionStorage.setItem('lekan_pending_role', role);
+
+    const { error: oauthError } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback`,
+        queryParams: { prompt: 'select_account' },
+      },
+    });
+
+    if (oauthError) {
+      setError('Gagal memulai login Google: ' + oauthError.message);
+      setIsGoogleLoading(false);
+    }
+    // Kalau sukses, browser redirect ke Google — tidak perlu setLoading(false)
   };
 
-  const switchMode = (next: Mode) => {
-    setMode(next);
-    setError('');
-    setForm({ full_name: '', email: '', password: '' });
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') handleSubmit();
   };
 
   const showNameField = mode === 'register' && role === 'nelayan';
@@ -179,7 +195,6 @@ export default function AuthPage() {
           {/* Fields */}
           <div className={styles.fields} onKeyDown={handleKeyDown}>
 
-            {/* Nama Lengkap — hanya nelayan register */}
             {showNameField && (
               <div className={styles.fieldGroup}>
                 <label className={styles.fieldLabel}>Nama Lengkap</label>
@@ -198,7 +213,6 @@ export default function AuthPage() {
               </div>
             )}
 
-            {/* Email */}
             <div className={styles.fieldGroup}>
               <label className={styles.fieldLabel}>Alamat Email</label>
               <div className={styles.inputWrap}>
@@ -215,7 +229,6 @@ export default function AuthPage() {
               </div>
             </div>
 
-            {/* Password */}
             <div className={styles.fieldGroup}>
               <div className={styles.fieldLabelRow}>
                 <label className={styles.fieldLabel}>Kata Sandi</label>
@@ -243,14 +256,11 @@ export default function AuthPage() {
                   {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
               </div>
-
-              {/* Password strength — hanya saat register */}
               {mode === 'register' && (
                 <PasswordStrengthBar password={form.password} />
               )}
             </div>
 
-            {/* Error */}
             {error && (
               <div className={styles.errorBox}>
                 <AlertCircle size={15} style={{ flexShrink: 0, marginTop: 1 }} />
@@ -258,11 +268,10 @@ export default function AuthPage() {
               </div>
             )}
 
-            {/* Submit */}
             <button
               className={styles.submitBtn}
               onClick={handleSubmit}
-              disabled={isLoading}
+              disabled={isLoading || isGoogleLoading}
             >
               {isLoading
                 ? 'Memproses...'
@@ -279,26 +288,46 @@ export default function AuthPage() {
             <div className={styles.dividerLine} />
           </div>
 
-          {/* Social */}
+          {/* ── Google Button ── */}
           <div className={styles.socialGrid}>
-            <button className={styles.socialBtn}>Google</button>
-            {/* <button className={styles.socialBtn}>Facebook</button> */}
+            <button
+              className={styles.socialBtn}
+              onClick={handleGoogleLogin}
+              disabled={isLoading || isGoogleLoading}
+            >
+              {isGoogleLoading ? (
+                <span style={{ display: 'flex', alignItems: 'center', gap: 8, justifyContent: 'center' }}>
+                  <svg width="16" height="16" viewBox="0 0 24 24"
+                    style={{ animation: 'lekan-spin 0.8s linear infinite', flexShrink: 0 }}>
+                    <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3"
+                      fill="none" strokeDasharray="31" strokeDashoffset="10" />
+                  </svg>
+                  Menghubungkan...
+                </span>
+              ) : (
+                <span style={{ display: 'flex', alignItems: 'center', gap: 8, justifyContent: 'center' }}>
+                  <svg width="18" height="18" viewBox="0 0 48 48" style={{ flexShrink: 0 }}>
+                    <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+                    <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+                    <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+                    <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+                  </svg>
+                  Lanjut dengan Google
+                </span>
+              )}
+            </button>
           </div>
+
+          <style>{`@keyframes lekan-spin { to { transform: rotate(360deg); } }`}</style>
 
           {/* Toggle mode */}
           <p className={styles.toggleMode}>
             {mode === 'login' ? (
               <>Belum punya akun?
-                {/* <button className={styles.toggleBtn} onClick={() => switchMode('register')}>
-                  Daftar Sekarang
-                </button> */}
                 <Link href="/auth?mode=register" className={styles.toggleBtn}>Daftar Sekarang</Link>
               </>
             ) : (
               <>Sudah punya akun?
-                {/* <button className={styles.toggleBtn} onClick={() => switchMode('login')}>
-                  Masuk
-                </button> */}
                 <Link href="/auth?mode=login" className={styles.toggleBtn}>Masuk</Link>
               </>
             )}

@@ -309,3 +309,139 @@ export const verifyOtp = async (req: Request, res: Response) => {
     });
   }
 };
+
+export const googleUpsert = async (req: Request, res: Response): Promise<void> => {
+  // Ambil token dari header Authorization
+  const authHeader = req.headers.authorization;
+  if (!authHeader?.startsWith('Bearer ')) {
+    res.status(401).json({ error: 'Token tidak ditemukan.' });
+    return;
+  }
+ 
+  const token = authHeader.replace('Bearer ', '');
+ 
+  // Verifikasi token ke Supabase dan dapatkan data user
+  const { data: { user }, error: userError } = await supabase.auth.getUser(token);
+  if (userError || !user) {
+    res.status(401).json({ error: 'Token tidak valid atau sudah kadaluarsa.' });
+    return;
+  }
+ 
+  const { role } = req.body as { role?: 'nelayan' | 'pembeli' };
+  if (!role || !['nelayan', 'pembeli'].includes(role)) {
+    res.status(400).json({ error: 'Role wajib diisi (nelayan atau pembeli).' });
+    return;
+  }
+ 
+  // Cek apakah profil sudah ada (user lama yang login lagi)
+  const { data: existing } = await supabase
+    .from('profiles')
+    .select('id, role, full_name')
+    .eq('id', user.id)
+    .maybeSingle();
+ 
+  if (existing) {
+    // User lama — kembalikan profil yang ada, role TIDAK diubah
+    res.status(200).json({
+      message: 'Login berhasil.',
+      user: {
+        id: existing.id,
+        email: user.email,
+        full_name: existing.full_name ?? user.user_metadata?.full_name ?? null,
+        role: existing.role,
+      },
+    });
+    return;
+  }
+ 
+  // User baru — buat profil dengan role yang dipilih
+  const full_name: string =
+    user.user_metadata?.full_name ??
+    user.user_metadata?.name ??
+    user.email ??
+    '';
+ 
+  const { error: profileError } = await supabase.from('profiles').insert({
+    id: user.id,
+    email: user.email,
+    full_name,
+    role,
+  });
+ 
+  if (profileError) {
+    res.status(500).json({ error: 'Gagal menyimpan profil: ' + profileError.message });
+    return;
+  }
+ 
+  // Buat wallet otomatis
+  const { error: walletError } = await supabase
+    .from('wallets')
+    .insert({ user_id: user.id, balance: 0, pending: 0 });
+ 
+  if (walletError) {
+    console.error('[googleUpsert] Wallet creation failed (non-critical):', walletError.message);
+  }
+ 
+  res.status(201).json({
+    message: 'Registrasi via Google berhasil.',
+    user: { id: user.id, email: user.email, full_name, role },
+  });
+};
+
+export const completeProfile = async (req: Request, res: Response): Promise<void> => {
+  // Ambil user dari middleware verifyToken (req.user.id)
+  // Jika belum ada middleware, bisa pakai token langsung seperti di bawah
+  const authHeader = req.headers.authorization;
+  if (!authHeader?.startsWith('Bearer ')) {
+    res.status(401).json({ error: 'Token tidak ditemukan.' });
+    return;
+  }
+ 
+  const token = authHeader.replace('Bearer ', '');
+  const { data: { user }, error: userError } = await supabase.auth.getUser(token);
+ 
+  if (userError || !user) {
+    res.status(401).json({ error: 'Token tidak valid.' });
+    return;
+  }
+ 
+  const { full_name, email, phone, address, vessel_name } = req.body;
+ 
+  // Validasi
+  if (!full_name?.trim()) { res.status(400).json({ error: 'Nama lengkap wajib diisi.' }); return; }
+  if (!email?.trim())     { res.status(400).json({ error: 'Email wajib diisi.' }); return; }
+  if (!phone?.trim())     { res.status(400).json({ error: 'Nomor telepon wajib diisi.' }); return; }
+  if (!address?.trim())   { res.status(400).json({ error: 'Alamat wajib diisi.' }); return; }
+ 
+  // Cek role — kalau nelayan, vessel_name wajib
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('role')
+    .eq('id', user.id)
+    .single();
+ 
+  if (profile?.role === 'nelayan' && !vessel_name?.trim()) {
+    res.status(400).json({ error: 'Nama kapal wajib diisi untuk nelayan.' });
+    return;
+  }
+ 
+  // Update profil di database
+  const { error: updateError } = await supabase
+    .from('profiles')
+    .update({
+      full_name:    full_name.trim(),
+      email:        email.trim(),
+      phone:        phone.trim(),
+      address:      address.trim(),
+      vessel_name:  vessel_name?.trim() || null,
+      updated_at:   new Date().toISOString(),
+    })
+    .eq('id', user.id);
+ 
+  if (updateError) {
+    res.status(500).json({ error: 'Gagal menyimpan profil: ' + updateError.message });
+    return;
+  }
+ 
+  res.status(200).json({ message: 'Profil berhasil dilengkapi.' });
+};

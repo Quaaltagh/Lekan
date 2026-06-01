@@ -1,4 +1,3 @@
-/* ── existing styles (tidak diubah) ── */
 .header {
   background-color: white;
   border-bottom: 1px solid #e2e8f0;
@@ -7,12 +6,14 @@
   align-items: center;
   justify-content: space-between;
   width: 100%;
+  position: relative;
+  z-index: 1001;
 }
 
 .navLeft {
   display: flex;
+  align-items: center;
   gap: 24px;
-  font-weight: 500;
 }
 
 .logoimages {
@@ -46,25 +47,16 @@
 
 .divauth {
   color: #64748b;
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
 /* ── Search Container ── */
 .searchcontainer {
   flex: 1;
   max-width: 36rem;
-  position: relative; /* ← untuk dropdown */
-}
-
-@media (max-width: 767px) {
-  .searchcontainer {
-    display: none;
-  }
-}
-
-@media (min-width: 768px) {
-  .searchcontainer {
-    display: block;
-  }
+  position: relative;
 }
 
 .searchwrapper {
@@ -92,19 +84,19 @@
   display: block;
   width: 100%;
   padding-left: 40px;
-  padding-right: 36px; /* ruang untuk tombol clear */
+  padding-right: 36px;
   padding-top: 8px;
   padding-bottom: 8px;
   border: 1px solid #e5e7eb;
   border-radius: 9999px;
-  background-color: var(--clr-input);
+  background-color: #f8fafc;
   font-size: 14px;
-  color: var(--clr-foregorund);
+  color: #0f172a;
   transition: all 0.2s ease;
 }
 
 .searchinput::placeholder {
-  color: var(--clr-text-muted);
+  color: #94a3b8;
 }
 
 .searchinput:focus {
@@ -113,7 +105,6 @@
   box-shadow: 0 0 0 2px #1e3a8a;
 }
 
-/* Tombol clear (X) di dalam input */
 .searchClear {
   position: absolute;
   right: 12px;
@@ -260,24 +251,6 @@
   font-weight: 500;
 }
 
-.searchDropdownFooter {
-  width: 100%;
-  padding: 10px 14px;
-  background: #f8fafc;
-  border: none;
-  border-top: 1px solid #f1f5f9;
-  cursor: pointer;
-  font-size: 0.8rem;
-  color: #1e3a8a;
-  font-weight: 600;
-  text-align: center;
-  transition: background 0.15s;
-}
-
-.searchDropdownFooter:hover {
-  background: #eff6ff;
-}
-
 /* ── Profile Button ── */
 .profileWrapper {
   position: relative;
@@ -333,7 +306,7 @@
 /* ── Dropdown Profile ── */
 .dropdown {
   position: absolute;
-  top: calc(100%);
+  top: calc(100% + 4px);
   right: 0;
   width: 220px;
   background: #fff;
@@ -348,6 +321,13 @@
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(-6px); }
   to   { opacity: 1; transform: translateY(0); }
+}
+
+.dropdownHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
 }
 
 .dropdownName {
@@ -402,11 +382,7 @@
   color: #dc2626;
 }
 
-/* ─── TAMBAHKAN KE Navbar.module.css ────────────────────────────────────────
-   Ganti atau tambahkan class .avatar yang sudah ada dengan blok di bawah ini.
-   ─────────────────────────────────────────────────────────────────────────── */
-
-/* Container avatar di navbar button */
+/* ── Avatar ── */
 .avatar {
   width: 34px;
   height: 34px;
@@ -419,7 +395,6 @@
   justify-content: center;
 }
 
-/* Foto profil — mengisi penuh container */
 .avatarImg {
   width: 100%;
   height: 100%;
@@ -427,7 +402,6 @@
   border-radius: 50%;
 }
 
-/* Fallback inisial — muncul kalau foto gagal load atau tidak ada */
 .avatarFallback {
   width: 100%;
   height: 100%;
@@ -442,7 +416,6 @@
   user-select: none;
 }
 
-/* Avatar lebih besar di dropdown header */
 .dropdownAvatar {
   width: 40px;
   height: 40px;
@@ -455,21 +428,78 @@
   justify-content: center;
 }
 
-/* Update dropdownHeader supaya avatar dan teks sejajar */
-.dropdownHeader {
+/* ── Desktop utility ── */
+.desktopIconsOnly {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  padding: 0.75rem 1rem;
+  gap: 16px;
 }
 
+/* ── Mobile ── */
 @media (max-width: 768px) {
-  .header{
-    padding: 4px 24px;
-    width: 100%;
+  .header {
+    padding: 8px 16px;
   }
 
-  .logoimages{
-    height: 1.5rem;
+  .logoimages {
+    height: 1.6rem;
+  }
+
+  .searchcontainer {
+    display: none;
+  }
+
+  .desktopIconsOnly {
+    display: none;
+  }
+
+  .profileButton {
+    padding: 3px 8px 3px 3px;
+  }
+
+  .profileName {
+    font-size: 12px;
+    max-width: 72px;
+  }
+
+  .profileRole {
+    font-size: 10px;
+  }
+
+  .dropdown {
+    position: fixed;
+    top: auto;
+    right: 12px;
+    left: 12px;
+    width: auto;
+  }
+
+  /* Sub-bar mobile */
+  .mobileSubHeader {
+    display: flex;
+    align-items: center;
+    background-color: #ffffff;
+    padding: 8px 16px 10px 16px;
+    border-bottom: 1px solid #e2e8f0;
+    gap: 12px;
+  }
+
+  .mobileSearchWrapper {
+    flex: 1;
+    min-width: 0;
+    position: relative;
+  }
+
+  .mobileIconsWrapper {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-shrink: 0;
+  }
+}
+
+@media (min-width: 769px) {
+  .mobileSubHeader {
+    display: none;
   }
 }
