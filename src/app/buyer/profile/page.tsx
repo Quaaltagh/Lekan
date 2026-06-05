@@ -281,11 +281,19 @@ export default function Profile() {
 
                 <div className={`${styles.formGroup} ${styles.phoneInput}`}>
                   <label>Nomor Telepon</label>
-                  <span className={styles.phonePrefix}>+62</span>
-                  <input type="tel" placeholder="81234567890" value={phone}onChange={(e) => {
-                    const onlyNumbers = e.target.value.replace(/\D/g, '');
-                    setPhone(onlyNumbers);
-                  }} />
+                  {/* Tambahkan wrapper di bawah ini */}
+                  <div className={styles.phoneInputWrapper}>
+                    <span className={styles.phonePrefix}>+62</span>
+                    <input 
+                      type="tel" 
+                      placeholder="81234567890" 
+                      value={phone} 
+                      onChange={(e) => {
+                        const onlyNumbers = e.target.value.replace(/\D/g, '');
+                        setPhone(onlyNumbers);
+                      }} 
+                    />
+                  </div>
                 </div>
 
                  <div className={`${styles.formGroup} ${styles.fullWidth}`}>

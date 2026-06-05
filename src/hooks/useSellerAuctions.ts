@@ -137,7 +137,7 @@ export function useSellerAuctions() {
     };
 
     socket.onerror = (err) => {
-      console.error('Realtime WS error:', err);
+      console.warn('Realtime WS error:', err);
     };
 
     return () => {

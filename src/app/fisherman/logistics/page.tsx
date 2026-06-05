@@ -35,6 +35,8 @@ const formatEstArrival = (dateString: string) => {
 
 export default function LogisticsPage() {
   const { user, token } = useAuth();
+  const router = useRouter();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [data, setData] = useState<LogisticsResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -107,10 +109,6 @@ export default function LogisticsPage() {
         );
     }
   };
-
-  const router = useRouter();
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-
 
   return (
     <div className={styles.layout}>
