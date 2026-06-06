@@ -16,6 +16,7 @@ interface AuthContextType {
   login: (email: string, password: string, role: UserRole) => Promise<void>;
   register: (email: string, password: string, role: UserRole, full_name?: string) => Promise<void>;
   logout: () => void;
+  setSession: (token: string, user: User) => void;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -25,7 +26,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Muat user dari localStorage saat pertama kali
   useEffect(() => {
     const savedToken = localStorage.getItem('lekan_token');
     const savedUser = localStorage.getItem('lekan_user');
@@ -60,8 +60,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.removeItem('lekan_user');
   };
 
+  const setSession = (token: string, user: User) => {
+    setToken(token);
+    setUser(user);
+    localStorage.setItem('lekan_token', token);
+    localStorage.setItem('lekan_user', JSON.stringify(user));
+  };
+
   return (
-    <AuthContext.Provider value={{ user, token, isLoading, login, register, logout }}>
+    <AuthContext.Provider value={{ user, token, isLoading, login, register, logout, setSession }}>
       {children}
     </AuthContext.Provider>
   );

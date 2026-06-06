@@ -1,7 +1,8 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@supabase/supabase-js';
+import { useAuth } from '@/context/AuthContext';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -11,10 +12,15 @@ const supabase = createClient(
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
 export default function AuthCallbackPage() {
-  const router  = useRouter();
+  const router = useRouter();
+  const { setSession } = useAuth();
   const [error, setError] = useState('');
+  const hasRun = useRef(false); // ← guard
 
   useEffect(() => {
+    if (hasRun.current) return; // ← stop kalau sudah pernah jalan
+    hasRun.current = true;
+
     const handle = async () => {
       const { data: { session }, error: sessionError } =
         await supabase.auth.getSession();
@@ -24,8 +30,10 @@ export default function AuthCallbackPage() {
         return;
       }
 
-      const pendingRole = sessionStorage.getItem('lekan_pending_role') as
-        'nelayan' | 'pembeli' | null;
+      const pendingRole = (
+        sessionStorage.getItem('lekan_pending_role') ||
+        localStorage.getItem('lekan_pending_role')
+      ) as 'nelayan' | 'pembeli' | null;
 
       if (!pendingRole) {
         setError('Role tidak ditemukan. Silakan ulangi proses login.');
@@ -48,12 +56,10 @@ export default function AuthCallbackPage() {
         return;
       }
 
-      localStorage.setItem('lekan_token', session.access_token);
-      localStorage.setItem('lekan_user', JSON.stringify(data.user));
+      setSession(session.access_token, data.user);
       sessionStorage.removeItem('lekan_pending_role');
+      localStorage.removeItem('lekan_pending_role');
 
-      // 201 = user baru → lengkapi profil dulu
-      // 200 = user lama → langsung ke dashboard
       if (res.status === 201) {
         router.replace('/auth/completeProfile');
       } else {
@@ -62,7 +68,7 @@ export default function AuthCallbackPage() {
     };
 
     handle();
-  }, [router]);
+  }, [router, setSession]);
 
   if (error) {
     return (
