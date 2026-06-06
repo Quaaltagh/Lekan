@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { User, Mail, Lock, Eye, EyeOff, Ship, ShoppingCart, AlertCircle } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
@@ -7,6 +7,7 @@ import { UserRole } from '@/services/authService';
 import { supabase } from '../lib/supabase'; // ← tambahan untuk Google OAuth
 import styles from './page.module.css';
 import Link from 'next/link';
+
 
 type Mode = 'login' | 'register';
 
@@ -38,7 +39,7 @@ function PasswordStrengthBar({ password }: { password: string }) {
   );
 }
 
-export default function AuthPage() {
+function AuthContent() {
   const router       = useRouter();
   const searchParams = useSearchParams();
   const { login, register } = useAuth();
@@ -337,5 +338,13 @@ export default function AuthPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function AuthPage() {
+  return (
+    <Suspense fallback={null}>
+      <AuthContent />
+    </Suspense>
   );
 }
