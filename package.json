@@ -35,5 +35,8 @@
   },
   "engines": {
     "node": ">=20.0.0"
+  },
+  "overrides": {
+    "lightningcss": "npm:lightningcss-wasm@latest"
   }
 }
