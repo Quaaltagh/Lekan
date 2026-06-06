@@ -78,7 +78,7 @@ function NotificationCard({ type, title, description, created_at, is_read }: Not
   );
 }
 
-export default function Notifications({ onBack }: { onBack: () => void }) {
+export default function Notifications() {
   const { user, token } = useAuth(); // ← tambah token
   const isSeller = user?.role === 'nelayan';
 
