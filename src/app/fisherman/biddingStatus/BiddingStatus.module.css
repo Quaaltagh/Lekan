@@ -954,23 +954,23 @@
     width:  6rem;
   }
 
-  :global(table tr th:nth-child(1)),
-  :global(table tr td:nth-child(1)) {
+  .table :global(tr th:nth-child(1)),
+  .table :global(tr td:nth-child(1)) {
     width: 10rem;
   }
 
-  :global(table tr th:nth-child(2)),
-  :global(table tr td:nth-child(2)) {
+  .table :global(tr th:nth-child(2)),
+  .table :global(tr td:nth-child(2)) {
     width: 8rem;
   }
 
-  :global(table tr th:nth-child(3)),
-  :global(table tr td:nth-child(3)) {
+  .table :global(tr th:nth-child(3)),
+  .table :global(tr td:nth-child(3)) {
     width: 8rem;
   }
 
-  :global(table tr th:nth-child(6)),
-  :global(table tr td:nth-child(6)) {
+  .table :global(tr th:nth-child(6)),
+  .table :global(tr td:nth-child(6)) {
     width: 9rem;
   }
 
