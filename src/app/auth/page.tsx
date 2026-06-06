@@ -101,6 +101,7 @@ export default function AuthPage() {
 
     // Simpan role sebelum redirect — state React hilang saat redirect
     sessionStorage.setItem('lekan_pending_role', role);
+    localStorage.setItem('lekan_pending_role', role);
 
     const { error: oauthError } = await supabase.auth.signInWithOAuth({
       provider: 'google',
