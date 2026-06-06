@@ -1,4 +1,3 @@
-// Simpan file ini di: src/app/auth/callback/page.tsx
 'use client';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -17,7 +16,6 @@ export default function AuthCallbackPage() {
 
   useEffect(() => {
     const handle = async () => {
-      // 1. Ambil session yang Supabase sisipkan di URL setelah redirect dari Google
       const { data: { session }, error: sessionError } =
         await supabase.auth.getSession();
 
@@ -26,7 +24,6 @@ export default function AuthCallbackPage() {
         return;
       }
 
-      // 2. Ambil role yang user pilih sebelum redirect
       const pendingRole = sessionStorage.getItem('lekan_pending_role') as
         'nelayan' | 'pembeli' | null;
 
@@ -35,8 +32,6 @@ export default function AuthCallbackPage() {
         return;
       }
 
-      // 3. Panggil backend untuk simpan profil + role (kalau user baru)
-      //    atau ambil profil existing (kalau user lama)
       const res = await fetch(`${API_URL}/api/auth/google-upsert`, {
         method: 'POST',
         headers: {
@@ -53,13 +48,17 @@ export default function AuthCallbackPage() {
         return;
       }
 
-      // 4. Simpan session ke localStorage (sama seperti login email biasa)
       localStorage.setItem('lekan_token', session.access_token);
       localStorage.setItem('lekan_user', JSON.stringify(data.user));
       sessionStorage.removeItem('lekan_pending_role');
 
-      // 5. Redirect sesuai role
-      router.replace('/auth/completeProfile');
+      // 201 = user baru → lengkapi profil dulu
+      // 200 = user lama → langsung ke dashboard
+      if (res.status === 201) {
+        router.replace('/auth/completeProfile');
+      } else {
+        router.replace(data.user.role === 'pembeli' ? '/' : '/fisherman/dashboard');
+      }
     };
 
     handle();
