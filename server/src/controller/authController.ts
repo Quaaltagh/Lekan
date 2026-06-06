@@ -434,7 +434,6 @@ export const completeProfile = async (req: Request, res: Response): Promise<void
       phone:        phone.trim(),
       address:      address.trim(),
       vessel_name:  vessel_name?.trim() || null,
-      updated_at:   new Date().toISOString(),
     })
     .eq('id', user.id);
  

@@ -59,7 +59,7 @@ export default function AuthCallbackPage() {
       sessionStorage.removeItem('lekan_pending_role');
 
       // 5. Redirect sesuai role
-      router.replace(data.user.role === 'pembeli' ? '/' : '/fisherman/dashboard');
+      router.replace('/auth/completeProfile');
     };
 
     handle();
