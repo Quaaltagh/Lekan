@@ -11,6 +11,7 @@ import { auctionService } from '@/services/auctionService';
 import AuctionCard from '@/app/components/AuctionCard'
 
 const DURATION_OPTIONS = [
+  { label: '2 Menit',  value: '0.0333' },
   { label: '2 Jam',   value: '2'  },
   { label: '6 Jam',   value: '6'  },
   { label: '12 Jam',  value: '12' },
@@ -74,8 +75,9 @@ export default function UploadAuction() {
     val > 0 ? `Rp ${val.toLocaleString('id-ID')}` : 'Rp 0';
 
   const endsAtPreview = () => {
-    const d = new Date(Date.now() + Number(duration) * 3600 * 1000);
-    return `${Number(duration)}h 00m`;
+    const totalMinutes = Number(duration) * 60;
+    if (totalMinutes < 60) return `${Math.round(totalMinutes)}m 00s`;
+    return `${Math.floor(totalMinutes / 60)}h 00m`;
   };
 
   // ── Submit ────────────────────────────────────────────────────────────────

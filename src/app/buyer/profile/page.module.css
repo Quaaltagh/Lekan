@@ -650,11 +650,11 @@
   }
  
   .phonePrefix {
-    margin-top: 28.5px;
-    margin-left: -4px;
+    margin-top: 0;
+    margin-left: 0;
     font-size: var(--fs-xs);
   }
- 
+  
   /* ── Password eye buttons: ganti positioning fixed → relative ── */
   .passwordWrapper {
     position: relative;

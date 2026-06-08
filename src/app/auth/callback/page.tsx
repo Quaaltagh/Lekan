@@ -60,7 +60,15 @@ export default function AuthCallbackPage() {
       sessionStorage.removeItem('lekan_pending_role');
       localStorage.removeItem('lekan_pending_role');
 
-      if (res.status === 201) {
+      // ── TAMBAHAN SECURITY GUARD: Cek kelengkapan alamat di database ──
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('address')
+        .eq('id', session.user.id)
+        .single();
+
+      // Jika dia akun baru (201) ATAU alamatnya belum diisi/kosong, paksa lengkapi profil
+      if (res.status === 201 || !profile?.address || profile.address.trim() === '') {
         router.replace('/auth/completeProfile');
       } else {
         router.replace(data.user.role === 'pembeli' ? '/' : '/fisherman/dashboard');
