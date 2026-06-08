@@ -172,9 +172,10 @@ export const requestPasswordReset = async (
         error: 'Email wajib diisi',
       });
     }
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
 
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: 'http://localhost:3000/auth/forgotpassword',
+      redirectTo: `${frontendUrl}/auth/forgotpassword`,
     });
 
     if (error) {
