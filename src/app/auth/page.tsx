@@ -82,11 +82,34 @@ function AuthContent() {
     setIsLoading(true);
     try {
       if (mode === 'login') {
+        // 1. Jalankan fungsi login dari AuthContext
         await login(form.email, form.password, role);
-        router.push(role === 'pembeli' ? '/' : '/fisherman/dashboard'); // login → dashboard
+
+        // 2. Ambil sesi user yang baru saja login
+        const { data: sessionData } = await supabase.auth.getSession();
+        
+        if (sessionData?.session?.user) {
+          // 3. Cek apakah address sudah diisi di tabel profiles
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('address')
+            .eq('id', sessionData.session.user.id)
+            .single();
+
+          // 4. Jika address kosong, paksa ke halaman completeProfile
+          if (!profile?.address || profile.address.trim() === '') {
+            router.push('/auth/completeProfile');
+            return; // Hentikan fungsi di sini agar tidak lanjut ke dashboard
+          }
+        }
+
+        // Jika address ada, izinkan masuk ke dashboard
+        router.push(role === 'pembeli' ? '/' : '/fisherman/dashboard');
+
       } else {
+        // Alur Register tetap sama
         await register(form.email, form.password, role, form.full_name || undefined);
-        router.push('/auth/completeProfile'); // register → lengkapi profil
+        router.push('/auth/completeProfile');
       }
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Terjadi kesalahan.');
